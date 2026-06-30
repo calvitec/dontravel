@@ -254,10 +254,14 @@
         const bookingDate = document.getElementById('bookingDate').value;
 
         function toggleSeat(element) {
-            if (element.classList.contains('booked')) return;
+            // Check if seat is booked
+            if (element.classList.contains('booked')) {
+                return;
+            }
             
             const seatId = element.dataset.seat;
             
+            // Toggle selection
             if (element.classList.contains('selected')) {
                 element.classList.remove('selected');
                 selectedSeats = selectedSeats.filter(s => s !== seatId);
@@ -266,7 +270,11 @@
                 selectedSeats.push(seatId);
             }
             
+            // Update the summary
             updateSummary();
+            
+            // Debug log
+            console.log('Selected seats:', selectedSeats);
         }
 
         function updateSummary() {
@@ -275,7 +283,10 @@
             
             document.getElementById('selectedSeatsDisplay').textContent = count > 0 ? selectedSeats.join(', ') : 'None selected';
             document.getElementById('totalFare').textContent = `KSh ${total.toLocaleString()}`;
-            document.getElementById('confirmBtn').disabled = count === 0;
+            
+            // Enable/disable confirm button
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.disabled = count === 0;
         }
 
         function confirmBooking() {
@@ -335,7 +346,14 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', updateSummary);
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSummary();
+            console.log('Bus ID:', busId);
+            console.log('Booking Date:', bookingDate);
+            console.log('Fare per seat:', farePerSeat);
+            console.log('Total seats:', document.querySelectorAll('.seat').length);
+        });
     </script>
 </body>
 </html>
