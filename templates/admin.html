@@ -3,226 +3,162 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard · Don Travels</title>
+    <title>Admin Dashboard · BusCar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; }
-        .admin-card {
+        body { background: #f0f4f8; }
+        
+        .stat-card {
             background: white;
             border-radius: 16px;
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
-            padding: 24px;
+            padding: 20px;
+            border: 1px solid #f1f5f9;
             text-align: center;
+            transition: all 0.3s;
         }
-        .admin-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.06); transform: translateY(-2px); }
-        .status-badge { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.04); }
+        .stat-card .stat-number { font-size: 2rem; font-weight: 800; color: #f59e0b; }
+        .stat-card .stat-label { color: #64748b; font-size: 0.85rem; }
+        
+        .admin-nav {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .admin-nav .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .admin-nav .nav-link:hover { background: #f8fafc; color: #0f172a; }
+        .admin-nav .nav-link.active { background: #f59e0b; color: white; }
+        
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 12px 16px; color: #64748b; font-weight: 600; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
+        tr:hover { background: #f8fafc; }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-confirmed { background: #d1fae5; color: #065f46; }
         .status-pending { background: #fef3c7; color: #92400e; }
-        .status-confirmed { background: #dbeafe; color: #1e40af; }
-        .status-completed { background: #d1fae5; color: #065f46; }
         .status-cancelled { background: #fee2e2; color: #991b1b; }
-        .btn-action { padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 4px; }
-        .btn-action:hover { transform: translateY(-1px); }
-        .btn-confirm { background: #dbeafe; color: #1e40af; }
-        .btn-confirm:hover { background: #bfdbfe; }
-        .btn-complete { background: #d1fae5; color: #065f46; }
-        .btn-complete:hover { background: #a7f3d0; }
-        .btn-cancel { background: #fee2e2; color: #991b1b; }
-        .btn-cancel:hover { background: #fecaca; }
-        .btn-delete { background: #fee2e2; color: #dc2626; }
-        .btn-delete:hover { background: #fecaca; }
-        .stat-number { font-size: 2rem; font-weight: 700; }
+        
         @media (max-width: 768px) {
-            .admin-table { font-size: 0.75rem; }
-            .admin-table th, .admin-table td { padding: 8px 10px; }
-            .status-badge { font-size: 0.65rem; padding: 2px 10px; }
-            .stat-number { font-size: 1.5rem; }
-            .admin-card { padding: 16px; }
+            .admin-nav { flex-direction: column; align-items: stretch; }
+            .admin-nav .nav-links { display: flex; flex-wrap: wrap; gap: 4px; }
+            .admin-nav .nav-link { padding: 6px 12px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Admin Nav -->
-    <nav style="background:#0a0a1a; color:white; padding:16px 24px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); position:sticky; top:0; z-index:40;">
-        <div style="max-width:1280px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
-            <div style="display:flex; align-items:center; gap:16px;">
-                <a href="/" style="display:flex; align-items:center; gap:8px; text-decoration:none; color:white;">
-                    <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, #fbbf24, #f59e0b); display:flex; align-items:center; justify-content:center; color:#0a0a1a; font-size:1.125rem;">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <span style="font-size:1.25rem; font-weight:700;">Don <span style="color:#fbbf24;">Travels</span></span>
-                </a>
-                <span style="font-size:0.75rem; color:#9ca3af; background:rgba(255,255,255,0.1); padding:4px 12px; border-radius:20px;">Admin</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                <span style="font-size:0.75rem; color:#9ca3af;"><i class="fas fa-clock"></i> <span id="currentTime"></span></span>
-                <span style="font-size:0.7rem; color:#9ca3af; background:rgba(255,255,255,0.05); padding:2px 12px; border-radius:12px;">
-                    <i class="fas fa-database"></i> {{ db_type|capitalize }}
-                </span>
-                <a href="/" style="font-size:0.75rem; color:#9ca3af; text-decoration:none; display:flex; align-items:center; gap:4px;"><i class="fas fa-arrow-left"></i> Back</a>
-                <button onclick="location.reload()" style="padding:6px 14px; border-radius:8px; background:#fbbf24; color:#0a0a1a; font-size:0.75rem; border:none; cursor:pointer; font-weight:600;">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-            </div>
+
+    <!-- ===== ADMIN NAV ===== -->
+    <nav class="admin-nav">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <i class="fas fa-bus" style="color:#f59e0b; font-size:1.5rem;"></i>
+            <span style="font-weight:800; font-size:1.2rem; color:#0f172a;">BusCar <span style="color:#f59e0b;">Admin</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="/admin" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="/admin/buses" class="nav-link"><i class="fas fa-bus"></i> Buses</a>
+            <a href="/admin/routes" class="nav-link"><i class="fas fa-route"></i> Routes</a>
+            <a href="/admin/bookings" class="nav-link"><i class="fas fa-ticket-alt"></i> Bookings</a>
+            <a href="/admin/logout" class="nav-link" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div style="background:#f8fafc; min-height:100vh; padding:24px 16px;">
-        <div style="max-width:1280px; margin:0 auto;">
-            
-            <!-- Stats Cards -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:24px;">
-                <div class="admin-card">
-                    <div style="color:#0a0a1a; font-size:1.5rem;"><i class="fas fa-calendar-check"></i></div>
-                    <div class="stat-number" style="color:#0a0a1a;">{{ stats.total }}</div>
-                    <div style="font-size:0.875rem; color:#6b7280;">Total Bookings</div>
-                </div>
-                <div class="admin-card" style="border-left: 4px solid #f59e0b;">
-                    <div style="color:#f59e0b; font-size:1.5rem;"><i class="fas fa-clock"></i></div>
-                    <div class="stat-number" style="color:#f59e0b;">{{ stats.pending }}</div>
-                    <div style="font-size:0.875rem; color:#6b7280;">Pending</div>
-                </div>
-                <div class="admin-card" style="border-left: 4px solid #3b82f6;">
-                    <div style="color:#3b82f6; font-size:1.5rem;"><i class="fas fa-check-circle"></i></div>
-                    <div class="stat-number" style="color:#3b82f6;">{{ stats.confirmed }}</div>
-                    <div style="font-size:0.875rem; color:#6b7280;">Confirmed</div>
-                </div>
-                <div class="admin-card" style="border-left: 4px solid #10b981;">
-                    <div style="color:#10b981; font-size:1.5rem;"><i class="fas fa-flag-checkered"></i></div>
-                    <div class="stat-number" style="color:#10b981;">{{ stats.completed }}</div>
-                    <div style="font-size:0.875rem; color:#6b7280;">Completed</div>
-                </div>
-                <div class="admin-card" style="border-left: 4px solid #ef4444;">
-                    <div style="color:#ef4444; font-size:1.5rem;"><i class="fas fa-times-circle"></i></div>
-                    <div class="stat-number" style="color:#ef4444;">{{ stats.cancelled }}</div>
-                    <div style="font-size:0.875rem; color:#6b7280;">Cancelled</div>
-                </div>
-                <div class="admin-card" style="border-left: 4px solid #059669;">
-                    <div style="color:#059669; font-size:1.5rem;"><i class="fas fa-coins"></i></div>
-                    <div class="stat-number" style="color:#059669;">KSh {{ stats.revenue }}</div>
-                    <div style="font-size:0.875rem; color:#6b7280;">Revenue</div>
-                </div>
+    <!-- ===== DASHBOARD ===== -->
+    <section style="max-width:1200px; margin:24px auto; padding:0 20px;">
+        <!-- Stats -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:16px; margin-bottom:24px;">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_bookings }}</div>
+                <div class="stat-label"><i class="fas fa-ticket-alt"></i> Total Bookings</div>
             </div>
-
-            <!-- Bookings Table -->
-            <div style="background:white; border-radius:16px; padding:20px; box-shadow:0 1px 3px 0 rgba(0,0,0,0.1); border:1px solid #e2e8f0; overflow-x:auto;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-                    <h3 style="font-size:1.125rem; font-weight:700; color:#0a0a1a;"><i class="fas fa-list-ul" style="color:#fbbf24;"></i> All Bookings <span style="font-size:0.75rem; font-weight:400; color:#6b7280; background:#f3f4f6; padding:2px 10px; border-radius:20px;">{{ bookings|length }}</span></h3>
-                    <input type="text" id="searchBookings" placeholder="Search..." style="border:1px solid #e2e8f0; border-radius:8px; padding:6px 12px; font-size:0.875rem; width:160px;">
-                </div>
-
-                {% if bookings %}
-                <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
-                    <thead>
-                        <tr>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">#</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">Booking ID</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">Customer</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">Vehicle</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">Pickup</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">Status</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left;">Amount</th>
-                            <th style="background:#f8fafc; font-weight:600; color:#1e293b; padding:12px 16px; text-align:left; min-width:180px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bookingsBody">
-                        {% for booking in bookings %}
-                        <tr id="booking-{{ booking.id }}" class="booking-row" style="border-bottom:1px solid #f1f5f9;">
-                            <td style="padding:12px 16px; font-weight:500; color:#0a0a1a;">{{ loop.index }}</td>
-                            <td style="padding:12px 16px; font-family:monospace; font-size:0.75rem; color:#0a0a1a; font-weight:600;">{{ booking.booking_id }}</td>
-                            <td style="padding:12px 16px; font-weight:500;">{{ booking.customer_name }}</td>
-                            <td style="padding:12px 16px; color:#4b5563;"><span style="background:#fef3c7; padding:2px 10px; border-radius:12px; font-size:0.7rem;">{{ booking.vehicle_type }}</span></td>
-                            <td style="padding:12px 16px; color:#4b5563; font-size:0.8rem;">{{ booking.pickup_location[:20] }}{% if booking.pickup_location|length > 20 %}...{% endif %}</td>
-                            <td style="padding:12px 16px;"><span class="status-badge status-{{ booking.status }}">{{ booking.status|capitalize }}</span></td>
-                            <td style="padding:12px 16px; font-weight:600; color:#0a0a1a;">KSh {{ booking.amount }}</td>
-                            <td style="padding:12px 16px;">
-                                <div style="display:flex; gap:4px; flex-wrap:wrap;">
-                                    {% if booking.status == 'pending' %}
-                                        <button onclick="updateStatus({{ booking.id }}, 'confirmed')" class="btn-action btn-confirm"><i class="fas fa-check"></i> Confirm</button>
-                                    {% endif %}
-                                    {% if booking.status == 'confirmed' %}
-                                        <button onclick="updateStatus({{ booking.id }}, 'completed')" class="btn-action btn-complete"><i class="fas fa-flag-checkered"></i> Complete</button>
-                                    {% endif %}
-                                    {% if booking.status == 'pending' or booking.status == 'confirmed' %}
-                                        <button onclick="updateStatus({{ booking.id }}, 'cancelled')" class="btn-action btn-cancel"><i class="fas fa-times"></i> Cancel</button>
-                                    {% endif %}
-                                    <button onclick="deleteBooking({{ booking.id }})" class="btn-action btn-delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <div style="text-align:center; padding:60px 20px; color:#9ca3af;">
-                    <i class="fas fa-inbox" style="font-size:3rem; margin-bottom:16px; opacity:0.5;"></i>
-                    <h4 style="font-size:1.125rem; font-weight:600; color:#374151;">No bookings yet</h4>
-                    <p style="font-size:0.875rem; color:#6b7280;">When customers book rides, they'll appear here</p>
-                </div>
-                {% endif %}
+            <div class="stat-card">
+                <div class="stat-number">KSh {{ stats.total_revenue }}</div>
+                <div class="stat-label"><i class="fas fa-coins"></i> Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_buses }}</div>
+                <div class="stat-label"><i class="fas fa-bus"></i> Buses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_routes }}</div>
+                <div class="stat-label"><i class="fas fa-route"></i> Routes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.today_bookings }}</div>
+                <div class="stat-label"><i class="fas fa-calendar-day"></i> Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.pending_payments }}</div>
+                <div class="stat-label"><i class="fas fa-clock"></i> Pending Payments</div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // ===== TIME =====
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        }
-        updateTime();
-        setInterval(updateTime, 30000);
+        <!-- Recent Bookings -->
+        <div class="table-container">
+            <h3 style="font-weight:700; color:#0f172a; margin-bottom:16px;">
+                <i class="fas fa-clock" style="color:#f59e0b;"></i> Recent Bookings
+            </h3>
+            {% if bookings %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ref</th>
+                        <th>Passenger</th>
+                        <th>Seats</th>
+                        <th>Fare</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings[:10] %}
+                    <tr>
+                        <td style="font-weight:600; color:#f59e0b;">{{ booking.booking_ref }}</td>
+                        <td>{{ booking.passenger_name }}</td>
+                        <td>{{ booking.selected_seats|join(', ') }}</td>
+                        <td>KSh {{ booking.total_fare }}</td>
+                        <td><span class="status-badge status-{{ booking.status }}">{{ booking.status|capitalize }}</span></td>
+                        <td style="color:#64748b; font-size:0.8rem;">{{ booking.created_at[:10] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:#94a3b8; text-align:center; padding:40px 0;">No bookings yet</p>
+            {% endif %}
+        </div>
+    </section>
 
-        // ===== SEARCH =====
-        document.getElementById('searchBookings').addEventListener('keyup', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.booking-row');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        });
-
-        // ===== UPDATE STATUS =====
-        function updateStatus(bookingId, status) {
-            if (!confirm(`Update booking ${bookingId} to ${status}?`)) return;
-            
-            fetch(`/api/bookings/${bookingId}/status`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: status })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('✅ ' + data.message);
-                    location.reload();
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            })
-            .catch(err => alert('Error: ' + err.message));
-        }
-
-        // ===== DELETE BOOKING =====
-        function deleteBooking(bookingId) {
-            if (!confirm(`⚠️ Delete booking ${bookingId}? This cannot be undone!`)) return;
-            
-            fetch(`/api/bookings/${bookingId}`, { method: 'DELETE' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('🗑️ ' + data.message);
-                    location.reload();
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            })
-            .catch(err => alert('Error: ' + err.message));
-        }
-    </script>
+    <!-- ===== FOOTER ===== -->
+    <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9; margin-top:24px;">
+        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar Admin Panel</p>
+    </footer>
 </body>
 </html>
