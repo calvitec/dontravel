@@ -27,7 +27,7 @@ DB_TYPE = 'json'
 def test_supabase_connection():
     try:
         response = requests.get(
-            f"{SUPABASE_URL}/rest/v1/vehicles?select=count",
+            f"{SUPABASE_URL}/rest/v1/buses?select=count",
             headers=SUPABASE_HEADERS,
             timeout=10
         )
@@ -63,43 +63,6 @@ def save_json(file_path, data):
         return True
     except:
         return False
-
-# ===== CREATE SAMPLE DATA =====
-def create_sample_data():
-    vehicles = load_json('vehicles.json')
-    if not vehicles:
-        print("📁 Creating sample vehicles...")
-        sample_vehicles = [
-            {"id": 1, "vehicle_id": "VEH-001", "vehicle_type": "Toyota Hiace", "vehicle_model": "Hiace Minibus", "registration": "KCA 123A", "color": "White", "capacity": 14, "features": {"seats": 14, "ac": True, "wifi": True, "tv": True}, "image_url": "https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop", "base_price": 3500, "status": "available"},
-            {"id": 2, "vehicle_id": "VEH-002", "vehicle_type": "Executive Van", "vehicle_model": "Mercedes Sprinter", "registration": "KCB 456B", "color": "Black", "capacity": 8, "features": {"seats": 8, "ac": True, "wifi": True, "refreshments": True, "leather_seats": True}, "image_url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop", "base_price": 6500, "status": "available"},
-            {"id": 3, "vehicle_id": "VEH-003", "vehicle_type": "Luxury SUV", "vehicle_model": "Land Cruiser V8", "registration": "KCC 789C", "color": "Black", "capacity": 7, "features": {"seats": 7, "ac": True, "wifi": True, "climate_control": True, "premium": True}, "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop", "base_price": 5500, "status": "available"}
-        ]
-        save_json('vehicles.json', sample_vehicles)
-    
-    routes = load_json('routes.json')
-    if not routes:
-        print("📁 Creating sample routes...")
-        sample_routes = [
-            {"id": 1, "route_id": "RTE-001", "origin": "Nairobi", "destination": "Mombasa", "distance_km": 480, "duration_minutes": 480, "base_fare": 1500},
-            {"id": 2, "route_id": "RTE-002", "origin": "Nairobi", "destination": "Kisumu", "distance_km": 350, "duration_minutes": 360, "base_fare": 1200},
-            {"id": 3, "route_id": "RTE-003", "origin": "Nairobi", "destination": "Eldoret", "distance_km": 310, "duration_minutes": 300, "base_fare": 1000},
-            {"id": 4, "route_id": "RTE-004", "origin": "Mombasa", "destination": "Nairobi", "distance_km": 480, "duration_minutes": 480, "base_fare": 1500},
-            {"id": 5, "route_id": "RTE-005", "origin": "Kisumu", "destination": "Nairobi", "distance_km": 350, "duration_minutes": 360, "base_fare": 1200}
-        ]
-        save_json('routes.json', sample_routes)
-    
-    buses = load_json('buses.json')
-    if not buses:
-        print("📁 Creating sample buses...")
-        sample_buses = [
-            {"id": 1, "bus_id": "BUS-001", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 2, "booked_seats_list": ["1", "2"], "fare": 1800, "departure_time": "07:00:00", "arrival_time": "15:00:00", "status": "active"},
-            {"id": 2, "bus_id": "BUS-002", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 1, "booked_seats_list": ["5"], "fare": 1800, "departure_time": "14:00:00", "arrival_time": "22:00:00", "status": "active"},
-            {"id": 3, "bus_id": "BUS-003", "company_name": "Don Travels Express", "route_id": 2, "vehicle_id": 1, "total_seats": 40, "booked_seats": 0, "booked_seats_list": [], "fare": 1400, "departure_time": "08:00:00", "arrival_time": "14:00:00", "status": "active"},
-            {"id": 4, "bus_id": "BUS-004", "company_name": "Don Travels Executive", "route_id": 1, "vehicle_id": 2, "total_seats": 8, "booked_seats": 1, "booked_seats_list": ["3"], "fare": 2500, "departure_time": "06:00:00", "arrival_time": "14:00:00", "status": "active"},
-            {"id": 5, "bus_id": "BUS-005", "company_name": "Don Travels Executive", "route_id": 3, "vehicle_id": 2, "total_seats": 8, "booked_seats": 0, "booked_seats_list": [], "fare": 2000, "departure_time": "09:00:00", "arrival_time": "14:00:00", "status": "active"},
-            {"id": 6, "bus_id": "BUS-006", "company_name": "Don Travels Luxury", "route_id": 1, "vehicle_id": 3, "total_seats": 7, "booked_seats": 0, "booked_seats_list": [], "fare": 3000, "departure_time": "07:30:00", "arrival_time": "15:30:00", "status": "active"}
-        ]
-        save_json('buses.json', sample_buses)
 
 # ===== DATABASE FUNCTIONS =====
 def load_vehicles():
@@ -143,34 +106,83 @@ def load_bookings():
     return load_json('bookings.json')
 
 def get_bus_by_id(bus_id):
-    buses = load_buses()
+    if DB_CONNECTED:
+        try:
+            response = requests.get(f"{SUPABASE_URL}/rest/v1/buses?id=eq.{bus_id}", headers=SUPABASE_HEADERS, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                return data[0] if data else None
+        except:
+            pass
+    buses = load_json('buses.json')
     for bus in buses:
         if str(bus.get('id')) == str(bus_id):
             return bus
     return None
 
 def get_vehicle_by_id(vehicle_id):
-    vehicles = load_vehicles()
+    if DB_CONNECTED:
+        try:
+            response = requests.get(f"{SUPABASE_URL}/rest/v1/vehicles?id=eq.{vehicle_id}", headers=SUPABASE_HEADERS, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                return data[0] if data else None
+        except:
+            pass
+    vehicles = load_json('vehicles.json')
     for vehicle in vehicles:
         if str(vehicle.get('id')) == str(vehicle_id):
             return vehicle
     return None
 
 def get_route_by_id(route_id):
-    routes = load_routes()
+    if DB_CONNECTED:
+        try:
+            response = requests.get(f"{SUPABASE_URL}/rest/v1/routes?id=eq.{route_id}", headers=SUPABASE_HEADERS, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                return data[0] if data else None
+        except:
+            pass
+    routes = load_json('routes.json')
     for route in routes:
         if str(route.get('id')) == str(route_id):
             return route
     return None
 
+def update_bus_seats(bus_id, booked_seats_list):
+    """Update bus booked seats in database"""
+    if DB_CONNECTED:
+        try:
+            response = requests.patch(
+                f"{SUPABASE_URL}/rest/v1/buses?id=eq.{bus_id}",
+                headers=SUPABASE_HEADERS,
+                json={
+                    'booked_seats_list': booked_seats_list,
+                    'booked_seats': len(booked_seats_list)
+                },
+                timeout=10
+            )
+            return response.status_code == 200
+        except Exception as e:
+            print(f"Update error: {e}")
+            return False
+    return False
+
 def save_booking(booking_data):
     if DB_CONNECTED:
         try:
-            response = requests.post(f"{SUPABASE_URL}/rest/v1/bookings", headers=SUPABASE_HEADERS, json=booking_data, timeout=10)
+            response = requests.post(
+                f"{SUPABASE_URL}/rest/v1/bookings",
+                headers=SUPABASE_HEADERS,
+                json=booking_data,
+                timeout=10
+            )
             if response.status_code == 201:
                 data = response.json()
                 return data[0]['id'] if data else None
-        except:
+        except Exception as e:
+            print(f"Save booking error: {e}")
             pass
     bookings = load_json('bookings.json')
     booking_data['id'] = len(bookings) + 1
@@ -203,7 +215,6 @@ def generate_booking_id():
 
 @app.route('/')
 def index():
-    create_sample_data()
     vehicles = load_vehicles()
     routes = load_routes()
     today = datetime.now().strftime('%Y-%m-%d')
@@ -217,10 +228,8 @@ def search_results():
     date = request.args.get('date', '')
     passengers = int(request.args.get('passengers', 1))
     
-    create_sample_data()
     buses = load_buses()
     routes = load_routes()
-    vehicles = load_vehicles()
     
     results = []
     for route in routes:
@@ -243,6 +252,7 @@ def search_results():
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
+    # Force refresh bus data from database
     bus = get_bus_by_id(bus_id)
     if not bus:
         flash('Bus not found', 'danger')
@@ -254,13 +264,17 @@ def booking_page(bus_id):
     total_seats = bus.get('total_seats', 40)
     booked_seats_list = bus.get('booked_seats_list', [])
     
+    # Debug: Print booked seats
+    print(f"Bus {bus_id} - Booked seats: {booked_seats_list}")
+    
     seats = []
     for i in range(1, total_seats + 1):
         seat_id = str(i)
+        is_booked = seat_id in booked_seats_list
         seats.append({
             'id': i,
             'number': i,
-            'status': 'booked' if seat_id in booked_seats_list else 'available'
+            'status': 'booked' if is_booked else 'available'
         })
     
     return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats)
@@ -281,16 +295,38 @@ def create_booking():
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
         
+        # Get current bus data
         bus = get_bus_by_id(bus_id)
         if not bus:
             return jsonify({'success': False, 'error': 'Bus not found'}), 404
         
-        # Check if seats are still available
+        # Get current booked seats
         booked_seats_list = bus.get('booked_seats_list', [])
+        
+        # Check if seats are still available
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
                 return jsonify({'success': False, 'error': f'Seat {seat} is already booked. Please refresh and try again.'}), 400
         
+        # Create new booked list
+        new_booked_list = booked_seats_list.copy()
+        for seat in selected_seats:
+            if str(seat) not in new_booked_list:
+                new_booked_list.append(str(seat))
+        
+        # Update bus in database
+        update_success = update_bus_seats(bus_id, new_booked_list)
+        if not update_success and DB_CONNECTED:
+            # Try JSON fallback
+            buses = load_json('buses.json')
+            for b in buses:
+                if str(b.get('id')) == str(bus_id):
+                    b['booked_seats_list'] = new_booked_list
+                    b['booked_seats'] = len(new_booked_list)
+                    save_json('buses.json', buses)
+                    break
+        
+        # Create booking
         booking_ref = generate_booking_ref()
         booking_id = generate_booking_id()
         
@@ -312,20 +348,6 @@ def create_booking():
         }
         
         save_booking(booking_data)
-        
-        # Update bus booked seats
-        buses = load_json('buses.json')
-        for b in buses:
-            if str(b.get('id')) == str(bus_id):
-                # Add new seats to booked list
-                current_booked = b.get('booked_seats_list', [])
-                for seat in selected_seats:
-                    if str(seat) not in current_booked:
-                        current_booked.append(str(seat))
-                b['booked_seats_list'] = current_booked
-                b['booked_seats'] = len(current_booked)
-                save_json('buses.json', buses)
-                break
         
         return jsonify({
             'success': True,
@@ -410,12 +432,17 @@ def api_status():
         'timestamp': datetime.utcnow().isoformat()
     })
 
+@app.route('/api/reconnect')
+def reconnect_db():
+    global DB_CONNECTED
+    DB_CONNECTED = test_supabase_connection()
+    return jsonify({'connected': DB_CONNECTED})
+
 # ===== VERCEL HANDLER =====
 def handler(request, context):
     return app(request, context)
 
 if __name__ == '__main__':
-    create_sample_data()
     print("\n" + "="*60)
     print("🚌 DON TRAVELS - Complete Bus Booking System")
     print("="*60)
