@@ -1,402 +1,294 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
-from datetime import datetime, timedelta
-import os
-import uuid
-import json
-import requests
-from functools import wraps
-
-app = Flask(__name__)
-app.secret_key = 'buscar-secret-key-2026'
-app.permanent_session_lifetime = timedelta(days=7)
-
-# ===== SUPABASE CONFIGURATION =====
-SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
-SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
-
-SUPABASE_HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json"
-}
-
-# ===== DATABASE CONNECTION =====
-DB_CONNECTED = False
-DB_TYPE = 'json'
-
-def test_supabase_connection():
-    try:
-        response = requests.get(
-            f"{SUPABASE_URL}/rest/v1/buses?select=count",
-            headers=SUPABASE_HEADERS,
-            timeout=10
-        )
-        return response.status_code == 200
-    except:
-        return False
-
-try:
-    if test_supabase_connection():
-        DB_CONNECTED = True
-        DB_TYPE = 'supabase'
-        print("✅ Supabase connected!")
-except:
-    print("📁 Using JSON storage")
-
-# ===== JSON FALLBACK =====
-def load_json(file_path):
-    try:
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as f:
-                return json.load(f)
-        return []
-    except:
-        return []
-
-def save_json(file_path, data):
-    try:
-        with open(file_path, 'w') as f:
-            json.dump(data, f, indent=2)
-        return True
-    except:
-        return False
-
-# ===== DATABASE FUNCTIONS =====
-def load_buses():
-    if DB_CONNECTED:
-        try:
-            response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/buses?select=*",
-                headers=SUPABASE_HEADERS,
-                timeout=10
-            )
-            if response.status_code == 200:
-                return response.json()
-        except:
-            pass
-    return load_json('buses.json')
-
-def load_routes():
-    if DB_CONNECTED:
-        try:
-            response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/routes?select=*",
-                headers=SUPABASE_HEADERS,
-                timeout=10
-            )
-            if response.status_code == 200:
-                return response.json()
-        except:
-            pass
-    return load_json('routes.json')
-
-def load_bookings():
-    if DB_CONNECTED:
-        try:
-            response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/bookings?select=*&order=created_at.desc",
-                headers=SUPABASE_HEADERS,
-                timeout=10
-            )
-            if response.status_code == 200:
-                return response.json()
-        except:
-            pass
-    return load_json('bookings.json')
-
-def save_booking(booking_data):
-    if DB_CONNECTED:
-        try:
-            response = requests.post(
-                f"{SUPABASE_URL}/rest/v1/bookings",
-                headers=SUPABASE_HEADERS,
-                json=booking_data,
-                timeout=10
-            )
-            if response.status_code == 201:
-                data = response.json()
-                return data[0]['id'] if data else None
-        except:
-            pass
-    bookings = load_json('bookings.json')
-    booking_data['id'] = len(bookings) + 1
-    bookings.append(booking_data)
-    save_json('bookings.json', bookings)
-    return booking_data['id']
-
-def update_booking(booking_id, updates):
-    if DB_CONNECTED:
-        try:
-            response = requests.patch(
-                f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
-                headers=SUPABASE_HEADERS,
-                json=updates,
-                timeout=10
-            )
-            if response.status_code == 200:
-                return True
-        except:
-            pass
-    bookings = load_json('bookings.json')
-    for booking in bookings:
-        if booking.get('id') == booking_id:
-            booking.update(updates)
-            save_json('bookings.json', bookings)
-            return True
-    return False
-
-def get_booking_by_ref(booking_ref):
-    if DB_CONNECTED:
-        try:
-            response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/bookings?booking_ref=eq.{booking_ref}",
-                headers=SUPABASE_HEADERS,
-                timeout=10
-            )
-            if response.status_code == 200:
-                data = response.json()
-                return data[0] if data else None
-        except:
-            pass
-    bookings = load_json('bookings.json')
-    for booking in bookings:
-        if booking.get('booking_ref') == booking_ref:
-            return booking
-    return None
-
-# ===== HELPER FUNCTIONS =====
-def generate_booking_ref():
-    return 'BC-' + str(uuid.uuid4().hex[:8]).upper()
-
-def generate_seat_layout(total_seats=40):
-    """Generate a seat layout with rows"""
-    seats = []
-    for row in range(1, 11):  # 10 rows
-        for side in ['L', 'R']:  # Left and Right side
-            for seat_num in range(1, 3):  # 2 seats per side
-                seat_id = f"{row}{side}{seat_num}"
-                seats.append({
-                    'id': seat_id,
-                    'row': row,
-                    'side': side,
-                    'number': seat_num,
-                    'status': 'available'  # available, booked, selected
-                })
-    return seats
-
-# ===== ADMIN AUTH =====
-ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'buscar2026')
-
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get('admin_logged_in'):
-            flash('Please login to access admin panel', 'warning')
-            return redirect(url_for('admin_login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-# ===== ROUTES =====
-
-@app.route('/')
-def index():
-    routes = load_routes()
-    return render_template('index.html', routes=routes)
-
-@app.route('/search')
-def search_results():
-    origin = request.args.get('origin', '')
-    destination = request.args.get('destination', '')
-    date = request.args.get('date', '')
-    passengers = int(request.args.get('passengers', 1))
-    
-    buses = load_buses()
-    routes = load_routes()
-    
-    # Filter buses based on search
-    results = []
-    for bus in buses:
-        # Check if bus route matches
-        route = next((r for r in routes if r.get('id') == bus.get('route_id')), {})
-        if route:
-            if route.get('origin', '').lower() == origin.lower() and route.get('destination', '').lower() == destination.lower():
-                # Check date and availability
-                bus['route'] = route
-                bus['available_seats'] = bus.get('total_seats', 40) - bus.get('booked_seats', 0)
-                if bus['available_seats'] >= passengers:
-                    results.append(bus)
-    
-    return render_template('search_results.html', results=results, origin=origin, destination=destination, date=date, passengers=passengers)
-
-@app.route('/booking/<bus_id>')
-def booking(bus_id):
-    buses = load_buses()
-    bus = next((b for b in buses if str(b.get('id')) == bus_id), None)
-    
-    if not bus:
-        flash('Bus not found', 'danger')
-        return redirect(url_for('index'))
-    
-    # Generate seat layout
-    seats = generate_seat_layout(bus.get('total_seats', 40))
-    bus['seats'] = seats
-    
-    return render_template('booking.html', bus=bus)
-
-@app.route('/api/book', methods=['POST'])
-def create_booking():
-    try:
-        data = request.get_json()
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BusCar · Book Bus Tickets Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f4f8; }
         
-        bus_id = data.get('bus_id')
-        passenger_name = data.get('passenger_name', '').strip()
-        passenger_phone = data.get('passenger_phone', '').strip()
-        passenger_email = data.get('passenger_email', '').strip()
-        selected_seats = data.get('selected_seats', [])
-        total_fare = data.get('total_fare', 0)
+        .hero-section {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            padding: 80px 20px 100px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='none'/%3E%3Cpath d='M10 10 L90 10 L90 90 L10 90 Z' stroke='rgba(255,255,255,0.02)' stroke-width='1'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        .hero-section h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 12px; }
+        .hero-section h1 span { color: #f59e0b; }
+        .hero-section p { color: #94a3b8; max-width: 500px; margin: 0 auto 32px; font-size: 1.1rem; line-height: 1.7; }
         
-        if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
-            return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
+        .search-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 900px;
+            margin: -60px auto 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 10;
+        }
+        .search-card .form-input {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 16px;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .search-card .form-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
         
-        # Generate booking reference
-        booking_ref = generate_booking_ref()
+        .section-title { font-size: 2rem; font-weight: 800; color: #0f172a; }
+        .section-title span { color: #f59e0b; }
         
-        booking_data = {
-            'booking_ref': booking_ref,
-            'bus_id': bus_id,
-            'passenger_name': passenger_name,
-            'passenger_phone': passenger_phone,
-            'passenger_email': passenger_email,
-            'selected_seats': selected_seats,
-            'total_fare': total_fare,
-            'status': 'confirmed',
-            'payment_status': 'pending',
-            'created_at': datetime.utcnow().isoformat(),
-            'payment_method': data.get('payment_method', 'cash')
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); }
+        .feature-card i { color: #f59e0b; font-size: 2.5rem; display: block; margin-bottom: 12px; }
+        .feature-card h4 { font-weight: 700; color: #0f172a; }
+        .feature-card p { color: #64748b; font-size: 0.85rem; }
+        
+        .offer-card {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .offer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .offer-card .offer-price { font-size: 2.5rem; font-weight: 900; }
+        .offer-card .offer-desc { font-size: 0.9rem; opacity: 0.9; }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+        }
+        .testimonial-card .stars { color: #f59e0b; margin-bottom: 8px; }
+        .testimonial-card .quote { font-style: italic; color: #475569; line-height: 1.6; }
+        .testimonial-card .author { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+        .testimonial-card .author .avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700;
         }
         
-        save_booking(booking_data)
-        
-        # Update bus booked seats
-        buses = load_buses()
-        for bus in buses:
-            if str(bus.get('id')) == bus_id:
-                bus['booked_seats'] = bus.get('booked_seats', 0) + len(selected_seats)
-                if DB_CONNECTED:
-                    try:
-                        requests.patch(
-                            f"{SUPABASE_URL}/rest/v1/buses?id=eq.{bus_id}",
-                            headers=SUPABASE_HEADERS,
-                            json={'booked_seats': bus['booked_seats']},
-                            timeout=10
-                        )
-                    except:
-                        pass
-                break
-        save_json('buses.json', buses)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Booking confirmed!',
-            'booking_ref': booking_ref,
-            'booking': booking_data
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        @media (max-width: 768px) {
+            .hero-section h1 { font-size: 2.2rem; }
+            .search-card { padding: 20px; margin-top: -40px; }
+            .search-grid { grid-template-columns: 1fr !important; }
+            .feature-grid { grid-template-columns: 1fr 1fr !important; }
+            .offer-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body>
 
-@app.route('/confirmation/<booking_ref>')
-def confirmation(booking_ref):
-    booking = get_booking_by_ref(booking_ref)
-    if not booking:
-        flash('Booking not found', 'danger')
-        return redirect(url_for('index'))
-    
-    return render_template('confirmation.html', booking=booking)
+    <!-- ===== HEADER ===== -->
+    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
+        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
+            <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
+                <i class="fas fa-bus" style="color:#f59e0b;"></i> Bus<span style="color:#f59e0b;">Car</span>
+            </a>
+            <div style="display:flex; align-items:center; gap:16px;">
+                <a href="/check-booking" style="color:#64748b; text-decoration:none; font-weight:500; font-size:0.9rem;">
+                    <i class="fas fa-ticket-alt"></i> Check Booking
+                </a>
+                <a href="/admin/login" style="color:#64748b; text-decoration:none; font-weight:500; font-size:0.9rem;">
+                    <i class="fas fa-user-shield"></i> Admin
+                </a>
+            </div>
+        </div>
+    </header>
 
-@app.route('/check-booking', methods=['GET', 'POST'])
-def check_booking():
-    if request.method == 'POST':
-        booking_ref = request.form.get('booking_ref', '').strip()
-        phone = request.form.get('phone', '').strip()
-        
-        booking = get_booking_by_ref(booking_ref)
-        if booking and booking.get('passenger_phone') == phone:
-            return render_template('check_booking.html', booking=booking)
-        else:
-            flash('No booking found. Please check your details.', 'danger')
-    
-    return render_template('check_booking.html')
+    <!-- ===== HERO ===== -->
+    <section class="hero-section">
+        <h1>Travel <span>Smart</span>, Travel <span>Safe</span></h1>
+        <p>Book your bus tickets online with ease. Compare prices, choose your seats, and travel comfortably.</p>
+    </section>
 
-# ===== ADMIN ROUTES =====
+    <!-- ===== SEARCH CARD ===== -->
+    <div class="search-card">
+        <form action="/search" method="GET">
+            <div class="search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:16px; align-items:end;">
+                <div>
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                        <i class="fas fa-map-marker-alt" style="color:#f59e0b;"></i> From
+                    </label>
+                    <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                        <i class="fas fa-flag-checkered" style="color:#f59e0b;"></i> To
+                    </label>
+                    <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                        <i class="fas fa-calendar" style="color:#f59e0b;"></i> Date
+                    </label>
+                    <input type="date" name="date" class="form-input" required />
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                        <i class="fas fa-users" style="color:#f59e0b;"></i> Passengers
+                    </label>
+                    <input type="number" name="passengers" class="form-input" min="1" max="10" value="1" required />
+                </div>
+                <div>
+                    <button type="submit" class="btn-primary" style="padding:14px 28px; width:100%;">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            session['admin_logged_in'] = True
-            flash('Login successful!', 'success')
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid credentials', 'danger')
-    
-    return render_template('admin_login.html')
+    <!-- ===== FEATURES ===== -->
+    <section style="max-width:1200px; margin:0 auto; padding:0 20px 40px;">
+        <div style="text-align:center; margin-bottom:32px;">
+            <h2 class="section-title">Why <span>BusCar</span></h2>
+            <p style="color:#64748b; max-width:500px; margin:0 auto;">The smartest way to book bus tickets online</p>
+        </div>
+        <div class="feature-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Safe Travel</h4>
+                <p>Verified buses with safety standards</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chair"></i>
+                <h4>Choose Seats</h4>
+                <p>Pick your preferred seat location</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-tag"></i>
+                <h4>Best Prices</h4>
+                <p>Compare and save on your trip</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-headset"></i>
+                <h4>24/7 Support</h4>
+                <p>We're here to help anytime</p>
+            </div>
+        </div>
+    </section>
 
-@app.route('/admin/logout')
-def admin_logout():
-    session.pop('admin_logged_in', None)
-    flash('Logged out successfully', 'info')
-    return redirect(url_for('admin_login'))
+    <!-- ===== OFFERS ===== -->
+    <section style="max-width:1200px; margin:0 auto; padding:0 20px 40px;">
+        <div style="text-align:center; margin-bottom:32px;">
+            <h2 class="section-title">Special <span>Offers</span></h2>
+            <p style="color:#64748b;">Grab these deals before they're gone</p>
+        </div>
+        <div class="offer-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
+            <div class="offer-card">
+                <div class="offer-price">KSh 500</div>
+                <div class="offer-desc">Nairobi → Kisumu</div>
+                <div style="font-size:0.8rem; opacity:0.8;">Limited seats available</div>
+            </div>
+            <div class="offer-card" style="background:linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                <div class="offer-price">KSh 800</div>
+                <div class="offer-desc">Nairobi → Mombasa</div>
+                <div style="font-size:0.8rem; opacity:0.8;">Executive class</div>
+            </div>
+        </div>
+    </section>
 
-@app.route('/admin')
-@admin_required
-def admin_dashboard():
-    bookings = load_bookings()
-    buses = load_buses()
-    routes = load_routes()
-    
-    stats = {
-        'total_bookings': len(bookings),
-        'total_revenue': sum([float(b.get('total_fare', 0)) for b in bookings if b.get('status') == 'confirmed']),
-        'total_buses': len(buses),
-        'total_routes': len(routes),
-        'today_bookings': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))]),
-        'pending_payments': len([b for b in bookings if b.get('payment_status') == 'pending'])
-    }
-    
-    return render_template('admin.html', bookings=bookings, buses=buses, routes=routes, stats=stats)
+    <!-- ===== TESTIMONIALS ===== -->
+    <section style="max-width:1200px; margin:0 auto; padding:0 20px 40px;">
+        <div style="text-align:center; margin-bottom:32px;">
+            <h2 class="section-title">What Our <span>Customers</span> Say</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"BusCar made booking my trip so easy. The seat selection was great!"</div>
+                <div class="author">
+                    <div class="avatar">JM</div>
+                    <div><strong>James Mwangi</strong><br><span style="font-size:0.75rem; color:#94a3b8;">Nairobi → Mombasa</span></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"Best bus booking platform in Kenya. Fast, reliable, and affordable."</div>
+                <div class="author">
+                    <div class="avatar">SO</div>
+                    <div><strong>Sarah Ochieng</strong><br><span style="font-size:0.75rem; color:#94a3b8;">Kisumu → Nairobi</span></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"I love the real-time seat availability. Highly recommend BusCar!"</div>
+                <div class="author">
+                    <div class="avatar">DK</div>
+                    <div><strong>David Kiprop</strong><br><span style="font-size:0.75rem; color:#94a3b8;">Eldoret → Nairobi</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-@app.route('/admin/buses')
-@admin_required
-def admin_buses():
-    buses = load_buses()
-    return render_template('admin_buses.html', buses=buses)
+    <!-- ===== FOOTER ===== -->
+    <footer style="background:white; padding:24px 20px; text-align:center; border-top:1px solid #f1f5f9;">
+        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar. All rights reserved.</p>
+        <p style="color:#cbd5e1; font-size:0.75rem; margin-top:4px;">
+            <i class="fas fa-lock" style="color:#f59e0b;"></i> Secure booking
+        </p>
+    </footer>
 
-@app.route('/admin/routes')
-@admin_required
-def admin_routes():
-    routes = load_routes()
-    return render_template('admin_routes.html', routes=routes)
-
-@app.route('/admin/bookings')
-@admin_required
-def admin_bookings():
-    bookings = load_bookings()
-    return render_template('admin_bookings.html', bookings=bookings)
-
-# ===== VERCEL HANDLER =====
-def handler(request, context):
-    return app(request, context)
-
-if __name__ == '__main__':
-    print("\n" + "="*60)
-    print("🚌 BUSCAR - Complete Bus Booking System")
-    print("="*60)
-    print(f"📁 Database: {DB_TYPE}")
-    print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
-    print("="*60)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    <script>
+        // Set min date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[name="date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+        });
+    </script>
+</body>
+</html>
