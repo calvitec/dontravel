@@ -348,7 +348,13 @@ def booking_page(bus_id):
             'status': 'booked' if is_booked else 'available'
         })
     
-    return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats, date=date)
+    return render_template('booking.html', 
+        bus=bus, 
+        vehicle=vehicle, 
+        route=route, 
+        seats=seats, 
+        date=date
+    )
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
