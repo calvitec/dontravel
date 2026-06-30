@@ -102,7 +102,6 @@
         .seat-legend .legend-item .dot.selected { background: #f59e0b; border-color: #f59e0b; }
         .seat-legend .legend-item .dot.booked { background: #e5e7eb; border-color: #d1d5db; }
         
-        /* Seat status indicator */
         .seat-status {
             font-size: 0.7rem;
             color: #94a3b8;
@@ -111,6 +110,17 @@
         }
         .seat-status .booked-count { color: #ef4444; font-weight: 600; }
         .seat-status .available-count { color: #10b981; font-weight: 600; }
+        
+        /* Date badge */
+        .date-badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
         
         @media (max-width: 768px) {
             .booking-grid { grid-template-columns: 1fr !important; }
@@ -125,7 +135,10 @@
             <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
                 <i class="fas fa-bus" style="color:#f59e0b;"></i> Don<span style="color:#f59e0b;">Travels</span>
             </a>
-            <a href="/" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Back</a>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span class="date-badge"><i class="fas fa-calendar"></i> {{ date }}</span>
+                <a href="/" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
         </div>
     </header>
 
@@ -141,6 +154,7 @@
                         <div><span class="label">Bus:</span> <span class="value">{{ bus.company_name or 'Don Travels Express' }}</span></div>
                         <div><span class="label">Route:</span> <span class="value">{{ route.origin }} → {{ route.destination }}</span></div>
                         <div><span class="label">Fare:</span> <span class="value" style="color:#f59e0b;">KSh {{ bus.fare or 1500 }}</span></div>
+                        <div><span class="label">Date:</span> <span class="value" style="color:#f59e0b;">{{ date }}</span></div>
                     </div>
                 </div>
                 
@@ -189,6 +203,10 @@
                         <span style="font-weight:600; color:#0f172a;">{{ route.origin }} → {{ route.destination }}</span>
                     </div>
                     <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#64748b;">Date:</span>
+                        <span style="font-weight:600; color:#f59e0b;">{{ date }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">
                         <span style="color:#64748b;">Seats:</span>
                         <span style="font-weight:600; color:#f59e0b;" id="selectedSeatsDisplay">None selected</span>
                     </div>
@@ -216,6 +234,9 @@
                     <input type="email" id="passengerEmail" class="form-input" placeholder="john@example.com" />
                 </div>
                 
+                <!-- Hidden date field -->
+                <input type="hidden" id="bookingDate" value="{{ date }}" />
+                
                 <button class="btn-primary" onclick="confirmBooking()" id="confirmBtn" disabled>
                     <i class="fas fa-check-circle"></i> Confirm Booking
                 </button>
@@ -231,6 +252,7 @@
         let selectedSeats = [];
         const farePerSeat = {{ bus.fare or 1500 }};
         const busId = {{ bus.id }};
+        const bookingDate = document.getElementById('bookingDate').value;
 
         function toggleSeat(element) {
             if (element.classList.contains('booked')) return;
@@ -279,6 +301,7 @@
             
             const data = {
                 bus_id: busId,
+                booking_date: bookingDate,
                 passenger_name: name,
                 passenger_phone: phone,
                 passenger_email: email,
@@ -316,8 +339,10 @@
         // Update summary on page load
         document.addEventListener('DOMContentLoaded', updateSummary);
         
-        // Log booked seats for debugging
-        console.log('Booked seats:', {{ bus.booked_seats_list|tojson }});
+        // Log for debugging
+        console.log('Bus ID:', busId);
+        console.log('Booking Date:', bookingDate);
+        console.log('Booked seats:', {{ bus.booked_seats_list|tojson if bus.booked_seats_list is defined else '[]' }});
     </script>
 </body>
 </html>
