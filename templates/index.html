@@ -167,12 +167,62 @@
             border-color: rgba(251,191,36,0.08);
         }
         
+        /* Vehicle Showcase */
+        .vehicle-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .vehicle-showcase .vehicle-image {
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .vehicle-showcase .vehicle-image:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(251,191,36,0.1);
+            border-color: rgba(251,191,36,0.2);
+        }
+        .vehicle-showcase .vehicle-image img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .vehicle-showcase .vehicle-image:hover img {
+            transform: scale(1.05);
+        }
+        .vehicle-showcase .vehicle-image .vehicle-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+        .vehicle-showcase .vehicle-image .vehicle-overlay .vehicle-name {
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .vehicle-showcase .vehicle-image .vehicle-overlay .vehicle-price {
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .vehicle-showcase .vehicle-image .vehicle-overlay .vehicle-desc {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+        }
+        
         /* Vehicle Cards */
         .vehicle-card {
             background: rgba(255,255,255,0.03);
             border: 2px solid rgba(255,255,255,0.06);
             border-radius: 20px;
-            padding: 24px 16px;
+            padding: 20px 16px;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
@@ -191,28 +241,28 @@
         .vehicle-card:hover, .vehicle-card.selected {
             border-color: #fbbf24;
             background: rgba(251,191,36,0.05);
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(251,191,36,0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(251,191,36,0.08);
         }
         .vehicle-card .vehicle-icon {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             color: #fbbf24;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: block;
             transition: all 0.4s ease;
         }
         .vehicle-card:hover .vehicle-icon { transform: scale(1.1) rotate(-3deg); }
-        .vehicle-card .vehicle-name { color: white; font-weight: 700; font-size: 1.05rem; }
-        .vehicle-card .vehicle-price { color: #fbbf24; font-weight: 700; font-size: 0.95rem; }
-        .vehicle-card .vehicle-desc { color: rgba(255,255,255,0.3); font-size: 0.75rem; margin-top: 4px; }
+        .vehicle-card .vehicle-name { color: white; font-weight: 600; font-size: 0.9rem; }
+        .vehicle-card .vehicle-price { color: #fbbf24; font-weight: 700; font-size: 0.85rem; }
+        .vehicle-card .vehicle-desc { color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 2px; }
         .vehicle-card .vehicle-seats { 
             display: inline-block; 
             background: rgba(255,255,255,0.05); 
-            padding: 2px 12px; 
+            padding: 2px 10px; 
             border-radius: 12px; 
-            font-size: 0.7rem; 
+            font-size: 0.65rem; 
             color: rgba(255,255,255,0.4);
-            margin-top: 6px;
+            margin-top: 4px;
         }
         
         /* Booking Form */
@@ -374,14 +424,18 @@
             .hero-title { font-size: 2.8rem !important; }
             .booking-card { padding: 28px 20px; }
             .stats-bar { gap: 24px; flex-wrap: wrap; }
+            .vehicle-showcase { grid-template-columns: 1fr !important; }
+            .vehicle-showcase .vehicle-image img { height: 220px; }
         }
         @media (max-width: 768px) {
             .hero-section { padding: 80px 0 30px; min-height: auto; }
             .hero-title { font-size: 2.2rem !important; }
             .booking-card { padding: 20px 16px; border-radius: 20px; }
             .vehicle-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
-            .vehicle-card { padding: 16px 12px; }
-            .vehicle-card .vehicle-icon { font-size: 2rem; }
+            .vehicle-card { padding: 14px 10px; }
+            .vehicle-card .vehicle-icon { font-size: 1.8rem; }
+            .vehicle-card .vehicle-name { font-size: 0.8rem; }
+            .vehicle-card .vehicle-price { font-size: 0.75rem; }
             .stats-bar { gap: 12px; padding: 10px 16px; flex-wrap: wrap; }
             .stats-bar .stat-number { font-size: 1.2rem; }
             .glass-nav { padding: 0 12px !important; border-radius: 12px; }
@@ -389,19 +443,21 @@
             .booking-form-grid { grid-template-columns: 1fr !important; }
             .feature-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
             .testimonial-grid { grid-template-columns: 1fr !important; }
+            .vehicle-showcase .vehicle-image img { height: 180px; }
         }
         @media (max-width: 480px) {
             .hero-title { font-size: 1.8rem !important; }
             .vehicle-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
-            .vehicle-card { padding: 12px 8px; }
-            .vehicle-card .vehicle-icon { font-size: 1.6rem; }
-            .vehicle-card .vehicle-name { font-size: 0.8rem; }
-            .vehicle-card .vehicle-price { font-size: 0.75rem; }
+            .vehicle-card { padding: 10px 8px; }
+            .vehicle-card .vehicle-icon { font-size: 1.4rem; }
+            .vehicle-card .vehicle-name { font-size: 0.7rem; }
+            .vehicle-card .vehicle-price { font-size: 0.65rem; }
             .feature-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
             .feature-card { padding: 16px 12px; }
             .feature-card .icon-wrap { width: 44px; height: 44px; font-size: 1.1rem; }
             .feature-card h3 { font-size: 0.85rem; }
             .feature-card p { font-size: 0.75rem; }
+            .vehicle-showcase .vehicle-image img { height: 150px; }
         }
     </style>
 </head>
@@ -509,16 +565,40 @@
         </div>
     </section>
 
-    <!-- VEHICLES -->
+    <!-- VEHICLES - SHOWCASING TOYOTA HIACE & EXECUTIVE VAN -->
     <section id="vehicles" style="padding:60px 20px; background:white;">
         <div style="max-width:1200px; margin:0 auto;">
-            <div style="text-align:center; margin-bottom:48px;">
+            <div style="text-align:center; margin-bottom:40px;">
                 <span style="color:#2d1b69; font-size:0.6rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;">Our Fleet</span>
-                <h2 style="font-size:2.5rem; font-weight:800; color:#0a0a1a; margin-top:4px; letter-spacing:-1px;">Choose Your <span style="color:#fbbf24;">Vehicle</span></h2>
-                <p style="font-size:0.95rem; color:#6b7280; margin-top:4px;">Premium vehicles for every occasion</p>
+                <h2 style="font-size:2.5rem; font-weight:800; color:#0a0a1a; margin-top:4px; letter-spacing:-1px;">Premium <span style="color:#fbbf24;">Vehicles</span></h2>
+                <p style="font-size:0.95rem; color:#6b7280; margin-top:4px;">Choose from our range of luxury and executive vehicles</p>
             </div>
 
-            <div class="vehicle-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:16px;">
+            <!-- Featured Vehicles with Images -->
+            <div class="vehicle-showcase" style="margin-bottom:32px;">
+                <!-- Toyota Hiace -->
+                <div class="vehicle-image" onclick="selectVehicle('Toyota Hiace')">
+                    <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop" alt="Toyota Hiace" />
+                    <div class="vehicle-overlay">
+                        <div class="vehicle-name">Toyota Hiace</div>
+                        <div class="vehicle-price">KSh 3,500</div>
+                        <div class="vehicle-desc"><i class="fas fa-user"></i> 14 Seats · Spacious Minibus</div>
+                    </div>
+                </div>
+                
+                <!-- Executive Van -->
+                <div class="vehicle-image" onclick="selectVehicle('Executive Van')">
+                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop" alt="Executive Van" />
+                    <div class="vehicle-overlay">
+                        <div class="vehicle-name">Executive Van</div>
+                        <div class="vehicle-price">KSh 6,500</div>
+                        <div class="vehicle-desc"><i class="fas fa-user"></i> 8 Seats · Executive Transport</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Vehicles as Cards -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px;">
                 <!-- Standard Sedan -->
                 <div class="vehicle-card" onclick="selectVehicle('Standard')" data-vehicle="Standard">
                     <span class="vehicle-icon"><i class="fas fa-car"></i></span>
@@ -537,15 +617,6 @@
                     <span class="vehicle-seats"><i class="fas fa-user"></i> 4 Seats</span>
                 </div>
                 
-                <!-- Toyota Hiace -->
-                <div class="vehicle-card" onclick="selectVehicle('Toyota Hiace')" data-vehicle="Toyota Hiace">
-                    <span class="vehicle-icon"><i class="fas fa-bus"></i></span>
-                    <div class="vehicle-name">Toyota Hiace</div>
-                    <div class="vehicle-price">KSh 3,500</div>
-                    <div class="vehicle-desc">Spacious minibus</div>
-                    <span class="vehicle-seats"><i class="fas fa-user"></i> 14 Seats</span>
-                </div>
-                
                 <!-- Luxury SUV -->
                 <div class="vehicle-card" onclick="selectVehicle('Luxury SUV')" data-vehicle="Luxury SUV">
                     <span class="vehicle-icon"><i class="fas fa-caravan"></i></span>
@@ -555,7 +626,16 @@
                     <span class="vehicle-seats"><i class="fas fa-user"></i> 7 Seats</span>
                 </div>
                 
-                <!-- Executive Van -->
+                <!-- Toyota Hiace (Card) -->
+                <div class="vehicle-card" onclick="selectVehicle('Toyota Hiace')" data-vehicle="Toyota Hiace">
+                    <span class="vehicle-icon"><i class="fas fa-bus"></i></span>
+                    <div class="vehicle-name">Toyota Hiace</div>
+                    <div class="vehicle-price">KSh 3,500</div>
+                    <div class="vehicle-desc">Spacious minibus</div>
+                    <span class="vehicle-seats"><i class="fas fa-user"></i> 14 Seats</span>
+                </div>
+                
+                <!-- Executive Van (Card) -->
                 <div class="vehicle-card" onclick="selectVehicle('Executive Van')" data-vehicle="Executive Van">
                     <span class="vehicle-icon"><i class="fas fa-shuttle-van"></i></span>
                     <div class="vehicle-name">Executive Van</div>
@@ -686,7 +766,7 @@
                 <p style="font-size:0.95rem; color:#6b7280; margin-top:4px;">Experience the best in executive transport</p>
             </div>
 
-            <div class="feature-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+            <div class="feature-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
                 <div class="feature-card">
                     <div class="icon-wrap"><i class="fas fa-user-shield"></i></div>
                     <h3>Professional Drivers</h3>
@@ -695,7 +775,7 @@
                 <div class="feature-card">
                     <div class="icon-wrap"><i class="fas fa-car"></i></div>
                     <h3>Luxury Fleet</h3>
-                    <p>Well-maintained premium vehicles including Toyota Hiace</p>
+                    <p>Premium vehicles including Toyota Hiace</p>
                 </div>
                 <div class="feature-card">
                     <div class="icon-wrap"><i class="fas fa-clock"></i></div>
