@@ -11,19 +11,9 @@
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f0f4f8; }
         
-        /* ===== ANIMATIONS ===== */
-        @keyframes float {
-            0%,100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        @keyframes pulse {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         .animate-float { animation: float 4s ease-in-out infinite; }
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         
@@ -230,6 +220,101 @@
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
         
+        /* ===== VEHICLE CARDS WITH IMAGES ===== */
+        .vehicle-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .vehicle-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+        .vehicle-card .vehicle-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: all 0.6s;
+        }
+        .vehicle-card:hover .vehicle-image {
+            transform: scale(1.03);
+        }
+        .vehicle-card .vehicle-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 14px;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
+            backdrop-filter: blur(4px);
+        }
+        .vehicle-card .vehicle-content {
+            padding: 20px 20px 24px;
+        }
+        .vehicle-card .vehicle-name {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #0f172a;
+        }
+        .vehicle-card .vehicle-desc {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+        .vehicle-card .vehicle-features {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .vehicle-card .vehicle-features .feature {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+        .vehicle-card .vehicle-features .feature i { color: #f59e0b; }
+        .vehicle-card .vehicle-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #f59e0b;
+            margin-top: 12px;
+        }
+        .vehicle-card .vehicle-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px 20px;
+            font-weight: 600;
+            color: #0f172a;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            width: 100%;
+            text-align: center;
+        }
+        .vehicle-card .vehicle-btn:hover {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
+        
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        
         /* ===== SECTION TITLES ===== */
         .section-title {
             font-size: 2.2rem;
@@ -253,20 +338,9 @@
             text-align: center;
             border: 1px solid #f1f5f9;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
         }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.02), transparent);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .feature-card:hover::before { opacity: 1; }
-        .feature-card:hover { 
-            transform: translateY(-8px); 
+        .feature-card:hover {
+            transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.04);
             border-color: rgba(245, 158, 11, 0.1);
         }
@@ -281,7 +355,6 @@
             font-size: 1.8rem;
             color: #f59e0b;
             margin: 0 auto 12px;
-            transition: all 0.4s;
         }
         .feature-card:hover .icon-wrap {
             background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -413,6 +486,7 @@
             .search-card { padding: 24px 20px; margin-top: -40px; }
             .search-grid { grid-template-columns: 1fr 1fr !important; }
             .search-grid .full-width { grid-column: span 2; }
+            .vehicle-grid { grid-template-columns: 1fr 1fr !important; }
             .offer-grid { grid-template-columns: 1fr 1fr !important; }
         }
         @media (max-width: 768px) {
@@ -424,6 +498,8 @@
             .search-card { padding: 16px; margin-top: -30px; border-radius: 20px; }
             .search-grid { grid-template-columns: 1fr !important; }
             .search-grid .full-width { grid-column: span 1; }
+            .vehicle-grid { grid-template-columns: 1fr !important; }
+            .vehicle-card .vehicle-image { height: 180px; }
             .feature-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
             .offer-grid { grid-template-columns: 1fr !important; }
             .testimonial-grid { grid-template-columns: 1fr !important; }
@@ -441,6 +517,7 @@
             .feature-card h4 { font-size: 0.85rem; }
             .feature-card p { font-size: 0.7rem; }
             .offer-card .offer-price { font-size: 2rem; }
+            .vehicle-card .vehicle-image { height: 150px; }
         }
     </style>
 </head>
@@ -530,8 +607,85 @@
         </form>
     </div>
 
+    <!-- ===== VEHICLES WITH IMAGES ===== -->
+    <section id="vehicles" style="padding:48px 20px; background:white;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="text-align:center; margin-bottom:40px;">
+                <h2 class="section-title">Our Premium <span class="highlight">Vehicles</span></h2>
+                <p class="section-subtitle">Choose from our range of luxury and executive vehicles</p>
+            </div>
+            <div class="vehicle-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+                
+                <!-- Vehicle 1: Toyota Hiace -->
+                <div class="vehicle-card">
+                    <div class="image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop" alt="Toyota Hiace" class="vehicle-image" />
+                        <span class="vehicle-badge">⭐ Popular</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-name">Toyota Hiace</div>
+                        <div class="vehicle-desc">Spacious 14-seater minibus</div>
+                        <div class="vehicle-features">
+                            <span class="feature"><i class="fas fa-user"></i> 14 Seats</span>
+                            <span class="feature"><i class="fas fa-snowflake"></i> A/C</span>
+                            <span class="feature"><i class="fas fa-wifi"></i> WiFi</span>
+                        </div>
+                        <div class="vehicle-price">From KSh 3,500</div>
+                        <button class="vehicle-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
+                            <i class="fas fa-calendar-check"></i> Book Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vehicle 2: Executive Van -->
+                <div class="vehicle-card">
+                    <div class="image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop" alt="Executive Van" class="vehicle-image" />
+                        <span class="vehicle-badge" style="background:rgba(59,130,246,0.9);">👔 Executive</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-name">Executive Van</div>
+                        <div class="vehicle-desc">Luxury 8-seater executive van</div>
+                        <div class="vehicle-features">
+                            <span class="feature"><i class="fas fa-user"></i> 8 Seats</span>
+                            <span class="feature"><i class="fas fa-snowflake"></i> A/C</span>
+                            <span class="feature"><i class="fas fa-wifi"></i> WiFi</span>
+                            <span class="feature"><i class="fas fa-water"></i> Refreshments</span>
+                        </div>
+                        <div class="vehicle-price">From KSh 6,500</div>
+                        <button class="vehicle-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
+                            <i class="fas fa-calendar-check"></i> Book Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vehicle 3: Luxury SUV -->
+                <div class="vehicle-card">
+                    <div class="image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop" alt="Luxury SUV" class="vehicle-image" />
+                        <span class="vehicle-badge" style="background:rgba(16,185,129,0.9);">💎 Luxury</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-name">Luxury SUV</div>
+                        <div class="vehicle-desc">Premium 7-seater luxury SUV</div>
+                        <div class="vehicle-features">
+                            <span class="feature"><i class="fas fa-user"></i> 7 Seats</span>
+                            <span class="feature"><i class="fas fa-snowflake"></i> Climate Control</span>
+                            <span class="feature"><i class="fas fa-wifi"></i> WiFi</span>
+                            <span class="feature"><i class="fas fa-crown"></i> Premium</span>
+                        </div>
+                        <div class="vehicle-price">From KSh 5,500</div>
+                        <button class="vehicle-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
+                            <i class="fas fa-calendar-check"></i> Book Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ===== WHY CHOOSE US ===== -->
-    <section style="max-width:1200px; margin:0 auto; padding:0 20px 48px;">
+    <section style="max-width:1200px; margin:0 auto; padding:48px 20px;">
         <div style="text-align:center; margin-bottom:32px;">
             <h2 class="section-title">Why <span class="highlight">Don Travels</span></h2>
             <p class="section-subtitle">Experience the best in executive transport and premium bus services</p>
@@ -560,99 +714,63 @@
         </div>
     </section>
 
-    <!-- ===== VEHICLES / OFFERS ===== -->
-    <section id="vehicles" style="background:#f8fafc; padding:48px 20px;">
+    <!-- ===== SPECIAL OFFERS ===== -->
+    <section id="offers" style="background:#f8fafc; padding:48px 20px;">
         <div style="max-width:1200px; margin:0 auto;">
             <div style="text-align:center; margin-bottom:32px;">
-                <h2 class="section-title">Our Premium <span class="highlight">Vehicles</span></h2>
-                <p class="section-subtitle">Choose from our range of luxury and executive vehicles</p>
+                <h2 class="section-title">Special <span class="highlight">Offers</span></h2>
+                <p class="section-subtitle">Grab these deals before they're gone</p>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+            <div class="offer-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
                 <div class="offer-card" style="background:linear-gradient(145deg, #f59e0b, #d97706);">
                     <div class="offer-bg-pattern"></div>
                     <div class="offer-bg-pattern-2"></div>
-                    <div class="offer-badge">Popular</div>
-                    <div class="offer-price">Toyota Hiace</div>
-                    <div class="offer-desc">14 Seater Minibus</div>
-                    <div class="offer-route"><i class="fas fa-user"></i> 14 Seats · Perfect for groups</div>
+                    <span class="offer-badge">Limited Time</span>
+                    <div class="offer-price">KSh 500</div>
+                    <div class="offer-desc">Nairobi → Kisumu</div>
+                    <div class="offer-route">Executive bus · Limited seats available</div>
                 </div>
                 <div class="offer-card" style="background:linear-gradient(145deg, #0f172a, #1e293b);">
                     <div class="offer-bg-pattern"></div>
                     <div class="offer-bg-pattern-2"></div>
-                    <div class="offer-badge">Executive</div>
-                    <div class="offer-price">Executive Van</div>
-                    <div class="offer-desc">8 Seater Luxury Van</div>
-                    <div class="offer-route"><i class="fas fa-user"></i> 8 Seats · Business class</div>
+                    <span class="offer-badge">Weekend Special</span>
+                    <div class="offer-price">KSh 800</div>
+                    <div class="offer-desc">Nairobi → Mombasa</div>
+                    <div class="offer-route">Executive class · Free WiFi & refreshments</div>
                 </div>
-                <div class="offer-card" style="background:linear-gradient(145deg, #3b82f6, #1d4ed8);">
-                    <div class="offer-bg-pattern"></div>
-                    <div class="offer-bg-pattern-2"></div>
-                    <div class="offer-badge">Luxury</div>
-                    <div class="offer-price">Luxury SUV</div>
-                    <div class="offer-desc">7 Seater Premium SUV</div>
-                    <div class="offer-route"><i class="fas fa-user"></i> 7 Seats · Executive travel</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== SPECIAL OFFERS ===== -->
-    <section id="offers" style="max-width:1200px; margin:0 auto; padding:48px 20px;">
-        <div style="text-align:center; margin-bottom:32px;">
-            <h2 class="section-title">Special <span class="highlight">Offers</span></h2>
-            <p class="section-subtitle">Grab these deals before they're gone</p>
-        </div>
-        <div class="offer-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
-            <div class="offer-card" style="background:linear-gradient(145deg, #f59e0b, #d97706);">
-                <div class="offer-bg-pattern"></div>
-                <div class="offer-bg-pattern-2"></div>
-                <span class="offer-badge">Limited Time</span>
-                <div class="offer-price">KSh 500</div>
-                <div class="offer-desc">Nairobi → Kisumu</div>
-                <div class="offer-route">Executive bus · Limited seats available</div>
-            </div>
-            <div class="offer-card" style="background:linear-gradient(145deg, #0f172a, #1e293b);">
-                <div class="offer-bg-pattern"></div>
-                <div class="offer-bg-pattern-2"></div>
-                <span class="offer-badge">Weekend Special</span>
-                <div class="offer-price">KSh 800</div>
-                <div class="offer-desc">Nairobi → Mombasa</div>
-                <div class="offer-route">Executive class · Free WiFi & refreshments</div>
             </div>
         </div>
     </section>
 
     <!-- ===== TESTIMONIALS ===== -->
-    <section style="background:#f8fafc; padding:48px 20px;">
-        <div style="max-width:1200px; margin:0 auto;">
-            <div style="text-align:center; margin-bottom:32px;">
-                <h2 class="section-title">What Our <span class="highlight">Customers</span> Say</h2>
-                <p class="section-subtitle">Real reviews from real travelers</p>
+    <section style="max-width:1200px; margin:0 auto; padding:48px 20px;">
+        <div style="text-align:center; margin-bottom:32px;">
+            <h2 class="section-title">What Our <span class="highlight">Customers</span> Say</h2>
+            <p class="section-subtitle">Real reviews from real travelers</p>
+        </div>
+        <div class="testimonial-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"Don Travels made our group trip amazing! The Toyota Hiace was spacious and comfortable. Professional driver too."</div>
+                <div class="author">
+                    <div class="avatar">JM</div>
+                    <div><div class="name">James Mwangi</div><div class="route">Nairobi → Mombasa · 2 days ago</div></div>
+                </div>
             </div>
-            <div class="testimonial-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"Don Travels made our group trip amazing! The Toyota Hiace was spacious and comfortable. Professional driver too."</div>
-                    <div class="author">
-                        <div class="avatar">JM</div>
-                        <div><div class="name">James Mwangi</div><div class="route">Nairobi → Mombasa · 2 days ago</div></div>
-                    </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"Executive van was perfect for our business trip. Very professional service and the vehicle was spotless."</div>
+                <div class="author">
+                    <div class="avatar">SO</div>
+                    <div><div class="name">Sarah Ochieng</div><div class="route">Kisumu → Nairobi · 5 days ago</div></div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"Executive van was perfect for our business trip. Very professional service and the vehicle was spotless."</div>
-                    <div class="author">
-                        <div class="avatar">SO</div>
-                        <div><div class="name">Sarah Ochieng</div><div class="route">Kisumu → Nairobi · 5 days ago</div></div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"Best transport service in Kenya! The premium sedan was luxurious and the ride was smooth. Highly recommend!"</div>
-                    <div class="author">
-                        <div class="avatar">DK</div>
-                        <div><div class="name">David Kiprop</div><div class="route">Eldoret → Nairobi · 1 week ago</div></div>
-                    </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"Best transport service in Kenya! The premium sedan was luxurious and the ride was smooth. Highly recommend!"</div>
+                <div class="author">
+                    <div class="avatar">DK</div>
+                    <div><div class="name">David Kiprop</div><div class="route">Eldoret → Nairobi · 1 week ago</div></div>
                 </div>
             </div>
         </div>
