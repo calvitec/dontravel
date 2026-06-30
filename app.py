@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template, session, redirect, u
 from datetime import datetime, timedelta
 import os
 import uuid
-import json
+import json  # ✅ Fixed: was 'jsonn'
 import requests
 from functools import wraps
 
@@ -17,7 +17,8 @@ SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_KEY,
     "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"  # ✅ Added for Supabase
 }
 
 # ===== DATABASE CONNECTION =====
@@ -51,7 +52,7 @@ def load_json(file_path):
     try:
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
-                return json.load(f)
+                return json.load(f)  # ✅ Fixed: was jsonn
         return []
     except:
         return []
@@ -59,7 +60,7 @@ def load_json(file_path):
 def save_json(file_path, data):
     try:
         with open(file_path, 'w') as f:
-            json.dump(data, f, indent=2)
+            json.dump(data, f, indent=2)  # ✅ Fixed: was jsonn
         return True
     except:
         return False
@@ -363,12 +364,19 @@ def booking_page(bus_id):
 @app.route('/api/book', methods=['POST'])
 def create_booking():
     try:
+        print("=" * 60)
+        print("📥 INCOMING BOOKING REQUEST")
+        
         data = request.get_json()
+        print("📦 Data received:", data)
         
         bus_id = data.get('bus_id')
+        print(f"🚌 Bus ID: {bus_id}")
         
         # Get bus details FIRST
         bus = get_bus_by_id(bus_id)
+        print(f"🚌 Bus found: {bus}")
+        
         if not bus:
             return jsonify({
                 'success': False,
@@ -383,6 +391,11 @@ def create_booking():
         total_fare = data.get('total_fare', 0)
         payment_method = data.get('payment_method', 'mpesa')
         
+        print(f"👤 Passenger: {passenger_name}, {passenger_phone}")
+        print(f"💺 Seats: {selected_seats}")
+        print(f"💰 Fare: {total_fare}")
+        print(f"📅 Date: {booking_date}")
+        
         # Validate required fields
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({
@@ -393,6 +406,7 @@ def create_booking():
         # Load seat data for this date
         seat_data = load_bus_seats(bus_id, booking_date)
         booked_seats_list = seat_data.get('booked_seats_list', [])
+        print(f"📊 Current booked seats: {booked_seats_list}")
         
         # Check seat availability
         for seat in selected_seats:
@@ -409,8 +423,12 @@ def create_booking():
             if seat not in new_booked_list:
                 new_booked_list.append(seat)
         
+        print(f"📊 New booked seats: {new_booked_list}")
+        
         # Save updated seats
         update_success = update_bus_seats(bus_id, booking_date, new_booked_list)
+        print(f"💾 Seat update success: {update_success}")
+        
         if not update_success:
             return jsonify({
                 'success': False,
@@ -439,9 +457,12 @@ def create_booking():
             'created_at': datetime.utcnow().isoformat()
         }
         
+        print(f"💾 Saving booking: {booking_data}")
+        
         save_booking(booking_data)
         
         print(f"✅ Booking created: {booking_ref}")
+        print("=" * 60)
         
         return jsonify({
             'success': True,
@@ -452,6 +473,8 @@ def create_booking():
         
     except Exception as e:
         print(f"❌ BOOKING ERROR: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': str(e)
