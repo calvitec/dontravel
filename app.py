@@ -594,6 +594,61 @@ def reconnect_db():
     DB_CONNECTED = test_supabase_connection()
     return jsonify({'connected': DB_CONNECTED})
 
+# ===== ADMIN ROUTES =====
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if username == 'admin' and password == 'dontravels2026':
+            session['admin_logged_in'] = True
+            flash('Login successful!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid credentials. Please try again.', 'error')
+            return redirect(url_for('admin_login'))
+    
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    flash('Logged out successfully', 'success')
+    return redirect(url_for('admin_login'))
+
+@app.route('/admin')
+def admin_dashboard():
+    if not session.get('admin_logged_in'):
+        flash('Please login to access admin panel', 'error')
+        return redirect(url_for('admin_login'))
+    
+    bookings = load_bookings()
+    vehicles = load_vehicles()
+    routes = load_routes()
+    buses = load_buses()
+    
+    stats = {
+        'total_bookings': len(bookings),
+        'total_revenue': sum([float(b.get('total_fare', 0)) for b in bookings if b.get('status') == 'confirmed']),
+        'total_vehicles': len(vehicles),
+        'total_routes': len(routes),
+        'total_buses': len(buses),
+        'today_bookings': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))]),
+        'pending_payments': len([b for b in bookings if b.get('payment_status') == 'pending'])
+    }
+    
+    return render_template('admin.html', 
+        bookings=bookings, 
+        vehicles=vehicles, 
+        routes=routes, 
+        buses=buses, 
+        stats=stats,
+        db_type=DB_TYPE,
+        db_connected=DB_CONNECTED
+    )
+
 # ===== VERCEL HANDLER =====
 def handler(request, context):
     return app(request, context)
