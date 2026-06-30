@@ -235,7 +235,6 @@ def get_route_by_id(route_id):
     return None
 
 def save_booking_to_supabase(booking_data):
-    """Save booking to Supabase - returns booking data or raises error"""
     if not DB_CONNECTED:
         raise Exception("Supabase not connected")
     
@@ -256,11 +255,9 @@ def save_booking_to_supabase(booking_data):
         raise Exception(f"Supabase insert failed: {error_msg}")
 
 def save_booking(booking_data):
-    """Save booking - ONLY to Supabase, no JSON fallback"""
     return save_booking_to_supabase(booking_data)
 
 def get_booking_by_ref(booking_ref):
-    """Get booking by reference - ONLY from Supabase"""
     print(f"🔍 Looking for booking: {booking_ref} in Supabase")
     
     if not DB_CONNECTED:
@@ -481,7 +478,6 @@ def create_booking():
         
         print(f"💾 Saving booking to Supabase: {booking_data}")
         
-        # Force save to Supabase - will raise error if fails
         save_booking_to_supabase(booking_data)
         
         print(f"✅ Booking created: {booking_ref}")
@@ -526,75 +522,6 @@ def check_booking():
         else:
             flash('No booking found. Please check your details.', 'danger')
     return render_template('check_booking.html')
-
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if username == 'admin' and password == 'dontravels2026':
-            session['admin_logged_in'] = True
-            flash('Login successful!', 'success')
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid credentials', 'danger')
-    return render_template('admin_login.html')
-
-@app.route('/admin/logout')
-def admin_logout():
-    session.pop('admin_logged_in', None)
-    flash('Logged out successfully', 'info')
-    return redirect(url_for('admin_login'))
-
-@app.route('/admin')
-def admin_dashboard():
-    if not session.get('admin_logged_in'):
-        flash('Please login to access admin panel', 'warning')
-        return redirect(url_for('admin_login'))
-    
-    bookings = load_bookings()
-    vehicles = load_vehicles()
-    routes = load_routes()
-    buses = load_buses()
-    
-    stats = {
-        'total_bookings': len(bookings),
-        'total_revenue': sum([float(b.get('total_fare', 0)) for b in bookings if b.get('status') == 'confirmed']),
-        'total_vehicles': len(vehicles),
-        'total_routes': len(routes),
-        'total_buses': len(buses),
-        'today_bookings': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))])
-    }
-    
-    return render_template('admin.html', 
-        bookings=bookings, 
-        vehicles=vehicles, 
-        routes=routes, 
-        buses=buses, 
-        stats=stats,
-        db_type=DB_TYPE,
-        db_connected=DB_CONNECTED
-    )
-
-@app.route('/api/status')
-def api_status():
-    return jsonify({
-        'database': DB_TYPE,
-        'connected': DB_CONNECTED,
-        'vehicles': len(load_vehicles()),
-        'routes': len(load_routes()),
-        'buses': len(load_buses()),
-        'bookings': len(load_bookings()),
-        'timestamp': datetime.utcnow().isoformat()
-    })
-
-@app.route('/api/reconnect')
-def reconnect_db():
-    global DB_CONNECTED
-    DB_CONNECTED = test_supabase_connection()
-    return jsonify({'connected': DB_CONNECTED})
-
-# ===== ADMIN ROUTES =====
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -648,6 +575,24 @@ def admin_dashboard():
         db_type=DB_TYPE,
         db_connected=DB_CONNECTED
     )
+
+@app.route('/api/status')
+def api_status():
+    return jsonify({
+        'database': DB_TYPE,
+        'connected': DB_CONNECTED,
+        'vehicles': len(load_vehicles()),
+        'routes': len(load_routes()),
+        'buses': len(load_buses()),
+        'bookings': len(load_bookings()),
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
+@app.route('/api/reconnect')
+def reconnect_db():
+    global DB_CONNECTED
+    DB_CONNECTED = test_supabase_connection()
+    return jsonify({'connected': DB_CONNECTED})
 
 # ===== VERCEL HANDLER =====
 def handler(request, context):
