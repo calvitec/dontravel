@@ -257,7 +257,6 @@ def save_booking_to_supabase(booking_data):
 
 def save_booking(booking_data):
     """Save booking - ONLY to Supabase, no JSON fallback"""
-    # Force save to Supabase
     return save_booking_to_supabase(booking_data)
 
 def get_booking_by_ref(booking_ref):
@@ -567,7 +566,15 @@ def admin_dashboard():
         'today_bookings': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))])
     }
     
-    return render_template('admin.html', bookings=bookings, vehicles=vehicles, routes=routes, buses=buses, stats=stats, db_type=DB_TYPE, db_connected=DB_CONNECTED)
+    return render_template('admin.html', 
+        bookings=bookings, 
+        vehicles=vehicles, 
+        routes=routes, 
+        buses=buses, 
+        stats=stats,
+        db_type=DB_TYPE,
+        db_connected=DB_CONNECTED
+    )
 
 @app.route('/api/status')
 def api_status():
