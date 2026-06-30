@@ -50,6 +50,11 @@
             font-weight: 600;
         }
         .bus-card .bus-route { color: #64748b; font-size: 0.85rem; }
+        .bus-card .bus-date { 
+            color: #f59e0b; 
+            font-size: 0.8rem; 
+            font-weight: 600;
+        }
         
         .btn-book {
             background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -82,13 +87,11 @@
         @media (max-width: 768px) {
             .bus-card { grid-template-columns: 1fr; text-align: center; padding: 16px; }
             .bus-card .bus-actions { display: flex; flex-direction: column; gap: 8px; align-items: center; }
-            .results-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
     <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
         <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
             <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
@@ -100,9 +103,7 @@
         </div>
     </header>
 
-    <!-- ===== RESULTS ===== -->
     <section style="max-width:900px; margin:40px auto; padding:0 20px;">
-        <!-- Search Summary -->
         <div style="background:white; border-radius:16px; padding:20px 24px; margin-bottom:24px; border:1px solid #f1f5f9;">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
                 <div>
@@ -111,14 +112,14 @@
                         {{ origin }} → {{ destination }}
                     </h2>
                     <p style="color:#64748b; font-size:0.9rem;">
-                        {{ results|length }} buses found · {{ passengers }} passenger(s) · {{ date }}
+                        {{ results|length }} buses found · {{ passengers }} passenger(s) · 
+                        <span style="color:#f59e0b; font-weight:600;">{{ date }}</span>
                     </p>
                 </div>
                 <a href="/" class="btn-outline"><i class="fas fa-search"></i> New Search</a>
             </div>
         </div>
 
-        <!-- Results -->
         {% if results %}
             {% for item in results %}
             <div class="bus-card">
@@ -127,6 +128,7 @@
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
                         <span class="bus-type">{{ item.vehicle.vehicle_type or 'Standard' }}</span>
                         <span class="bus-seats"><i class="fas fa-chair"></i> {{ item.available_seats }} seats available</span>
+                        <span class="bus-date"><i class="fas fa-calendar"></i> {{ item.date }}</span>
                     </div>
                     <div class="bus-time" style="margin-top:6px;">
                         <i class="fas fa-clock" style="color:#f59e0b;"></i> 
@@ -143,7 +145,7 @@
                     <div style="color:#94a3b8; font-size:0.75rem;">per passenger</div>
                 </div>
                 <div class="bus-actions">
-                    <a href="/booking/{{ item.bus.id }}" class="btn-book">
+                    <a href="/booking/{{ item.bus.id }}?date={{ item.date }}" class="btn-book">
                         <i class="fas fa-calendar-check"></i> Book Now
                     </a>
                 </div>
