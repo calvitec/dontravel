@@ -12,7 +12,6 @@
         body { background: #f0f4f8; }
         
         @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         .animate-float { animation: float 4s ease-in-out infinite; }
         
         /* ===== HEADER ===== */
@@ -90,7 +89,7 @@
             color: white;
             position: relative;
             overflow: hidden;
-            min-height: 70vh;
+            min-height: 60vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -503,7 +502,11 @@
                 </div>
                 <div>
                     <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
-                    <input type="date" name="date" class="form-input" required />
+                    <input type="date" name="date" class="form-input" 
+                           min="{{ today }}" 
+                           max="{{ max_date }}" 
+                           value="{{ today }}" 
+                           required />
                 </div>
                 <div>
                     <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
@@ -589,12 +592,21 @@
             autoPlay = setInterval(() => moveCarousel(1), 5000);
         });
 
-        // ===== SET MIN DATE =====
+        // ===== DATE LIMITS =====
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.querySelector('input[name="date"]');
             if (dateInput) {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.setAttribute('min', today);
+                const today = new Date();
+                const maxDate = new Date();
+                maxDate.setDate(today.getDate() + 30); // Allow booking up to 30 days in advance
+                
+                dateInput.setAttribute('min', today.toISOString().split('T')[0]);
+                dateInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
+                
+                // Set default to today
+                if (!dateInput.value) {
+                    dateInput.value = today.toISOString().split('T')[0];
+                }
             }
         });
 
