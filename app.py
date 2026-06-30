@@ -64,6 +64,82 @@ def save_json(file_path, data):
     except:
         return False
 
+# ===== CREATE SAMPLE DATA IF NOT EXISTS =====
+def create_sample_data():
+    """Create sample vehicles, routes, and buses if they don't exist"""
+    
+    # Check if vehicles exist
+    vehicles = load_json('vehicles.json')
+    if not vehicles:
+        print("📁 Creating sample vehicles...")
+        sample_vehicles = [
+            {
+                "id": 1,
+                "vehicle_id": "VEH-001",
+                "vehicle_type": "Toyota Hiace",
+                "vehicle_model": "Hiace Minibus",
+                "registration": "KCA 123A",
+                "color": "White",
+                "capacity": 14,
+                "features": {"seats": 14, "ac": True, "wifi": True, "tv": True},
+                "image_url": "https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop",
+                "base_price": 3500,
+                "status": "available"
+            },
+            {
+                "id": 2,
+                "vehicle_id": "VEH-002",
+                "vehicle_type": "Executive Van",
+                "vehicle_model": "Mercedes Sprinter",
+                "registration": "KCB 456B",
+                "color": "Black",
+                "capacity": 8,
+                "features": {"seats": 8, "ac": True, "wifi": True, "refreshments": True, "leather_seats": True},
+                "image_url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop",
+                "base_price": 6500,
+                "status": "available"
+            },
+            {
+                "id": 3,
+                "vehicle_id": "VEH-003",
+                "vehicle_type": "Luxury SUV",
+                "vehicle_model": "Land Cruiser V8",
+                "registration": "KCC 789C",
+                "color": "Black",
+                "capacity": 7,
+                "features": {"seats": 7, "ac": True, "wifi": True, "climate_control": True, "premium": True},
+                "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop",
+                "base_price": 5500,
+                "status": "available"
+            }
+        ]
+        save_json('vehicles.json', sample_vehicles)
+    
+    routes = load_json('routes.json')
+    if not routes:
+        print("📁 Creating sample routes...")
+        sample_routes = [
+            {"id": 1, "route_id": "RTE-001", "origin": "Nairobi", "destination": "Mombasa", "distance_km": 480, "duration_minutes": 480, "base_fare": 1500},
+            {"id": 2, "route_id": "RTE-002", "origin": "Nairobi", "destination": "Kisumu", "distance_km": 350, "duration_minutes": 360, "base_fare": 1200},
+            {"id": 3, "route_id": "RTE-003", "origin": "Nairobi", "destination": "Eldoret", "distance_km": 310, "duration_minutes": 300, "base_fare": 1000},
+            {"id": 4, "route_id": "RTE-004", "origin": "Mombasa", "destination": "Nairobi", "distance_km": 480, "duration_minutes": 480, "base_fare": 1500},
+            {"id": 5, "route_id": "RTE-005", "origin": "Kisumu", "destination": "Nairobi", "distance_km": 350, "duration_minutes": 360, "base_fare": 1200}
+        ]
+        save_json('routes.json', sample_routes)
+    
+    buses = load_json('buses.json')
+    if not buses:
+        print("📁 Creating sample buses...")
+        sample_buses = [
+            {"id": 1, "bus_id": "BUS-001", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 2, "fare": 1800, "departure_time": "07:00:00", "arrival_time": "15:00:00", "status": "active"},
+            {"id": 2, "bus_id": "BUS-002", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 1, "fare": 1800, "departure_time": "14:00:00", "arrival_time": "22:00:00", "status": "active"},
+            {"id": 3, "bus_id": "BUS-003", "company_name": "Don Travels Express", "route_id": 2, "vehicle_id": 1, "total_seats": 40, "booked_seats": 0, "fare": 1400, "departure_time": "08:00:00", "arrival_time": "14:00:00", "status": "active"},
+            {"id": 4, "bus_id": "BUS-004", "company_name": "Don Travels Executive", "route_id": 1, "vehicle_id": 2, "total_seats": 8, "booked_seats": 1, "fare": 2500, "departure_time": "06:00:00", "arrival_time": "14:00:00", "status": "active"},
+            {"id": 5, "bus_id": "BUS-005", "company_name": "Don Travels Executive", "route_id": 3, "vehicle_id": 2, "total_seats": 8, "booked_seats": 0, "fare": 2000, "departure_time": "09:00:00", "arrival_time": "14:00:00", "status": "active"},
+            {"id": 6, "bus_id": "BUS-006", "company_name": "Don Travels Luxury", "route_id": 1, "vehicle_id": 3, "total_seats": 7, "booked_seats": 0, "fare": 3000, "departure_time": "07:30:00", "arrival_time": "15:30:00", "status": "active"}
+        ]
+        save_json('buses.json', sample_buses)
+
 # ===== DATABASE FUNCTIONS =====
 def load_vehicles():
     if DB_CONNECTED:
@@ -257,24 +333,46 @@ def admin_required(f):
 
 @app.route('/')
 def index():
+    # Create sample data if needed
+    create_sample_data()
+    
     vehicles = load_vehicles()
     routes = load_routes()
     return render_template('index.html', vehicles=vehicles, routes=routes)
 
 @app.route('/search')
 def search_results():
-    origin = request.args.get('origin', '')
-    destination = request.args.get('destination', '')
+    origin = request.args.get('origin', '').strip()
+    destination = request.args.get('destination', '').strip()
     date = request.args.get('date', '')
     passengers = int(request.args.get('passengers', 1))
+    
+    # Create sample data if needed
+    create_sample_data()
     
     vehicles = load_vehicles()
     routes = load_routes()
     buses = load_buses()
     
+    # Debug: Print what we're searching for
+    print(f"🔍 Searching: {origin} → {destination}")
+    print(f"📊 Routes found: {len(routes)}")
+    print(f"📊 Buses found: {len(buses)}")
+    
     results = []
+    
+    # First, find matching routes
     for route in routes:
-        if route.get('origin', '').lower() == origin.lower() and route.get('destination', '').lower() == destination.lower():
+        route_origin = route.get('origin', '').lower().strip()
+        route_dest = route.get('destination', '').lower().strip()
+        search_origin = origin.lower().strip()
+        search_dest = destination.lower().strip()
+        
+        # Check if route matches (case insensitive)
+        if route_origin == search_origin and route_dest == search_dest:
+            print(f"✅ Found matching route: {route.get('origin')} → {route.get('destination')}")
+            
+            # Find buses for this route
             for bus in buses:
                 if bus.get('route_id') == route.get('id'):
                     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
@@ -288,8 +386,38 @@ def search_results():
                                 'fare': bus.get('fare', route.get('base_fare', 1500)),
                                 'available_seats': available
                             })
+                            print(f"   ✅ Added bus {bus.get('bus_id')} with {available} seats")
     
-    return render_template('search_results.html', results=results, origin=origin, destination=destination, date=date, passengers=passengers)
+    print(f"📊 Found {len(results)} results")
+    
+    # If no results, try partial match
+    if not results:
+        print("🔄 No exact matches, trying partial matches...")
+        for route in routes:
+            route_origin = route.get('origin', '').lower()
+            route_dest = route.get('destination', '').lower()
+            if search_origin in route_origin and search_dest in route_dest:
+                print(f"✅ Found partial match: {route.get('origin')} → {route.get('destination')}")
+                for bus in buses:
+                    if bus.get('route_id') == route.get('id'):
+                        vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
+                        if vehicle:
+                            available = bus.get('total_seats', 40) - bus.get('booked_seats', 0)
+                            if available >= passengers:
+                                results.append({
+                                    'bus': bus,
+                                    'vehicle': vehicle,
+                                    'route': route,
+                                    'fare': bus.get('fare', route.get('base_fare', 1500)),
+                                    'available_seats': available
+                                })
+    
+    return render_template('search_results.html', 
+        results=results, 
+        origin=origin, 
+        destination=destination, 
+        date=date, 
+        passengers=passengers)
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
@@ -315,6 +443,8 @@ def booking_page(bus_id):
         seats.append(seat)
     
     return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats)
+
+# ... (rest of the code remains the same: /api/book, /confirmation, /check-booking, /admin routes, etc.)
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
@@ -540,10 +670,19 @@ def handler(request, context):
     return app(request, context)
 
 if __name__ == '__main__':
+    # Create sample data on startup
+    create_sample_data()
+    
     print("\n" + "="*60)
     print("🚌 DON TRAVELS - Complete Bus Booking System")
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
+    
+    # Show data counts
+    vehicles = load_vehicles()
+    routes = load_routes()
+    buses = load_buses()
+    print(f"📊 Vehicles: {len(vehicles)}, Routes: {len(routes)}, Buses: {len(buses)}")
     print("="*60)
     app.run(debug=True, host='0.0.0.0', port=5000)
