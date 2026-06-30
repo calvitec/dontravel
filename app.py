@@ -7,10 +7,12 @@ import json
 app = Flask(__name__)
 app.secret_key = 'dev-secret-key-12345'
 
-# ===== YOUR SUPABASE CREDENTIALS =====
-# These will be set as Environment Variables in Vercel
-SUPABASE_URL = os.environ.get('SUPABASE_URL', "https://hzqrdwerkgfmfaufabjr.supabase.co")
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY', "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld")
+# ===== YOUR SUPABASE CREDENTIALS (HARDCODED) =====
+SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
+SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
+
+print(f"🔍 Using Supabase URL: {SUPABASE_URL[:30]}...")
+print(f"🔑 Using Supabase Key: {SUPABASE_KEY[:20]}...")
 
 # Try to connect to Supabase
 DB_CONNECTED = False
@@ -27,7 +29,7 @@ try:
     
     DB_CONNECTED = True
     DB_TYPE = 'supabase'
-    print("✅ Supabase connected successfully!")
+    print(f"✅ Supabase connected successfully!")
     
 except ImportError:
     print("❌ Supabase package not installed")
@@ -35,6 +37,7 @@ except ImportError:
     
 except Exception as e:
     print(f"❌ Supabase error: {e}")
+    print("📁 Using JSON storage instead")
     supabase = None
 
 # ===== JSON BACKUP =====
@@ -273,5 +276,9 @@ if __name__ == '__main__':
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
+    if DB_CONNECTED:
+        print(f"📊 Supabase: {SUPABASE_URL}")
+    else:
+        print("📂 Using JSON file storage")
     print("="*60)
     app.run(debug=True, host='0.0.0.0', port=5000)
