@@ -4,7 +4,6 @@ import os
 import uuid
 import json
 import requests
-import traceback
 from functools import wraps
 
 app = Flask(__name__)
@@ -98,6 +97,7 @@ def load_buses():
     return load_json('buses.json')
 
 def load_bus_seats(bus_id, date):
+    """Get seat availability for a specific bus on a specific date"""
     if DB_CONNECTED:
         try:
             response = requests.get(
@@ -112,6 +112,7 @@ def load_bus_seats(bus_id, date):
         except Exception as e:
             print(f"Error loading seats: {e}")
     
+    # JSON fallback
     seats_data = load_json('bus_seats.json')
     for seat in seats_data:
         if seat.get('bus_id') == bus_id and seat.get('booking_date') == date:
@@ -120,8 +121,10 @@ def load_bus_seats(bus_id, date):
     return {'bus_id': bus_id, 'booking_date': date, 'booked_seats_list': [], 'booked_seats': 0}
 
 def update_bus_seats(bus_id, date, booked_seats_list):
+    """Update seat availability for a specific bus on a specific date"""
     if DB_CONNECTED:
         try:
+            # Check if entry exists
             check = requests.get(
                 f"{SUPABASE_URL}/rest/v1/bus_seats?bus_id=eq.{bus_id}&booking_date=eq.{date}",
                 headers=SUPABASE_HEADERS,
@@ -129,6 +132,7 @@ def update_bus_seats(bus_id, date, booked_seats_list):
             )
             
             if check.status_code == 200 and check.json():
+                # Update existing
                 response = requests.patch(
                     f"{SUPABASE_URL}/rest/v1/bus_seats?bus_id=eq.{bus_id}&booking_date=eq.{date}",
                     headers=SUPABASE_HEADERS,
@@ -140,6 +144,7 @@ def update_bus_seats(bus_id, date, booked_seats_list):
                     timeout=10
                 )
             else:
+                # Insert new
                 response = requests.post(
                     f"{SUPABASE_URL}/rest/v1/bus_seats",
                     headers=SUPABASE_HEADERS,
@@ -156,6 +161,7 @@ def update_bus_seats(bus_id, date, booked_seats_list):
             print(f"Update error: {e}")
             return False
     
+    # JSON fallback
     seats_data = load_json('bus_seats.json')
     found = False
     for seat in seats_data:
@@ -245,7 +251,14 @@ def save_booking(booking_data):
                 return data[0]['id'] if data else None
         except Exception as e:
             print(f"Save booking error: {e}")
-            pass
+            # Try JSON fallback
+            bookings = load_json('bookings.json')
+            booking_data['id'] = len(bookings) + 1
+            bookings.append(booking_data)
+            save_json('bookings.json', bookings)
+            return booking_data['id']
+    
+    # JSON fallback
     bookings = load_json('bookings.json')
     booking_data['id'] = len(bookings) + 1
     bookings.append(booking_data)
@@ -253,18 +266,31 @@ def save_booking(booking_data):
     return booking_data['id']
 
 def get_booking_by_ref(booking_ref):
+    """Get booking by reference - checks Supabase and JSON fallback"""
+    # First try Supabase
     if DB_CONNECTED:
         try:
-            response = requests.get(f"{SUPABASE_URL}/rest/v1/bookings?booking_ref=eq.{booking_ref}", headers=SUPABASE_HEADERS, timeout=10)
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/bookings?booking_ref=eq.{booking_ref}",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
             if response.status_code == 200:
                 data = response.json()
-                return data[0] if data else None
-        except:
-            pass
+                if data:
+                    print(f"✅ Found booking in Supabase: {booking_ref}")
+                    return data[0]
+        except Exception as e:
+            print(f"Error getting booking from Supabase: {e}")
+    
+    # Try JSON fallback
     bookings = load_json('bookings.json')
     for booking in bookings:
         if booking.get('booking_ref') == booking_ref:
+            print(f"✅ Found booking in JSON: {booking_ref}")
             return booking
+    
+    print(f"❌ Booking not found: {booking_ref}")
     return None
 
 def generate_booking_ref():
@@ -300,6 +326,7 @@ def search_results():
                 if bus.get('route_id') == route.get('id'):
                     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
                     if vehicle:
+                        # Get seat availability for the specific date
                         seat_data = load_bus_seats(bus.get('id'), date)
                         booked = seat_data.get('booked_seats', 0)
                         total = bus.get('total_seats', 40)
@@ -318,20 +345,25 @@ def search_results():
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
+    # Get bus data
     bus = get_bus_by_id(bus_id)
     if not bus:
         flash('Bus not found', 'danger')
         return redirect(url_for('index'))
     
+    # Get the date from query params or use today
     date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
     
+    # Get vehicle and route
     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
     route = get_route_by_id(bus.get('route_id'))
     
+    # Get seat data for this specific date
     total_seats = bus.get('total_seats', 40)
     seat_data = load_bus_seats(bus_id, date)
     booked_seats_list = seat_data.get('booked_seats_list', [])
     
+    # Build seats array with date-specific status
     seats = []
     for i in range(1, total_seats + 1):
         seat_id = str(i)
@@ -357,19 +389,15 @@ def create_booking():
         print("📥 INCOMING BOOKING REQUEST")
         
         data = request.get_json()
-        print("📦 Data received:", data)
+        print(f"📦 Data: {data}")
         
         bus_id = data.get('bus_id')
         print(f"🚌 Bus ID: {bus_id}")
         
+        # Get bus details
         bus = get_bus_by_id(bus_id)
-        print(f"🚌 Bus found: {bus}")
-        
         if not bus:
-            return jsonify({
-                'success': False,
-                'error': 'Bus not found'
-            }), 404
+            return jsonify({'success': False, 'error': 'Bus not found'}), 404
         
         booking_date = data.get('booking_date', datetime.now().strftime('%Y-%m-%d'))
         passenger_name = data.get('passenger_name', '').strip()
@@ -379,45 +407,38 @@ def create_booking():
         total_fare = data.get('total_fare', 0)
         payment_method = data.get('payment_method', 'mpesa')
         
-        print(f"👤 Passenger: {passenger_name}, {passenger_phone}")
+        print(f"👤 Passenger: {passenger_name}")
         print(f"💺 Seats: {selected_seats}")
-        print(f"💰 Fare: {total_fare}")
         print(f"📅 Date: {booking_date}")
         
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
-            return jsonify({
-                'success': False,
-                'error': 'Please fill in all required fields'
-            }), 400
+            return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
         
+        # Load seat data for this date
         seat_data = load_bus_seats(bus_id, booking_date)
         booked_seats_list = seat_data.get('booked_seats_list', [])
-        print(f"📊 Current booked seats: {booked_seats_list}")
+        print(f"📊 Current booked: {booked_seats_list}")
         
+        # Check seat availability
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
-                return jsonify({
-                    'success': False,
-                    'error': f'Seat {seat} is already booked for {booking_date}'
-                }), 400
+                return jsonify({'success': False, 'error': f'Seat {seat} is already booked for {booking_date}'}), 400
         
+        # Update booked seats
         new_booked_list = booked_seats_list.copy()
         for seat in selected_seats:
             seat = str(seat)
             if seat not in new_booked_list:
                 new_booked_list.append(seat)
         
-        print(f"📊 New booked seats: {new_booked_list}")
+        print(f"📊 New booked: {new_booked_list}")
         
+        # Save updated seats
         update_success = update_bus_seats(bus_id, booking_date, new_booked_list)
-        print(f"💾 Seat update success: {update_success}")
-        
         if not update_success:
-            return jsonify({
-                'success': False,
-                'error': 'Failed to update seats. Please try again.'
-            }), 500
+            return jsonify({'success': False, 'error': 'Failed to update seats. Please try again.'}), 500
         
+        # Create booking
         booking_ref = generate_booking_ref()
         booking_id = generate_booking_id()
         
@@ -439,11 +460,12 @@ def create_booking():
             'created_at': datetime.utcnow().isoformat()
         }
         
-        print(f"💾 Saving booking: {booking_data}")
-        
+        # Save booking
         save_booking(booking_data)
         
+        # Verify booking was saved
         print(f"✅ Booking created: {booking_ref}")
+        print(f"📦 Booking data: {booking_data}")
         print("=" * 60)
         
         return jsonify({
@@ -455,24 +477,23 @@ def create_booking():
         
     except Exception as e:
         print(f"❌ BOOKING ERROR: {e}")
+        import traceback
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/confirmation/<booking_ref>')
 def confirmation(booking_ref):
     print(f"🔍 Looking for booking: {booking_ref}")
+    
+    # Get booking from Supabase or JSON
     booking = get_booking_by_ref(booking_ref)
     
     if not booking:
         print(f"❌ Booking not found: {booking_ref}")
-        flash('Booking not found', 'danger')
+        flash('Booking not found. Please check your reference.', 'danger')
         return redirect(url_for('index'))
     
     print(f"✅ Booking found: {booking}")
-    print(f"📦 Booking data: {booking}")
     return render_template('confirmation.html', booking=booking)
 
 @app.route('/check-booking', methods=['GET', 'POST'])
