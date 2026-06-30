@@ -1,140 +1,677 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional CV Builder</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Don Travels · Premium Taxi & Executive Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        .typing-dots::after { content: '...'; animation: dots 1.5s steps(4, end) infinite; }
-        @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+        .hero-section {
+            background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #2d1b69 100%);
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 0 60px;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255,215,0,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-section .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            opacity: 0.08;
+        }
+        .hero-section .orb-1 { width: 600px; height: 600px; background: #ffd700; top: -200px; right: -100px; }
+        .hero-section .orb-2 { width: 400px; height: 400px; background: #7c3aed; bottom: -150px; left: -100px; }
+        
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            transition: all 0.3s ease;
+            color: #0a1628;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(245, 158, 11, 0.3);
+        }
+        .btn-outline-gold {
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-outline-gold:hover {
+            background: #fbbf24;
+            color: #0a1628;
+            transform: translateY(-2px);
+        }
+        .nav-link {
+            position: relative;
+            color: rgba(255,255,255,0.6);
+            transition: color 0.3s;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2.5px;
+            background: #fbbf24;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        .nav-link:hover { color: white; }
+        .nav-link:hover::after { width: 80%; }
+        .nav-link.active { color: white; }
+        .nav-link.active::after { width: 80%; }
+        
+        .glass-nav {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .glass-nav.scrolled {
+            background: rgba(10,22,40,0.92);
+            border-color: rgba(255,215,0,0.08);
+        }
+        
+        .booking-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 40px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+        }
+        .booking-card .form-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+        .booking-card .form-input::placeholder { color: rgba(255,255,255,0.25); }
+        .booking-card .form-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.05);
+        }
+        .booking-card .form-select {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 0.95rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+        .booking-card .form-select:focus {
+            outline: none;
+            border-color: #fbbf24;
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.05);
+        }
+        .booking-card .form-select option { background: #1a2a4a; color: white; }
+        .booking-card .form-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        
+        .booking-card .success-message {
+            background: rgba(251, 191, 36, 0.08);
+            border-left: 4px solid #fbbf24;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+        .booking-card .success-message p { color: rgba(255,255,255,0.8); font-size: 0.9rem; }
+        .booking-card .success-message .highlight { color: #fbbf24; font-weight: 600; }
+        
+        .vehicle-card {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .vehicle-card:hover, .vehicle-card.selected {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.05);
+            transform: translateY(-4px);
+        }
+        .vehicle-card .vehicle-icon { font-size: 2.5rem; color: #fbbf24; margin-bottom: 8px; }
+        .vehicle-card .vehicle-name { color: white; font-weight: 600; font-size: 1rem; }
+        .vehicle-card .vehicle-price { color: #fbbf24; font-weight: 700; font-size: 0.9rem; }
+        .vehicle-card .vehicle-desc { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 32px;
+            padding: 14px 24px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .stats-bar .stat-item { text-align: center; }
+        .stats-bar .stat-number { font-size: 1.4rem; font-weight: 800; color: #fbbf24; }
+        .stats-bar .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
+        
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
+            text-align: center;
+            border: 1px solid #f3f4f6;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(45, 27, 105, 0.06);
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+        .feature-card .icon-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(45, 27, 105, 0.08));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #2d1b69;
+            margin: 0 auto 16px;
+        }
+        .feature-card h3 { font-size: 1.1rem; font-weight: 700; color: #0a1628; margin-bottom: 8px; }
+        .feature-card p { font-size: 0.9rem; color: #6b7280; line-height: 1.6; }
+        
+        @media (max-width: 768px) {
+            .hero-section { padding: 80px 0 30px; min-height: auto; }
+            .booking-card { padding: 24px 16px; border-radius: 20px; }
+            .stats-bar { gap: 16px; flex-wrap: wrap; padding: 12px 16px; }
+            .stats-bar .stat-number { font-size: 1.1rem; }
+            .glass-nav { padding: 0 12px !important; border-radius: 12px; }
+            .glass-nav > div { height: 56px; }
+            .vehicle-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 480px) {
+            .vehicle-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+            .vehicle-card { padding: 12px; }
+            .vehicle-card .vehicle-icon { font-size: 1.8rem; }
+            .booking-card { padding: 16px; }
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen py-8 px-4">
-    <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-8 animate-float">
-            <div class="inline-block bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-4">
-                <i class="fas fa-file-pdf text-white text-5xl"></i>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-2">CV Builder Pro</h1>
-            <p class="text-white/80 text-lg">Paste your CV text and get a professional PDF in seconds</p>
-        </div>
+<body>
 
-        <!-- Main Card -->
-        <div class="glass-card rounded-3xl shadow-2xl p-6 md:p-8">
-            {% if error %}
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                    <p class="text-red-700">{{ error }}</p>
-                </div>
-            </div>
-            {% endif %}
-
-            <form id="cvForm" action="/generate" method="POST">
-                <!-- Text Area -->
-                <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">
-                        <i class="fas fa-paste text-blue-600 mr-2"></i> Paste Your CV Text
-                    </label>
-                    <textarea name="cv_text" id="cvText" rows="16" 
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none font-mono text-sm"
-                        placeholder="Paste your CV here... Include sections like: EDUCATION, EMPLOYMENT, SKILLS, REFERENCES..."></textarea>
-                    <div class="mt-2 text-sm text-gray-500">
-                        <i class="fas fa-info-circle text-blue-500 mr-1"></i> 
-                        Supports: EDUCATION, EMPLOYMENT, SKILLS, ADDITIONAL QUALIFICATIONS, REFERENCES
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button type="submit" id="generateBtn"
-                        class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] shadow-lg flex items-center justify-center">
-                        <i class="fas fa-magic mr-3"></i> Generate CV
-                    </button>
-                    <button type="button" onclick="loadSample()"
-                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center">
-                        <i class="fas fa-file-alt mr-3"></i> Load Sample
-                    </button>
-                </div>
-            </form>
-
-            <!-- Loading -->
-            <div id="loadingDiv" class="hidden text-center py-8">
-                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                <p class="text-gray-600 font-semibold">Generating your professional CV...</p>
-                <p class="text-gray-400 text-sm">This may take a few seconds</p>
-            </div>
-        </div>
-
-        <!-- Features -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-5 text-center text-white">
-                <i class="fas fa-robot text-3xl mb-2"></i>
-                <h3 class="font-bold">AI-Powered</h3>
-                <p class="text-white/70 text-sm">Smart parsing of your CV content</p>
-            </div>
-            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-5 text-center text-white">
-                <i class="fas fa-palette text-3xl mb-2"></i>
-                <h3 class="font-bold">Professional Design</h3>
-                <p class="text-white/70 text-sm">Clean, modern CV templates</p>
-            </div>
-            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-5 text-center text-white">
-                <i class="fas fa-download text-3xl mb-2"></i>
-                <h3 class="font-bold">Instant Download</h3>
-                <p class="text-white/70 text-sm">Get your PDF in seconds</p>
-            </div>
+    <!-- TOP BAR -->
+    <div style="background:rgba(10,22,40,0.92); color:rgba(255,255,255,0.3); font-size:0.6rem; padding:4px 0; text-align:center; border-bottom:1px solid rgba(255,255,255,0.02); backdrop-filter:blur(10px); position:relative; z-index:60;">
+        <div style="max-width:1280px; margin:0 auto; padding:0 16px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:12px;">
+            <span><i class="fas fa-phone" style="color:#fbbf24; margin-right:4px; font-size:0.55rem;"></i> +254 745 793 27</span>
+            <span><i class="fas fa-envelope" style="color:#fbbf24; margin-right:4px; font-size:0.55rem;"></i> hello@dontravels.com</span>
+            <span><i class="fas fa-clock" style="color:#fbbf24; margin-right:4px; font-size:0.55rem;"></i> 24/7 Service</span>
+            <span style="color:#fbbf24; font-size:0.55rem;"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> 4.9/5</span>
         </div>
     </div>
 
+    <!-- NAV -->
+    <nav style="position:fixed; top:10px; left:0; right:0; z-index:50; padding:0 16px; pointer-events:none;">
+        <div class="glass-nav" style="max-width:1200px; margin:0 auto; border-radius:16px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); pointer-events:all; padding:0 18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; height:60px;">
+                <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+                    <div style="width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, #fbbf24, #f59e0b); display:flex; align-items:center; justify-content:center; color:#0a1628; font-size:1.1rem; box-shadow:0 8px 20px rgba(251,191,36,0.15);">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <span style="font-size:1.15rem; font-weight:700; color:white; letter-spacing:-0.5px;">Don <span style="color:#fbbf24;">Travels</span></span>
+                </a>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:16px; margin-right:6px;">
+                        <a href="#home" class="nav-link active">Home</a>
+                        <a href="#vehicles" class="nav-link">Vehicles</a>
+                        <a href="#book" class="nav-link">Book</a>
+                        <a href="/admin" class="nav-link" style="color:#fbbf24;">Dashboard</a>
+                    </div>
+                    <button onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth', block:'center'})" style="background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; color:#0a1628; padding:8px 20px; border-radius:9999px; font-weight:600; font-size:0.8rem; cursor:pointer; box-shadow:0 8px 20px rgba(251,191,36,0.15); transition:all 0.3s ease;">
+                        <i class="fas fa-calendar-check" style="margin-right:4px;"></i> Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="home" class="hero-section">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        
+        <div style="width:100%; max-width:1200px; margin:0 auto; padding:0 20px; position:relative; z-index:2;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;">
+                <!-- Left Content -->
+                <div>
+                    <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(251,191,36,0.08); padding:4px 14px; border-radius:9999px; font-size:0.7rem; color:#fbbf24; font-weight:600; border:1px solid rgba(251,191,36,0.06); margin-bottom:16px;">
+                        <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; display:inline-block; animation:pulse 2s infinite;"></span>
+                        Premium Executive Transport
+                    </div>
+                    <h1 style="font-size:3.5rem; font-weight:900; color:white; letter-spacing:-1.5px; line-height:1.05; margin-bottom:16px;">
+                        Ride in <span style="color:#fbbf24;">Style</span> &<br>Executive <span style="color:#fbbf24;">Comfort</span>
+                    </h1>
+                    <p style="font-size:1.05rem; color:rgba(255,255,255,0.5); max-width:480px; line-height:1.7; margin-bottom:28px;">
+                        Premium taxi and executive car services. Professional drivers, luxury vehicles, and unmatched comfort for every journey.
+                    </p>
+                    <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                        <button onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth', block:'center'})" class="btn-gold" style="padding:16px 36px; border-radius:9999px; font-weight:700; font-size:1rem; display:flex; align-items:center; gap:10px; box-shadow:0 20px 40px rgba(251,191,36,0.2);">
+                            <i class="fas fa-calendar-check"></i> Book Your Ride
+                        </button>
+                        <a href="#vehicles" class="btn-outline-gold" style="padding:16px 36px; border-radius:9999px; font-weight:600; font-size:1rem; display:flex; align-items:center; gap:10px; text-decoration:none;">
+                            <i class="fas fa-car"></i> Our Fleet
+                        </a>
+                    </div>
+                    <div style="display:flex; gap:48px; margin-top:40px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.04);">
+                        <div><span style="color:white; font-weight:700; font-size:1.25rem;">500+</span><p style="color:rgba(255,255,255,0.3); font-size:0.8rem;">Happy Riders</p></div>
+                        <div><span style="color:white; font-weight:700; font-size:1.25rem;">4.9</span><p style="color:rgba(255,255,255,0.3); font-size:0.8rem;">Rating</p></div>
+                        <div><span style="color:white; font-weight:700; font-size:1.25rem;">24/7</span><p style="color:rgba(255,255,255,0.3); font-size:0.8rem;">Service</p></div>
+                    </div>
+                </div>
+                
+                <!-- Right Content - Image -->
+                <div>
+                    <div style="background:rgba(255,255,255,0.03); border-radius:24px; padding:20px; border:1px solid rgba(255,255,255,0.04);">
+                        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop" alt="Luxury Car" style="width:100%; border-radius:16px; height:400px; object-fit:cover;" />
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:16px;">
+                            <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.03);">
+                                <i class="fas fa-user-shield" style="color:#fbbf24; font-size:1.2rem;"></i>
+                                <p style="color:rgba(255,255,255,0.4); font-size:0.7rem; margin-top:4px;">Professional</p>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.03);">
+                                <i class="fas fa-wifi" style="color:#fbbf24; font-size:1.2rem;"></i>
+                                <p style="color:rgba(255,255,255,0.4); font-size:0.7rem; margin-top:4px;">Free WiFi</p>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.03);">
+                                <i class="fas fa-water" style="color:#fbbf24; font-size:1.2rem;"></i>
+                                <p style="color:rgba(255,255,255,0.4); font-size:0.7rem; margin-top:4px;">Refreshments</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VEHICLES -->
+    <section id="vehicles" style="padding:60px 20px; background:white;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="text-align:center; margin-bottom:48px;">
+                <span style="color:#2d1b69; font-size:0.6rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;">Our Fleet</span>
+                <h2 style="font-size:2.5rem; font-weight:800; color:#0a1628; margin-top:4px; letter-spacing:-1px;">Choose Your <span style="color:#fbbf24;">Vehicle</span></h2>
+                <p style="font-size:0.95rem; color:#6b7280; margin-top:4px;">Premium vehicles for every occasion</p>
+            </div>
+
+            <div class="vehicle-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:16px;">
+                <div class="vehicle-card" onclick="selectVehicle('Standard')">
+                    <div class="vehicle-icon"><i class="fas fa-car"></i></div>
+                    <div class="vehicle-name">Standard</div>
+                    <div class="vehicle-price">KSh 1,500</div>
+                    <div class="vehicle-desc">4 seats · Sedan</div>
+                </div>
+                <div class="vehicle-card" onclick="selectVehicle('Premium')">
+                    <div class="vehicle-icon"><i class="fas fa-car-side"></i></div>
+                    <div class="vehicle-name">Premium</div>
+                    <div class="vehicle-price">KSh 2,500</div>
+                    <div class="vehicle-desc">4 seats · Luxury Sedan</div>
+                </div>
+                <div class="vehicle-card" onclick="selectVehicle('Executive')">
+                    <div class="vehicle-icon"><i class="fas fa-crown"></i></div>
+                    <div class="vehicle-name">Executive</div>
+                    <div class="vehicle-price">KSh 4,000</div>
+                    <div class="vehicle-desc">4 seats · Executive</div>
+                </div>
+                <div class="vehicle-card" onclick="selectVehicle('Luxury SUV')">
+                    <div class="vehicle-icon"><i class="fas fa-caravan"></i></div>
+                    <div class="vehicle-name">Luxury SUV</div>
+                    <div class="vehicle-price">KSh 5,500</div>
+                    <div class="vehicle-desc">7 seats · SUV</div>
+                </div>
+                <div class="vehicle-card" onclick="selectVehicle('Van')">
+                    <div class="vehicle-icon"><i class="fas fa-bus"></i></div>
+                    <div class="vehicle-name">Van</div>
+                    <div class="vehicle-price">KSh 3,500</div>
+                    <div class="vehicle-desc">14 seats · Minibus</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOOKING SECTION -->
+    <section id="book" style="padding:60px 20px; background:#0a1628;">
+        <div style="max-width:900px; margin:0 auto;">
+            <div style="text-align:center; margin-bottom:40px;">
+                <span style="color:#fbbf24; font-size:0.6rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;">Book Now</span>
+                <h2 style="font-size:2.5rem; font-weight:800; color:white; margin-top:4px; letter-spacing:-1px;">Book Your <span style="color:#fbbf24;">Ride</span></h2>
+                <p style="font-size:0.95rem; color:rgba(255,255,255,0.4); margin-top:4px;">Experience luxury and comfort with Don Travels</p>
+            </div>
+
+            <div id="book-section" class="booking-card">
+                <!-- Success Message -->
+                <div id="successMessage" style="display:none;" class="success-message">
+                    <div style="display:flex; align-items:flex-start; gap:10px;">
+                        <i class="fas fa-check-circle" style="color:#fbbf24; font-size:1.1rem; margin-top:2px;"></i>
+                        <div>
+                            <p style="font-weight:600; color:white; font-size:0.9rem;">Booking confirmed! <span style="color:#fbbf24;">✅</span></p>
+                            <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:2px;">We'll contact you shortly to confirm your ride details.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="bookingForm">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div>
+                            <label class="form-label"><i class="fas fa-user"></i> Full Name</label>
+                            <input type="text" name="name" placeholder="John Doe" class="form-input" required />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
+                            <input type="email" name="email" placeholder="john@example.com" class="form-input" required />
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;">
+                        <label class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+254 745 793 27" class="form-input" />
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
+                        <div>
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> Pickup Location</label>
+                            <input type="text" name="pickup" placeholder="Nairobi, Kenya" class="form-input" required />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-flag-checkered"></i> Drop-off Location</label>
+                            <input type="text" name="dropoff" placeholder="Mombasa, Kenya" class="form-input" required />
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px;">
+                        <div>
+                            <label class="form-label"><i class="fas fa-car"></i> Vehicle Type</label>
+                            <select name="vehicle" class="form-select" id="vehicleSelect" required>
+                                <option value="Standard">Standard - KSh 1,500</option>
+                                <option value="Premium">Premium - KSh 2,500</option>
+                                <option value="Executive">Executive - KSh 4,000</option>
+                                <option value="Luxury SUV">Luxury SUV - KSh 5,500</option>
+                                <option value="Van">Van - KSh 3,500</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
+                            <input type="date" name="date" class="form-input" required />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-clock"></i> Time</label>
+                            <input type="time" name="time" class="form-input" />
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+                        <div>
+                            <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
+                            <input type="number" name="passengers" min="1" max="14" value="1" class="form-input" />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-info-circle"></i> Special Requests</label>
+                            <input type="text" name="special_requests" placeholder="Baby seat, extra luggage, etc." class="form-input" />
+                        </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:16px; margin-top:20px;">
+                        <button type="submit" class="btn-gold" style="padding:16px 32px; border-radius:14px; font-weight:700; font-size:1.05rem; flex:1;">
+                            <i class="fas fa-calendar-check" style="margin-right:8px;"></i> Book Now
+                        </button>
+                        <div style="display:flex; align-items:center; gap:6px; color:rgba(255,255,255,0.15); font-size:0.65rem;">
+                            <i class="fas fa-lock" style="color:#fbbf24;"></i> Secure
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section style="padding:60px 20px; background:white;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="text-align:center; margin-bottom:40px;">
+                <span style="color:#2d1b69; font-size:0.6rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;">Why Choose Us</span>
+                <h2 style="font-size:2.5rem; font-weight:800; color:#0a1628; margin-top:4px; letter-spacing:-1px;">Premium <span style="color:#fbbf24;">Service</span></h2>
+                <p style="font-size:0.95rem; color:#6b7280; margin-top:4px;">Experience the best in executive transport</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-user-shield"></i></div>
+                    <h3>Professional Drivers</h3>
+                    <p>Experienced, licensed, and courteous drivers</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-car"></i></div>
+                    <h3>Luxury Fleet</h3>
+                    <p>Well-maintained premium vehicles</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-clock"></i></div>
+                    <h3>24/7 Service</h3>
+                    <p>Available anytime, anywhere</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Safe & Secure</h3>
+                    <p>GPS tracked and insured rides</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="background:#0a1628; color:rgba(255,255,255,0.2); padding:32px 20px 16px; border-top:1px solid rgba(255,255,255,0.02);">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:24px; margin-bottom:16px;">
+                <div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                        <div style="width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg, #fbbf24, #f59e0b); display:flex; align-items:center; justify-content:center; color:#0a1628; font-size:0.8rem;">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <span style="font-size:0.95rem; font-weight:700; color:white;">Don <span style="color:#fbbf24;">Travels</span></span>
+                    </div>
+                    <p style="font-size:0.7rem; line-height:1.5; color:rgba(255,255,255,0.25);">Premium taxi & executive services.</p>
+                </div>
+                <div>
+                    <h4 style="color:white; font-weight:600; font-size:0.75rem; margin-bottom:6px;">Quick Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:3px;">
+                        <li><a href="#home" style="color:rgba(255,255,255,0.25); text-decoration:none; font-size:0.75rem; transition:color 0.3s;">Home</a></li>
+                        <li><a href="#vehicles" style="color:rgba(255,255,255,0.25); text-decoration:none; font-size:0.75rem; transition:color 0.3s;">Vehicles</a></li>
+                        <li><a href="#book" style="color:rgba(255,255,255,0.25); text-decoration:none; font-size:0.75rem; transition:color 0.3s;">Book</a></li>
+                        <li><a href="/admin" style="color:#fbbf24; text-decoration:none; font-size:0.75rem; transition:color 0.3s;">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:white; font-weight:600; font-size:0.75rem; margin-bottom:6px;">Contact</h4>
+                    <ul style="list-style:none; padding:0; margin:0; font-size:0.7rem; display:flex; flex-direction:column; gap:3px;">
+                        <li style="display:flex; align-items:center; gap:6px; color:rgba(255,255,255,0.25);"><i class="fas fa-phone" style="color:#fbbf24; width:14px; font-size:0.6rem;"></i> +254 745 793 27</li>
+                        <li style="display:flex; align-items:center; gap:6px; color:rgba(255,255,255,0.25);"><i class="fas fa-envelope" style="color:#fbbf24; width:14px; font-size:0.6rem;"></i> hello@dontravels.com</li>
+                        <li style="display:flex; align-items:center; gap:6px; color:rgba(255,255,255,0.25);"><i class="fas fa-map-marker-alt" style="color:#fbbf24; width:14px; font-size:0.6rem;"></i> Nairobi, Kenya</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.02); padding-top:10px; text-align:center; font-size:0.65rem; color:rgba(255,255,255,0.1);">
+                © 2026 Don Travels. All rights reserved. Built with <i class="fas fa-heart" style="color:#ef4444;"></i>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0a1628; }
+        ::-webkit-scrollbar-thumb { background: #fbbf24; border-radius: 4px; }
+        html { scroll-behavior: smooth; }
+    </style>
+
     <script>
-        function loadSample() {
-            document.getElementById('cvText').value = `JOHN AMWAYI NGATIA
-
-I am a highly motivated and results-driven Compliance Account Manager with over 5 years of experience in tax administration, revenue management, and financial compliance. Currently pursuing a Master's degree at Moi University, I have developed strong expertise in tax laws, auditing, data analytics, and customer service.
-
-EDUCATION
-2024 – To Date: Master's Degree (Ongoing), Moi University.
-2016 – 2021: Kenyatta University – Bachelor's Degree in Economics and Finance.
-2012 – 2015: Maranda High School.
-
-EMPLOYMENT
-2023 – To Date: Compliance Account Manager – Kenya Revenue Authority (KRA), Medium Taxpayers Office (MTO).
-2020 – 2022: Balkan Ltd (Maseno, Kenya) – Research Associate and Data Analyst.
-2019 – 2020: Nation Media Group (Nairobi, Kenya) – Volunteer Sales Assistant.
-
-SKILLS
-Tax Laws, Tax Administration, Customer Service, Data Analytics, Auditing, Relationship Building.
-
-ADDITIONAL QUALIFICATIONS
-Leadership Certificate – Kenyatta University.
-Technical Tax Administration Training - KESRA.
-
-REFERENCES
-Surbhi S. Vashisht (Mrs.)
-Head Teacher – Early Years and Preparatory
-Email: surbhi.vashisht@hillcrest.ac.ke
-Phone: +254 733 941 398`;
+        // ===== VEHICLE SELECTION =====
+        function selectVehicle(vehicle) {
+            const select = document.getElementById('vehicleSelect');
+            const options = select.options;
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === vehicle) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+            // Highlight selected
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                card.classList.remove('selected');
+                if (card.querySelector('.vehicle-name').textContent === vehicle) {
+                    card.classList.add('selected');
+                }
+            });
         }
 
-        document.getElementById('cvForm').addEventListener('submit', function(e) {
-            const text = document.getElementById('cvText').value.trim();
-            if (!text) {
-                e.preventDefault();
-                alert('Please paste your CV text first.');
-                return;
+        // ===== NAVBAR SCROLL EFFECT =====
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.glass-nav');
+            if (window.scrollY > 40) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
             }
-            document.getElementById('loadingDiv').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
-            document.getElementById('generateBtn').innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Processing...';
+        });
+
+        // ===== FORM SUBMIT =====
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('name', document.querySelector('input[name="name"]').value);
+            formData.append('email', document.querySelector('input[name="email"]').value);
+            formData.append('phone', document.querySelector('input[name="phone"]').value);
+            formData.append('pickup', document.querySelector('input[name="pickup"]').value);
+            formData.append('dropoff', document.querySelector('input[name="dropoff"]').value);
+            formData.append('vehicle', document.querySelector('select[name="vehicle"]').value);
+            formData.append('date', document.querySelector('input[name="date"]').value);
+            formData.append('time', document.querySelector('input[name="time"]').value);
+            formData.append('passengers', document.querySelector('input[name="passengers"]').value);
+            formData.append('special_requests', document.querySelector('input[name="special_requests"]').value);
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i> Booking...';
+
+            try {
+                const response = await fetch('/api/book', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    e.target.reset();
+                    
+                    // Show amount
+                    const amountMsg = document.createElement('div');
+                    amountMsg.style.cssText = 'margin-top:12px; padding:12px 16px; background:rgba(251,191,36,0.08); border-radius:12px; border:1px solid rgba(251,191,36,0.1);';
+                    amountMsg.innerHTML = `<p style="color:white; font-size:0.9rem;">💰 <span style="color:#fbbf24; font-weight:700;">KSh ${data.amount}</span> - Payment will be collected upon arrival</p>`;
+                    document.getElementById('successMessage').after(amountMsg);
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Booking failed: ' + error.message);
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Set today's date as min for date input
+        const dateInput = document.querySelector('input[name="date"]');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+        }
+
+        // ===== ACTIVE NAV LINK =====
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 150;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
         });
     </script>
 </body>
