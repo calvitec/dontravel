@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login · BusCar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        
+        .login-card {
+            background: white;
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .login-card .form-input {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 16px;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .login-card .form-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div style="text-align:center; margin-bottom:32px;">
+            <i class="fas fa-bus" style="font-size:3rem; color:#f59e0b;"></i>
+            <h1 style="font-size:1.5rem; font-weight:800; color:#0f172a; margin-top:8px;">Admin Login</h1>
+            <p style="color:#64748b; font-size:0.9rem;">Enter your credentials to access the dashboard</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="margin-bottom:16px; padding:12px; border-radius:12px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST">
+            <div style="margin-bottom:16px;">
+                <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                    <i class="fas fa-user"></i> Username
+                </label>
+                <input type="text" name="username" class="form-input" placeholder="admin" required />
+            </div>
+            <div style="margin-bottom:24px;">
+                <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                <input type="password" name="password" class="form-input" placeholder="••••••••" required />
+            </div>
+            
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <p style="text-align:center; margin-top:16px; color:#94a3b8; font-size:0.8rem;">
+            <a href="/" style="color:#f59e0b; text-decoration:none;">← Back to Home</a>
+        </p>
+    </div>
+</body>
+</html>
