@@ -11,25 +11,18 @@
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f0f4f8; }
         
-        @keyframes float {
-            0%,100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-        @keyframes pulse {
-            0%,100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.95); }
-        }
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
-        .animate-pulse-slow { animation: pulse 3s ease-in-out infinite; }
+        .animate-slide-up { animation: slideUp 0.8s ease-out forwards; }
+        .animate-slide-down { animation: slideDown 0.8s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+        .animate-zoom-in { animation: zoomIn 0.8s ease-out forwards; }
         
         /* ===== GLASS HEADER ===== */
         .app-header {
@@ -38,13 +31,20 @@
             -webkit-backdrop-filter: blur(20px);
             padding: 16px 24px;
             box-shadow: 0 4px 30px rgba(0,0,0,0.03);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 50;
+            left: 0;
+            right: 0;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s;
+        }
+        .app-header.scrolled {
+            background: rgba(255,255,255,0.98);
+            box-shadow: 0 4px 40px rgba(0,0,0,0.06);
         }
         .app-header .brand {
             display: flex;
@@ -126,75 +126,143 @@
         .nav-link.active { color: #f59e0b; }
         .nav-link.active::after { width: 60%; }
         
-        /* ===== HERO WITH GLASS ===== */
+        /* ===== CINEMATIC HERO ===== */
         .hero-section {
-            background: linear-gradient(145deg, #0a0a1a 0%, #1a1a3e 40%, #0f172a 100%);
-            padding: 80px 20px 100px;
-            color: white;
             position: relative;
-            overflow: hidden;
-            min-height: 80vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-        }
-        .hero-section .bg-glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.08;
-            pointer-events: none;
-        }
-        .hero-section .bg-glow.gold { 
-            background: #f59e0b; 
-            top: -200px; 
-            right: -100px; 
-        }
-        .hero-section .bg-glow.purple { 
-            background: #7c3aed; 
-            bottom: -200px; 
-            left: -100px; 
+            justify-content: center;
+            overflow: hidden;
+            background: #0a0a1a;
+            padding-top: 80px;
         }
         
-        .hero-section .floating-elements {
+        /* Hero Background Video/Image */
+        .hero-background {
             position: absolute;
             inset: 0;
-            pointer-events: none;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
         }
-        .hero-section .floating-elements .float-icon {
+        .hero-background img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-overlay {
             position: absolute;
-            font-size: 3rem;
-            color: rgba(245, 158, 11, 0.03);
+            inset: 0;
+            background: linear-gradient(135deg, 
+                rgba(10,10,26,0.85) 0%,
+                rgba(10,10,26,0.4) 40%,
+                rgba(10,10,26,0.2) 70%,
+                rgba(10,10,26,0.05) 100%
+            );
+            z-index: 1;
         }
-        .hero-section .floating-elements .float-icon:nth-child(1) { top: 10%; left: 5%; animation: float 6s ease-in-out infinite; }
-        .hero-section .floating-elements .float-icon:nth-child(2) { top: 20%; right: 8%; animation: float 8s ease-in-out infinite 1s; }
-        .hero-section .floating-elements .float-icon:nth-child(3) { bottom: 20%; left: 10%; animation: float 7s ease-in-out infinite 2s; }
-        .hero-section .floating-elements .float-icon:nth-child(4) { bottom: 30%; right: 5%; animation: float 9s ease-in-out infinite 0.5s; }
         
-        .hero-section .hero-tag {
+        /* Animated particles/grid */
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .hero-particles .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: floatParticle 15s infinite linear;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Floating accent shapes */
+        .hero-accent {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .hero-accent.gold {
+            width: 400px;
+            height: 400px;
+            background: rgba(245, 158, 11, 0.08);
+            top: -100px;
+            right: -100px;
+            animation: float 8s ease-in-out infinite;
+        }
+        .hero-accent.purple {
+            width: 300px;
+            height: 300px;
+            background: rgba(124, 58, 237, 0.06);
+            bottom: -50px;
+            left: -50px;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+        .hero-accent.blue {
+            width: 200px;
+            height: 200px;
+            background: rgba(59, 130, 246, 0.05);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: float 12s ease-in-out infinite 2s;
+        }
+        
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 24px 40px;
+        }
+        
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             background: rgba(245, 158, 11, 0.12);
             backdrop-filter: blur(10px);
-            padding: 6px 20px;
+            padding: 8px 24px;
             border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #fbbf24;
             font-weight: 600;
             border: 1px solid rgba(245, 158, 11, 0.08);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
-        .hero-section h1 {
-            font-size: 4rem;
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: #f59e0b;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .hero-title {
+            font-size: 4.5rem;
             font-weight: 900;
-            letter-spacing: -2px;
+            color: white;
+            letter-spacing: -3px;
             line-height: 1.05;
             margin-bottom: 16px;
+            max-width: 700px;
         }
-        .hero-section h1 .highlight { 
+        .hero-title .highlight { 
             background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -202,37 +270,102 @@
             background-clip: text;
             animation: shimmer 4s ease-in-out infinite;
         }
-        .hero-section .hero-subtitle {
-            color: #94a3b8;
-            max-width: 480px;
-            font-size: 1.1rem;
+        
+        .hero-subtitle {
+            color: rgba(255,255,255,0.6);
+            max-width: 500px;
+            font-size: 1.15rem;
             line-height: 1.8;
+            margin-bottom: 32px;
         }
-        .hero-section .hero-stats {
+        
+        .hero-search-card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            padding: 28px 32px;
+            max-width: 700px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+        .hero-search-card .form-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .hero-search-card .form-label i { color: #f59e0b; margin-right: 4px; }
+        .hero-search-card .form-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 14px 18px;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            color: white;
+        }
+        .hero-search-card .form-input::placeholder { color: rgba(255,255,255,0.3); }
+        .hero-search-card .form-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.04);
+        }
+        .hero-search-card .form-input option { background: #1a1a3e; color: white; }
+        
+        .hero-search-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            font-size: 1rem;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
+        }
+        .hero-search-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.35);
+        }
+        
+        .hero-stats {
             display: flex;
             gap: 48px;
             margin-top: 32px;
         }
-        .hero-section .hero-stats .stat-item { text-align: left; }
-        .hero-section .hero-stats .stat-item .number { 
+        .hero-stats .stat-item { text-align: left; }
+        .hero-stats .stat-item .number { 
             font-size: 2rem; 
             font-weight: 800; 
             color: #f59e0b;
             display: block;
-            font-family: 'Inter', sans-serif;
         }
-        .hero-section .hero-stats .stat-item .label { 
+        .hero-stats .stat-item .label { 
             font-size: 0.8rem; 
-            color: #94a3b8; 
+            color: rgba(255,255,255,0.4); 
         }
         
-        /* ===== GLASS CAROUSEL ===== */
-        .carousel-container {
+        /* ===== CAROUSEL SECTION ===== */
+        .carousel-section {
+            background: white;
+            padding: 60px 20px;
+        }
+        .carousel-container-premium {
+            max-width: 1200px;
+            margin: 0 auto;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.04);
             position: relative;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid #f1f5f9;
         }
         .carousel-slides {
             display: flex;
@@ -244,7 +377,7 @@
         }
         .carousel-slide img {
             width: 100%;
-            height: 380px;
+            height: 400px;
             object-fit: cover;
         }
         .carousel-slide .slide-overlay {
@@ -253,7 +386,7 @@
             left: 0;
             right: 0;
             padding: 40px 30px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8) 70%);
+            background: linear-gradient(transparent, rgba(0,0,0,0.7) 70%);
         }
         .carousel-slide .slide-overlay .slide-title {
             color: white;
@@ -310,75 +443,15 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.15);
+            background: #e2e8f0;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
         }
-        .carousel-dot:hover { background: rgba(255,255,255,0.3); }
         .carousel-dot.active { 
             background: #f59e0b; 
             width: 32px; 
             border-radius: 6px;
-        }
-        
-        /* ===== SEARCH CARD ===== */
-        .search-card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 36px 40px;
-            max-width: 1000px;
-            margin: -50px auto 40px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.06);
-            position: relative;
-            z-index: 10;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .search-card .form-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #475569;
-            display: block;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .search-card .form-label i { color: #f59e0b; margin-right: 4px; }
-        .search-card .form-input {
-            border: 2px solid #e8edf2;
-            border-radius: 14px;
-            padding: 14px 18px;
-            width: 100%;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-            background: #fafbfc;
-            color: #0f172a;
-        }
-        .search-card .form-input:focus {
-            outline: none;
-            border-color: #f59e0b;
-            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.06);
-            background: white;
-        }
-        .search-card .form-input::placeholder { color: #94a3b8; }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 14px 32px;
-            border-radius: 14px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 100%;
-            font-size: 1rem;
-            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
-        }
-        .btn-primary:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.3);
         }
         
         /* ===== FEATURES ===== */
@@ -521,25 +594,23 @@
         
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
-            .hero-section h1 { font-size: 3rem; }
-            .search-card { padding: 24px 20px; margin-top: -40px; }
-            .search-grid { grid-template-columns: 1fr 1fr !important; }
+            .hero-title { font-size: 3.2rem; letter-spacing: -2px; }
+            .hero-search-card { max-width: 100%; }
+            .hero-stats { gap: 24px; }
+            .hero-stats .stat-item .number { font-size: 1.6rem; }
             .carousel-slide img { height: 300px; }
-            .hero-section .hero-stats { gap: 24px; }
-            .hero-section .hero-stats .stat-item .number { font-size: 1.6rem; }
         }
         @media (max-width: 768px) {
-            .hero-section { padding: 60px 20px 80px; min-height: auto; }
-            .hero-section h1 { font-size: 2.4rem; }
-            .hero-section .hero-subtitle { font-size: 0.95rem; }
-            .hero-section .hero-stats { gap: 16px; flex-wrap: wrap; }
-            .hero-section .hero-stats .stat-item .number { font-size: 1.4rem; }
-            .search-card { padding: 16px; margin-top: -30px; border-radius: 20px; }
-            .search-grid { grid-template-columns: 1fr !important; }
-            .search-grid .full-width { grid-column: span 1; }
+            .hero-title { font-size: 2.4rem; letter-spacing: -1.5px; }
+            .hero-section { min-height: auto; padding: 120px 0 60px; }
+            .hero-content { padding: 20px 16px; }
+            .hero-subtitle { font-size: 0.95rem; }
+            .hero-search-card { padding: 20px 16px; border-radius: 20px; }
+            .hero-search-grid { grid-template-columns: 1fr !important; }
+            .hero-stats { gap: 16px; flex-wrap: wrap; }
+            .hero-stats .stat-item .number { font-size: 1.4rem; }
             .carousel-slide img { height: 220px; }
             .carousel-btn { width: 36px; height: 36px; font-size: 0.8rem; }
-            .carousel-slide .slide-overlay .slide-title { font-size: 1.1rem; }
             .app-header .brand .brand-text { font-size: 1.1rem; }
             .app-header .brand .brand-icon { width: 38px; height: 38px; font-size: 1rem; }
             .header-btn { padding: 8px 16px; font-size: 0.75rem; }
@@ -548,29 +619,25 @@
             .feature-card { padding: 20px 16px; }
             .feature-card .icon-wrap { width: 56px; height: 56px; font-size: 1.5rem; }
             .testimonial-grid { grid-template-columns: 1fr !important; }
+            .hero-accent.gold { width: 200px; height: 200px; }
+            .hero-accent.purple { width: 150px; height: 150px; }
         }
         @media (max-width: 480px) {
-            .hero-section h1 { font-size: 1.8rem; }
-            .hero-section .hero-tag { font-size: 0.65rem; padding: 4px 14px; }
+            .hero-title { font-size: 1.8rem; }
+            .hero-badge { font-size: 0.65rem; padding: 4px 14px; }
             .carousel-slide img { height: 180px; }
-            .carousel-slide .slide-overlay { padding: 20px 16px; }
-            .carousel-slide .slide-overlay .slide-title { font-size: 0.9rem; }
-            .carousel-slide .slide-overlay .slide-desc { font-size: 0.75rem; }
-            .carousel-btn { width: 28px; height: 28px; font-size: 0.6rem; }
             .feature-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
             .feature-card { padding: 14px 10px; }
             .feature-card .icon-wrap { width: 44px; height: 44px; font-size: 1.2rem; }
-            .feature-card h4 { font-size: 0.85rem; }
-            .feature-card p { font-size: 0.7rem; }
-            .search-card { padding: 12px; }
-            .search-card .form-input { padding: 10px 14px; font-size: 0.85rem; }
+            .hero-search-card { padding: 12px; }
+            .hero-search-card .form-input { padding: 10px 14px; font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
 
     <!-- ===== HEADER ===== -->
-    <header class="app-header">
+    <header class="app-header" id="mainHeader">
         <a href="/" class="brand">
             <div class="brand-icon"><i class="fas fa-car"></i></div>
             <div class="brand-text">Don<span>Travels</span></div>
@@ -588,125 +655,156 @@
         </div>
     </header>
 
-    <!-- ===== HERO WITH CAROUSEL ===== -->
+    <!-- ===== CINEMATIC HERO ===== -->
     <section class="hero-section">
-        <div class="bg-glow gold"></div>
-        <div class="bg-glow purple"></div>
-        <div class="floating-elements">
-            <div class="float-icon"><i class="fas fa-bus"></i></div>
-            <div class="float-icon"><i class="fas fa-car"></i></div>
-            <div class="float-icon"><i class="fas fa-shuttle-van"></i></div>
-            <div class="float-icon"><i class="fas fa-crown"></i></div>
+        <!-- Background Image -->
+        <div class="hero-background">
+            <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=1600&h=900&fit=crop" alt="Luxury Transport" />
+        </div>
+        <div class="hero-overlay"></div>
+        
+        <!-- Hero Accents -->
+        <div class="hero-accent gold"></div>
+        <div class="hero-accent purple"></div>
+        <div class="hero-accent blue"></div>
+        
+        <!-- Particles -->
+        <div class="hero-particles">
+            <div class="particle" style="left:10%; animation-delay:0s; animation-duration:20s;"></div>
+            <div class="particle" style="left:30%; animation-delay:3s; animation-duration:18s;"></div>
+            <div class="particle" style="left:50%; animation-delay:6s; animation-duration:22s;"></div>
+            <div class="particle" style="left:70%; animation-delay:9s; animation-duration:16s;"></div>
+            <div class="particle" style="left:90%; animation-delay:2s; animation-duration:25s;"></div>
+            <div class="particle" style="left:20%; animation-delay:5s; animation-duration:19s;"></div>
+            <div class="particle" style="left:60%; animation-delay:8s; animation-duration:21s;"></div>
+            <div class="particle" style="left:80%; animation-delay:1s; animation-duration:23s;"></div>
         </div>
         
-        <div style="position:relative; z-index:2; width:100%; max-width:1200px; margin:0 auto;">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;">
-                <!-- Left Content -->
-                <div class="animate-slide-up" style="animation-delay:0.1s;">
-                    <div class="hero-tag"><i class="fas fa-crown"></i> Premium Executive Transport</div>
-                    <h1>Travel <span class="highlight">Smart</span>,<br>Travel in <span class="highlight">Comfort</span></h1>
-                    <p class="hero-subtitle">
-                        Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
-                    </p>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <span class="number">500+</span>
-                            <span class="label">Happy Travelers</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="number">4.9</span>
-                            <span class="label">Average Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="number">24/7</span>
-                            <span class="label">Service</span>
-                        </div>
-                    </div>
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <div class="animate-slide-down" style="animation-delay:0.1s;">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    Premium Executive Transport
+                    <span style="margin-left:8px; background:rgba(245,158,11,0.15); padding:2px 12px; border-radius:9999px; font-size:0.65rem;">⭐ 4.9/5</span>
                 </div>
-                
-                <!-- Right Content - Carousel -->
-                <div class="animate-slide-up" style="animation-delay:0.3s;">
-                    <div class="carousel-container">
-                        <div class="carousel-slides" id="carouselSlides">
-                            <div class="carousel-slide">
-                                <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=800&h=500&fit=crop" alt="Luxury Bus" />
-                                <span class="slide-badge">⭐ Popular</span>
-                                <div class="slide-overlay">
-                                    <div class="slide-title">🚌 Executive Bus Service</div>
-                                    <div class="slide-desc">Comfortable travel with premium amenities</div>
-                                </div>
-                            </div>
-                            <div class="carousel-slide">
-                                <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=500&fit=crop" alt="Executive Van" />
-                                <span class="slide-badge">👔 Executive</span>
-                                <div class="slide-overlay">
-                                    <div class="slide-title">🚐 Executive Van</div>
-                                    <div class="slide-desc">Luxury travel for groups and business</div>
-                                </div>
-                            </div>
-                            <div class="carousel-slide">
-                                <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=800&h=500&fit=crop" alt="Luxury SUV" />
-                                <span class="slide-badge">💎 Luxury</span>
-                                <div class="slide-overlay">
-                                    <div class="slide-title">🚙 Luxury SUV</div>
-                                    <div class="slide-desc">Premium executive travel experience</div>
-                                </div>
-                            </div>
-                            <div class="carousel-slide">
-                                <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=800&h=500&fit=crop" alt="Premium Sedan" />
-                                <span class="slide-badge">🚗 Premium</span>
-                                <div class="slide-overlay">
-                                    <div class="slide-title">🚗 Premium Sedan</div>
-                                    <div class="slide-desc">Elegant and comfortable city travel</div>
-                                </div>
-                            </div>
+            </div>
+            
+            <h1 class="hero-title animate-slide-up" style="animation-delay:0.2s;">
+                Travel <span class="highlight">Smart</span>,<br>Travel in <span class="highlight">Comfort</span>
+            </h1>
+            <p class="hero-subtitle animate-slide-up" style="animation-delay:0.3s;">
+                Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
+            </p>
+            
+            <!-- Search Card - In Hero -->
+            <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
+                <form action="/search" method="GET">
+                    <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:14px; align-items:end;">
+                        <div>
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
+                            <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
                         </div>
-                        <button class="carousel-btn prev" onclick="moveCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-btn next" onclick="moveCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+                        <div>
+                            <label class="form-label"><i class="fas fa-flag-checkered"></i> To</label>
+                            <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
+                            <input type="date" name="date" class="form-input" 
+                                   min="{{ today }}" 
+                                   max="{{ max_date }}" 
+                                   value="{{ today }}" 
+                                   required />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
+                            <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
+                        </div>
+                        <div>
+                            <button type="submit" class="hero-search-btn">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
                     </div>
-                    <div class="carousel-dots" id="carouselDots">
-                        <button class="carousel-dot active" onclick="goToSlide(0)"></button>
-                        <button class="carousel-dot" onclick="goToSlide(1)"></button>
-                        <button class="carousel-dot" onclick="goToSlide(2)"></button>
-                        <button class="carousel-dot" onclick="goToSlide(3)"></button>
-                    </div>
+                </form>
+            </div>
+            
+            <!-- Stats -->
+            <div class="hero-stats animate-fade-in" style="animation-delay:0.6s;">
+                <div class="stat-item">
+                    <span class="number">500+</span>
+                    <span class="label">Happy Travelers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">4.9</span>
+                    <span class="label">Average Rating</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">24/7</span>
+                    <span class="label">Service</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">100%</span>
+                    <span class="label">Satisfaction</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== SEARCH CARD ===== -->
-    <div class="search-card" id="search-section">
-        <form action="/search" method="GET">
-            <div class="search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:16px; align-items:end;">
-                <div>
-                    <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
-                    <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
+    <!-- ===== VEHICLES CAROUSEL ===== -->
+    <section id="vehicles" class="carousel-section">
+        <div style="max-width:1200px; margin:0 auto 32px; text-align:center;">
+            <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Our Fleet</span>
+            <h2 style="font-size:2.5rem; font-weight:800; color:#0f172a; margin-top:4px;">Premium <span style="color:#f59e0b;">Vehicles</span></h2>
+            <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Choose from our range of luxury and executive vehicles</p>
+        </div>
+        
+        <div class="carousel-container-premium">
+            <div class="carousel-slides" id="carouselSlides">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=1200&h=600&fit=crop" alt="Executive Bus" />
+                    <span class="slide-badge">⭐ Popular</span>
+                    <div class="slide-overlay">
+                        <div class="slide-title">🚌 Executive Bus Service</div>
+                        <div class="slide-desc">Comfortable travel with premium amenities • 40 Seats</div>
+                    </div>
                 </div>
-                <div>
-                    <label class="form-label"><i class="fas fa-flag-checkered"></i> To</label>
-                    <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1200&h=600&fit=crop" alt="Executive Van" />
+                    <span class="slide-badge">👔 Executive</span>
+                    <div class="slide-overlay">
+                        <div class="slide-title">🚐 Executive Van</div>
+                        <div class="slide-desc">Luxury travel for groups and business • 8 Seats</div>
+                    </div>
                 </div>
-                <div>
-                    <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
-                    <input type="date" name="date" class="form-input" 
-                           min="{{ today }}" 
-                           max="{{ max_date }}" 
-                           value="{{ today }}" 
-                           required />
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=1200&h=600&fit=crop" alt="Luxury SUV" />
+                    <span class="slide-badge">💎 Luxury</span>
+                    <div class="slide-overlay">
+                        <div class="slide-title">🚙 Luxury SUV</div>
+                        <div class="slide-desc">Premium executive travel experience • 7 Seats</div>
+                    </div>
                 </div>
-                <div>
-                    <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
-                    <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
-                </div>
-                <div>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-search"></i> Search
-                    </button>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=1200&h=600&fit=crop" alt="Premium Sedan" />
+                    <span class="slide-badge">🚗 Premium</span>
+                    <div class="slide-overlay">
+                        <div class="slide-title">🚗 Premium Sedan</div>
+                        <div class="slide-desc">Elegant and comfortable city travel • 4 Seats</div>
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
+            <button class="carousel-btn prev" onclick="moveCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-btn next" onclick="moveCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="carousel-dots" id="carouselDots">
+            <button class="carousel-dot active" onclick="goToSlide(0)"></button>
+            <button class="carousel-dot" onclick="goToSlide(1)"></button>
+            <button class="carousel-dot" onclick="goToSlide(2)"></button>
+            <button class="carousel-dot" onclick="goToSlide(3)"></button>
+        </div>
+    </section>
 
     <!-- ===== FEATURES ===== -->
     <section style="max-width:1200px; margin:0 auto; padding:0 20px 48px;">
@@ -824,11 +922,13 @@
 
         // Auto-play
         let autoPlay = setInterval(() => moveCarousel(1), 5000);
-        const carouselContainer = document.querySelector('.carousel-container');
-        carouselContainer.addEventListener('mouseenter', () => clearInterval(autoPlay));
-        carouselContainer.addEventListener('mouseleave', () => {
-            autoPlay = setInterval(() => moveCarousel(1), 5000);
-        });
+        const carouselContainer = document.querySelector('.carousel-container-premium');
+        if (carouselContainer) {
+            carouselContainer.addEventListener('mouseenter', () => clearInterval(autoPlay));
+            carouselContainer.addEventListener('mouseleave', () => {
+                autoPlay = setInterval(() => moveCarousel(1), 5000);
+            });
+        }
 
         // ===== DATE LIMITS =====
         document.addEventListener('DOMContentLoaded', function() {
@@ -847,28 +947,13 @@
             }
         });
 
-        // ===== SMOOTH SCROLL =====
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const offset = 80;
-                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
-                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                }
-            });
-        });
-
         // ===== NAVBAR SCROLL EFFECT =====
         window.addEventListener('scroll', function() {
-            const header = document.querySelector('.app-header');
+            const header = document.getElementById('mainHeader');
             if (window.scrollY > 20) {
-                header.style.background = 'rgba(255,255,255,0.98)';
-                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.04)';
+                header.classList.add('scrolled');
             } else {
-                header.style.background = 'rgba(255,255,255,0.92)';
-                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.03)';
+                header.classList.remove('scrolled');
             }
         });
 
