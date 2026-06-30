@@ -92,12 +92,12 @@ def create_sample_data():
     if not buses:
         print("📁 Creating sample buses...")
         sample_buses = [
-            {"id": 1, "bus_id": "BUS-001", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 2, "fare": 1800, "departure_time": "07:00:00", "arrival_time": "15:00:00", "status": "active"},
-            {"id": 2, "bus_id": "BUS-002", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 1, "fare": 1800, "departure_time": "14:00:00", "arrival_time": "22:00:00", "status": "active"},
-            {"id": 3, "bus_id": "BUS-003", "company_name": "Don Travels Express", "route_id": 2, "vehicle_id": 1, "total_seats": 40, "booked_seats": 0, "fare": 1400, "departure_time": "08:00:00", "arrival_time": "14:00:00", "status": "active"},
-            {"id": 4, "bus_id": "BUS-004", "company_name": "Don Travels Executive", "route_id": 1, "vehicle_id": 2, "total_seats": 8, "booked_seats": 1, "fare": 2500, "departure_time": "06:00:00", "arrival_time": "14:00:00", "status": "active"},
-            {"id": 5, "bus_id": "BUS-005", "company_name": "Don Travels Executive", "route_id": 3, "vehicle_id": 2, "total_seats": 8, "booked_seats": 0, "fare": 2000, "departure_time": "09:00:00", "arrival_time": "14:00:00", "status": "active"},
-            {"id": 6, "bus_id": "BUS-006", "company_name": "Don Travels Luxury", "route_id": 1, "vehicle_id": 3, "total_seats": 7, "booked_seats": 0, "fare": 3000, "departure_time": "07:30:00", "arrival_time": "15:30:00", "status": "active"}
+            {"id": 1, "bus_id": "BUS-001", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 2, "booked_seats_list": ["1", "2"], "fare": 1800, "departure_time": "07:00:00", "arrival_time": "15:00:00", "status": "active"},
+            {"id": 2, "bus_id": "BUS-002", "company_name": "Don Travels Express", "route_id": 1, "vehicle_id": 1, "total_seats": 40, "booked_seats": 1, "booked_seats_list": ["5"], "fare": 1800, "departure_time": "14:00:00", "arrival_time": "22:00:00", "status": "active"},
+            {"id": 3, "bus_id": "BUS-003", "company_name": "Don Travels Express", "route_id": 2, "vehicle_id": 1, "total_seats": 40, "booked_seats": 0, "booked_seats_list": [], "fare": 1400, "departure_time": "08:00:00", "arrival_time": "14:00:00", "status": "active"},
+            {"id": 4, "bus_id": "BUS-004", "company_name": "Don Travels Executive", "route_id": 1, "vehicle_id": 2, "total_seats": 8, "booked_seats": 1, "booked_seats_list": ["3"], "fare": 2500, "departure_time": "06:00:00", "arrival_time": "14:00:00", "status": "active"},
+            {"id": 5, "bus_id": "BUS-005", "company_name": "Don Travels Executive", "route_id": 3, "vehicle_id": 2, "total_seats": 8, "booked_seats": 0, "booked_seats_list": [], "fare": 2000, "departure_time": "09:00:00", "arrival_time": "14:00:00", "status": "active"},
+            {"id": 6, "bus_id": "BUS-006", "company_name": "Don Travels Luxury", "route_id": 1, "vehicle_id": 3, "total_seats": 7, "booked_seats": 0, "booked_seats_list": [], "fare": 3000, "departure_time": "07:30:00", "arrival_time": "15:30:00", "status": "active"}
         ]
         save_json('buses.json', sample_buses)
 
@@ -252,14 +252,15 @@ def booking_page(bus_id):
     route = get_route_by_id(bus.get('route_id'))
     
     total_seats = bus.get('total_seats', 40)
-    booked_seats = bus.get('booked_seats', 0)
+    booked_seats_list = bus.get('booked_seats_list', [])
     
     seats = []
     for i in range(1, total_seats + 1):
+        seat_id = str(i)
         seats.append({
             'id': i,
             'number': i,
-            'status': 'booked' if i <= booked_seats else 'available'
+            'status': 'booked' if seat_id in booked_seats_list else 'available'
         })
     
     return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats)
@@ -283,6 +284,12 @@ def create_booking():
         bus = get_bus_by_id(bus_id)
         if not bus:
             return jsonify({'success': False, 'error': 'Bus not found'}), 404
+        
+        # Check if seats are still available
+        booked_seats_list = bus.get('booked_seats_list', [])
+        for seat in selected_seats:
+            if str(seat) in booked_seats_list:
+                return jsonify({'success': False, 'error': f'Seat {seat} is already booked. Please refresh and try again.'}), 400
         
         booking_ref = generate_booking_ref()
         booking_id = generate_booking_id()
@@ -310,7 +317,13 @@ def create_booking():
         buses = load_json('buses.json')
         for b in buses:
             if str(b.get('id')) == str(bus_id):
-                b['booked_seats'] = b.get('booked_seats', 0) + len(selected_seats)
+                # Add new seats to booked list
+                current_booked = b.get('booked_seats_list', [])
+                for seat in selected_seats:
+                    if str(seat) not in current_booked:
+                        current_booked.append(str(seat))
+                b['booked_seats_list'] = current_booked
+                b['booked_seats'] = len(current_booked)
                 save_json('buses.json', buses)
                 break
         
