@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Select Seats · BusCar</title>
+    <title>Book Seats · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -34,14 +34,6 @@
         .seat.available:hover { background: #fffbeb; }
         .seat.selected { background: #f59e0b; border-color: #f59e0b; color: white; }
         .seat.booked { background: #f1f5f9; border-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
-        .seat.aisle { border-color: transparent; background: transparent; cursor: default; }
-        
-        .seat-legend { display: flex; gap: 24px; justify-content: center; margin: 16px 0; }
-        .seat-legend .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #64748b; }
-        .seat-legend .legend-item .dot { width: 20px; height: 20px; border-radius: 4px; border: 2px solid #e2e8f0; }
-        .seat-legend .legend-item .dot.available { background: white; }
-        .seat-legend .legend-item .dot.selected { background: #f59e0b; border-color: #f59e0b; }
-        .seat-legend .legend-item .dot.booked { background: #f1f5f9; }
         
         .btn-primary {
             background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -57,201 +49,121 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         
-        .booking-summary {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid #f1f5f9;
-            position: sticky;
-            top: 80px;
-        }
-        
-        .payment-option {
-            border: 2px solid #e2e8f0;
+        .form-input {
+            border: 1.5px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 16px;
-            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
-        .payment-option:hover { border-color: #f59e0b; }
-        .payment-option.selected { border-color: #f59e0b; background: #fffbeb; }
-        .payment-option i { font-size: 1.5rem; color: #f59e0b; }
-        
-        @media (max-width: 768px) {
-            .booking-grid { grid-template-columns: 1fr !important; }
-            .seat-grid { max-width: 280px; }
-            .seat { padding: 8px 4px; font-size: 0.65rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- ===== HEADER ===== -->
-    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
-        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
-            <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
-                <i class="fas fa-bus" style="color:#f59e0b;"></i> Bus<span style="color:#f59e0b;">Car</span>
-            </a>
-            <a href="/" style="color:#64748b; text-decoration:none;">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
-        </div>
-    </header>
-
-    <!-- ===== BOOKING ===== -->
-    <section style="max-width:1100px; margin:32px auto; padding:0 20px;">
-        <div class="booking-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
-            <!-- Left: Seat Selection -->
-            <div>
-                <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9;">
-                    <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-                        <i class="fas fa-chair" style="color:#f59e0b;"></i> Select Seats
-                    </h3>
-                    <p style="color:#64748b; font-size:0.85rem; margin-bottom:16px;">
-                        {{ bus.company_name or 'BusCar Express' }} · {{ bus.route.origin }} → {{ bus.route.destination }}
-                    </p>
-                    
-                    <!-- Seat Legend -->
-                    <div class="seat-legend">
-                        <div class="legend-item"><span class="dot available"></span> Available</div>
-                        <div class="legend-item"><span class="dot selected"></span> Selected</div>
-                        <div class="legend-item"><span class="dot booked"></span> Booked</div>
-                    </div>
-                    
-                    <!-- Seat Grid -->
-                    <div class="seat-grid" id="seatGrid">
-                        {% for seat in bus.seats %}
-                            {% if seat.side == 'L' %}
-                                <div class="seat {% if seat.status == 'booked' %}booked{% else %}available{% endif %}" 
-                                     data-seat="{{ seat.id }}" 
-                                     data-row="{{ seat.row }}"
-                                     onclick="toggleSeat(this)">
-                                    {{ seat.row }}{{ seat.number }}
-                                </div>
-                            {% else %}
-                                <div class="seat {% if seat.status == 'booked' %}booked{% else %}available{% endif %}" 
-                                     data-seat="{{ seat.id }}" 
-                                     data-row="{{ seat.row }}"
-                                     onclick="toggleSeat(this)">
-                                    {{ seat.row }}{{ seat.number }}
-                                </div>
-                            {% endif %}
-                            {% if loop.index % 2 == 0 and not loop.last %}
-                                <div class="seat aisle"></div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    
-                    <div style="text-align:center; margin-top:12px; font-size:0.8rem; color:#94a3b8;">
-                        <i class="fas fa-info-circle"></i> Click a seat to select or deselect
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Right: Booking Summary -->
-            <div>
-                <div class="booking-summary">
-                    <h4 style="font-weight:700; color:#0f172a; font-size:1.1rem; margin-bottom:4px;">
-                        <i class="fas fa-receipt" style="color:#f59e0b;"></i> Booking Summary
-                    </h4>
-                    <p style="color:#64748b; font-size:0.85rem; margin-bottom:16px;">Review your selection before booking</p>
-                    
-                    <div style="background:#f8fafc; border-radius:12px; padding:16px; margin-bottom:16px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:#64748b;">Bus:</span>
-                            <span style="font-weight:600; color:#0f172a;">{{ bus.company_name or 'BusCar Express' }}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                            <span style="color:#64748b;">Route:</span>
-                            <span style="font-weight:600; color:#0f172a;">{{ bus.route.origin }} → {{ bus.route.destination }}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="color:#64748b;">Seats:</span>
-                            <span style="font-weight:600; color:#f59e0b;" id="selectedSeatsDisplay">None selected</span>
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid #f1f5f9;">
-                        <span style="font-weight:600; color:#0f172a;">Total Fare</span>
-                        <span style="font-weight:800; font-size:1.3rem; color:#f59e0b;" id="totalFare">KSh 0</span>
-                    </div>
-                    
-                    <!-- Payment Methods -->
-                    <div style="margin:16px 0;">
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:8px;">
-                            <i class="fas fa-credit-card"></i> Payment Method
-                        </label>
-                        <div id="paymentMethods">
-                            <div class="payment-option selected" data-method="mpesa" onclick="selectPayment(this)">
-                                <i class="fas fa-mobile-alt"></i>
-                                <div>
-                                    <div style="font-weight:600; color:#0f172a;">M-Pesa</div>
-                                    <div style="font-size:0.75rem; color:#64748b;">Pay with M-Pesa</div>
-                                </div>
-                            </div>
-                            <div class="payment-option" data-method="cash" onclick="selectPayment(this)">
-                                <i class="fas fa-money-bill-wave"></i>
-                                <div>
-                                    <div style="font-weight:600; color:#0f172a;">Cash</div>
-                                    <div style="font-size:0.75rem; color:#64748b;">Pay on arrival</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Passenger Details -->
-                    <div style="margin:16px 0;">
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                            <i class="fas fa-user"></i> Full Name <span style="color:#ef4444;">*</span>
-                        </label>
-                        <input type="text" id="passengerName" class="form-input" placeholder="John Doe" 
-                               style="border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 16px; width:100%;" />
-                        
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin:8px 0 4px;">
-                            <i class="fas fa-phone"></i> Phone Number <span style="color:#ef4444;">*</span>
-                        </label>
-                        <input type="tel" id="passengerPhone" class="form-input" placeholder="+254 700 000 000" 
-                               style="border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 16px; width:100%;" />
-                        
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin:8px 0 4px;">
-                            <i class="fas fa-envelope"></i> Email (Optional)
-                        </label>
-                        <input type="email" id="passengerEmail" class="form-input" placeholder="john@example.com" 
-                               style="border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 16px; width:100%;" />
-                    </div>
-                    
-                    <button class="btn-primary" onclick="confirmBooking()" id="confirmBtn">
-                        <i class="fas fa-check-circle"></i> Confirm Booking
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER ===== -->
-    <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9; margin-top:40px;">
-        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar. All rights reserved.</p>
-    </footer>
-
-    <style>
         .form-input:focus {
             outline: none;
             border-color: #f59e0b;
             box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
         }
     </style>
+</head>
+<body>
+
+    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
+        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
+            <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
+                <i class="fas fa-bus" style="color:#f59e0b;"></i> Don<span style="color:#f59e0b;">Travels</span>
+            </a>
+            <a href="/" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </header>
+
+    <section style="max-width:1100px; margin:32px auto; padding:0 20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
+            <!-- Left: Seat Selection -->
+            <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9;">
+                <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
+                    <i class="fas fa-chair" style="color:#f59e0b;"></i> Select Seats
+                </h3>
+                <p style="color:#64748b; font-size:0.85rem; margin-bottom:16px;">
+                    {{ bus.company_name or 'Don Travels Express' }} · {{ route.origin }} → {{ route.destination }}
+                </p>
+                
+                <div style="display:flex; gap:16px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; color:#64748b;">
+                        <span style="width:20px; height:20px; border-radius:4px; border:2px solid #e2e8f0; background:white; display:inline-block;"></span> Available
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; color:#64748b;">
+                        <span style="width:20px; height:20px; border-radius:4px; background:#f59e0b; display:inline-block;"></span> Selected
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; color:#64748b;">
+                        <span style="width:20px; height:20px; border-radius:4px; background:#f1f5f9; border:2px solid #e2e8f0; display:inline-block;"></span> Booked
+                    </div>
+                </div>
+                
+                <div class="seat-grid" id="seatGrid">
+                    {% for seat in seats %}
+                        <div class="seat {{ seat.status }}" data-seat="{{ seat.id }}" onclick="toggleSeat(this)">
+                            {{ seat.number }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Right: Booking Summary -->
+            <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9; position:sticky; top:80px; height:fit-content;">
+                <h4 style="font-weight:700; color:#0f172a; font-size:1.1rem; margin-bottom:4px;">
+                    <i class="fas fa-receipt" style="color:#f59e0b;"></i> Booking Summary
+                </h4>
+                
+                <div style="background:#f8fafc; border-radius:12px; padding:16px; margin:16px 0;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span style="color:#64748b;">Bus:</span>
+                        <span style="font-weight:600; color:#0f172a;">{{ bus.company_name or 'Don Travels Express' }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span style="color:#64748b;">Route:</span>
+                        <span style="font-weight:600; color:#0f172a;">{{ route.origin }} → {{ route.destination }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#64748b;">Seats:</span>
+                        <span style="font-weight:600; color:#f59e0b;" id="selectedSeatsDisplay">None selected</span>
+                    </div>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid #f1f5f9;">
+                    <span style="font-weight:600; color:#0f172a;">Total Fare</span>
+                    <span style="font-weight:800; font-size:1.3rem; color:#f59e0b;" id="totalFare">KSh 0</span>
+                </div>
+                
+                <div style="margin:16px 0;">
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                        <i class="fas fa-user"></i> Full Name <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input type="text" id="passengerName" class="form-input" placeholder="John Doe" />
+                    
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin:8px 0 4px;">
+                        <i class="fas fa-phone"></i> Phone Number <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input type="tel" id="passengerPhone" class="form-input" placeholder="+254 700 000 000" />
+                    
+                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin:8px 0 4px;">
+                        <i class="fas fa-envelope"></i> Email (Optional)
+                    </label>
+                    <input type="email" id="passengerEmail" class="form-input" placeholder="john@example.com" />
+                </div>
+                
+                <button class="btn-primary" onclick="confirmBooking()" id="confirmBtn" disabled>
+                    <i class="fas fa-check-circle"></i> Confirm Booking
+                </button>
+            </div>
+        </div>
+    </section>
 
     <script>
         let selectedSeats = [];
-        let farePerSeat = {{ bus.fare or 1500 }};
-        let busId = {{ bus.id }};
-        
+        const farePerSeat = {{ bus.fare or 1500 }};
+        const busId = {{ bus.id }};
+
         function toggleSeat(element) {
             if (element.classList.contains('booked')) return;
-            if (element.classList.contains('aisle')) return;
             
             const seatId = element.dataset.seat;
             
@@ -265,7 +177,7 @@
             
             updateSummary();
         }
-        
+
         function updateSummary() {
             const count = selectedSeats.length;
             const total = count * farePerSeat;
@@ -274,33 +186,15 @@
             document.getElementById('totalFare').textContent = `KSh ${total.toLocaleString()}`;
             document.getElementById('confirmBtn').disabled = count === 0;
         }
-        
-        function selectPayment(element) {
-            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-        }
-        
+
         function confirmBooking() {
             const name = document.getElementById('passengerName').value.trim();
             const phone = document.getElementById('passengerPhone').value.trim();
             const email = document.getElementById('passengerEmail').value.trim();
             
-            if (!name) {
-                alert('Please enter your full name');
-                document.getElementById('passengerName').focus();
-                return;
-            }
-            if (!phone) {
-                alert('Please enter your phone number');
-                document.getElementById('passengerPhone').focus();
-                return;
-            }
-            if (selectedSeats.length === 0) {
-                alert('Please select at least one seat');
-                return;
-            }
-            
-            const paymentMethod = document.querySelector('.payment-option.selected').dataset.method;
+            if (!name) { alert('Please enter your full name'); return; }
+            if (!phone) { alert('Please enter your phone number'); return; }
+            if (selectedSeats.length === 0) { alert('Please select at least one seat'); return; }
             
             const data = {
                 bus_id: busId,
@@ -309,7 +203,7 @@
                 passenger_email: email,
                 selected_seats: selectedSeats,
                 total_fare: selectedSeats.length * farePerSeat,
-                payment_method: paymentMethod
+                payment_method: 'mpesa'
             };
             
             const btn = document.getElementById('confirmBtn');
