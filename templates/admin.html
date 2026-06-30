@@ -34,8 +34,6 @@
         .btn-delete { background: #fee2e2; color: #dc2626; }
         .btn-delete:hover { background: #fecaca; }
         .stat-number { font-size: 2rem; font-weight: 700; }
-        .db-status-connected { background: #ecfdf5; border: 1px solid #d1fae5; }
-        .db-status-disconnected { background: #fef2f2; border: 1px solid #fecaca; }
         @media (max-width: 768px) {
             .admin-table { font-size: 0.75rem; }
             .admin-table th, .admin-table td { padding: 8px 10px; }
@@ -47,11 +45,11 @@
 </head>
 <body>
     <!-- Admin Nav -->
-    <nav style="background:#0a1628; color:white; padding:16px 24px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); position:sticky; top:0; z-index:40;">
+    <nav style="background:#0a0a1a; color:white; padding:16px 24px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); position:sticky; top:0; z-index:40;">
         <div style="max-width:1280px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; gap:16px;">
                 <a href="/" style="display:flex; align-items:center; gap:8px; text-decoration:none; color:white;">
-                    <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, #fbbf24, #f59e0b); display:flex; align-items:center; justify-content:center; color:#0a1628; font-size:1.125rem;">
+                    <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, #fbbf24, #f59e0b); display:flex; align-items:center; justify-content:center; color:#0a0a1a; font-size:1.125rem;">
                         <i class="fas fa-car"></i>
                     </div>
                     <span style="font-size:1.25rem; font-weight:700;">Don <span style="color:#fbbf24;">Travels</span></span>
@@ -60,8 +58,11 @@
             </div>
             <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                 <span style="font-size:0.75rem; color:#9ca3af;"><i class="fas fa-clock"></i> <span id="currentTime"></span></span>
+                <span style="font-size:0.7rem; color:#9ca3af; background:rgba(255,255,255,0.05); padding:2px 12px; border-radius:12px;">
+                    <i class="fas fa-database"></i> {{ db_type|capitalize }}
+                </span>
                 <a href="/" style="font-size:0.75rem; color:#9ca3af; text-decoration:none; display:flex; align-items:center; gap:4px;"><i class="fas fa-arrow-left"></i> Back</a>
-                <button onclick="location.reload()" style="padding:6px 14px; border-radius:8px; background:#fbbf24; color:#0a1628; font-size:0.75rem; border:none; cursor:pointer; font-weight:600;">
+                <button onclick="location.reload()" style="padding:6px 14px; border-radius:8px; background:#fbbf24; color:#0a0a1a; font-size:0.75rem; border:none; cursor:pointer; font-weight:600;">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
@@ -72,46 +73,44 @@
     <div style="background:#f8fafc; min-height:100vh; padding:24px 16px;">
         <div style="max-width:1280px; margin:0 auto;">
             
-            <!-- Database Status -->
-            <div style="margin-bottom:20px;">
-                <div class="{% if db_connected %}db-status-connected{% else %}db-status-disconnected{% endif %}" 
-                     style="border-radius:12px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:1.5rem;">
-                            {% if db_connected %}<i class="fas fa-check-circle" style="color:#10b981;"></i>{% else %}<i class="fas fa-exclamation-circle" style="color:#ef4444;"></i>{% endif %}
-                        </span>
-                        <div>
-                            <span style="font-weight:600; color:#0a1628;">Database Status:</span>
-                            <span style="font-weight:500; color:{% if db_connected %}#065f46{% else %}#991b1b{% endif %};">
-                                {% if db_connected %}✅ Connected to {{ db_type|capitalize }}{% else %}❌ Using JSON Fallback{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button onclick="testDatabase()" style="padding:6px 16px; border-radius:8px; background:#0a1628; color:white; font-size:0.75rem; border:none; cursor:pointer;">
-                            <i class="fas fa-sync-alt"></i> Test Connection
-                        </button>
-                        <a href="/api/status" target="_blank" style="padding:6px 16px; border-radius:8px; background:#f3f4f6; color:#374151; font-size:0.75rem; border:1px solid #e5e7eb; text-decoration:none;">
-                            <i class="fas fa-info-circle"></i> API Status
-                        </a>
-                    </div>
-                </div>
-            </div>
-
             <!-- Stats Cards -->
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:24px;">
-                <div class="admin-card"><div style="color:#0a1628; font-size:1.5rem;"><i class="fas fa-calendar-check"></i></div><div class="stat-number" style="color:#0a1628;">{{ stats.total }}</div><div style="font-size:0.875rem; color:#6b7280;">Total Bookings</div></div>
-                <div class="admin-card" style="border-left: 4px solid #f59e0b;"><div style="color:#f59e0b; font-size:1.5rem;"><i class="fas fa-clock"></i></div><div class="stat-number" style="color:#f59e0b;">{{ stats.pending }}</div><div style="font-size:0.875rem; color:#6b7280;">Pending</div></div>
-                <div class="admin-card" style="border-left: 4px solid #3b82f6;"><div style="color:#3b82f6; font-size:1.5rem;"><i class="fas fa-check-circle"></i></div><div class="stat-number" style="color:#3b82f6;">{{ stats.confirmed }}</div><div style="font-size:0.875rem; color:#6b7280;">Confirmed</div></div>
-                <div class="admin-card" style="border-left: 4px solid #10b981;"><div style="color:#10b981; font-size:1.5rem;"><i class="fas fa-flag-checkered"></i></div><div class="stat-number" style="color:#10b981;">{{ stats.completed }}</div><div style="font-size:0.875rem; color:#6b7280;">Completed</div></div>
-                <div class="admin-card" style="border-left: 4px solid #ef4444;"><div style="color:#ef4444; font-size:1.5rem;"><i class="fas fa-times-circle"></i></div><div class="stat-number" style="color:#ef4444;">{{ stats.cancelled }}</div><div style="font-size:0.875rem; color:#6b7280;">Cancelled</div></div>
-                <div class="admin-card" style="border-left: 4px solid #059669;"><div style="color:#059669; font-size:1.5rem;"><i class="fas fa-coins"></i></div><div class="stat-number" style="color:#059669;">KSh {{ stats.revenue }}</div><div style="font-size:0.875rem; color:#6b7280;">Revenue</div></div>
+                <div class="admin-card">
+                    <div style="color:#0a0a1a; font-size:1.5rem;"><i class="fas fa-calendar-check"></i></div>
+                    <div class="stat-number" style="color:#0a0a1a;">{{ stats.total }}</div>
+                    <div style="font-size:0.875rem; color:#6b7280;">Total Bookings</div>
+                </div>
+                <div class="admin-card" style="border-left: 4px solid #f59e0b;">
+                    <div style="color:#f59e0b; font-size:1.5rem;"><i class="fas fa-clock"></i></div>
+                    <div class="stat-number" style="color:#f59e0b;">{{ stats.pending }}</div>
+                    <div style="font-size:0.875rem; color:#6b7280;">Pending</div>
+                </div>
+                <div class="admin-card" style="border-left: 4px solid #3b82f6;">
+                    <div style="color:#3b82f6; font-size:1.5rem;"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-number" style="color:#3b82f6;">{{ stats.confirmed }}</div>
+                    <div style="font-size:0.875rem; color:#6b7280;">Confirmed</div>
+                </div>
+                <div class="admin-card" style="border-left: 4px solid #10b981;">
+                    <div style="color:#10b981; font-size:1.5rem;"><i class="fas fa-flag-checkered"></i></div>
+                    <div class="stat-number" style="color:#10b981;">{{ stats.completed }}</div>
+                    <div style="font-size:0.875rem; color:#6b7280;">Completed</div>
+                </div>
+                <div class="admin-card" style="border-left: 4px solid #ef4444;">
+                    <div style="color:#ef4444; font-size:1.5rem;"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-number" style="color:#ef4444;">{{ stats.cancelled }}</div>
+                    <div style="font-size:0.875rem; color:#6b7280;">Cancelled</div>
+                </div>
+                <div class="admin-card" style="border-left: 4px solid #059669;">
+                    <div style="color:#059669; font-size:1.5rem;"><i class="fas fa-coins"></i></div>
+                    <div class="stat-number" style="color:#059669;">KSh {{ stats.revenue }}</div>
+                    <div style="font-size:0.875rem; color:#6b7280;">Revenue</div>
+                </div>
             </div>
 
             <!-- Bookings Table -->
             <div style="background:white; border-radius:16px; padding:20px; box-shadow:0 1px 3px 0 rgba(0,0,0,0.1); border:1px solid #e2e8f0; overflow-x:auto;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-                    <h3 style="font-size:1.125rem; font-weight:700; color:#0a1628;"><i class="fas fa-list-ul" style="color:#fbbf24;"></i> All Bookings <span style="font-size:0.75rem; font-weight:400; color:#6b7280; background:#f3f4f6; padding:2px 10px; border-radius:20px;">{{ bookings|length }}</span></h3>
+                    <h3 style="font-size:1.125rem; font-weight:700; color:#0a0a1a;"><i class="fas fa-list-ul" style="color:#fbbf24;"></i> All Bookings <span style="font-size:0.75rem; font-weight:400; color:#6b7280; background:#f3f4f6; padding:2px 10px; border-radius:20px;">{{ bookings|length }}</span></h3>
                     <input type="text" id="searchBookings" placeholder="Search..." style="border:1px solid #e2e8f0; border-radius:8px; padding:6px 12px; font-size:0.875rem; width:160px;">
                 </div>
 
@@ -132,13 +131,13 @@
                     <tbody id="bookingsBody">
                         {% for booking in bookings %}
                         <tr id="booking-{{ booking.id }}" class="booking-row" style="border-bottom:1px solid #f1f5f9;">
-                            <td style="padding:12px 16px; font-weight:500; color:#0a1628;">{{ loop.index }}</td>
-                            <td style="padding:12px 16px; font-family:monospace; font-size:0.75rem; color:#0a1628; font-weight:600;">{{ booking.booking_id }}</td>
+                            <td style="padding:12px 16px; font-weight:500; color:#0a0a1a;">{{ loop.index }}</td>
+                            <td style="padding:12px 16px; font-family:monospace; font-size:0.75rem; color:#0a0a1a; font-weight:600;">{{ booking.booking_id }}</td>
                             <td style="padding:12px 16px; font-weight:500;">{{ booking.customer_name }}</td>
                             <td style="padding:12px 16px; color:#4b5563;"><span style="background:#fef3c7; padding:2px 10px; border-radius:12px; font-size:0.7rem;">{{ booking.vehicle_type }}</span></td>
                             <td style="padding:12px 16px; color:#4b5563; font-size:0.8rem;">{{ booking.pickup_location[:20] }}{% if booking.pickup_location|length > 20 %}...{% endif %}</td>
                             <td style="padding:12px 16px;"><span class="status-badge status-{{ booking.status }}">{{ booking.status|capitalize }}</span></td>
-                            <td style="padding:12px 16px; font-weight:600; color:#0a1628;">KSh {{ booking.amount }}</td>
+                            <td style="padding:12px 16px; font-weight:600; color:#0a0a1a;">KSh {{ booking.amount }}</td>
                             <td style="padding:12px 16px;">
                                 <div style="display:flex; gap:4px; flex-wrap:wrap;">
                                     {% if booking.status == 'pending' %}
@@ -186,29 +185,6 @@
                 row.style.display = text.includes(searchTerm) ? '' : 'none';
             });
         });
-
-        // ===== TEST DATABASE =====
-        function testDatabase() {
-            const btn = event.target;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
-            
-            fetch('/api/test-db')
-                .then(res => res.json())
-                .then(data => {
-                    let message = '📊 Database Status:\n\n';
-                    message += `🔗 Connected: ${data.connected ? '✅ Yes' : '❌ No'}\n`;
-                    message += `📁 Type: ${data.type}\n`;
-                    message += `📝 Bookings: ${data.bookings_count}\n`;
-                    alert(message);
-                    location.reload();
-                })
-                .catch(err => alert('❌ Error testing database: ' + err.message))
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Test Connection';
-                });
-        }
 
         // ===== UPDATE STATUS =====
         function updateStatus(bookingId, status) {
