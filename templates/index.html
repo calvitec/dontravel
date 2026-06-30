@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional CV Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .typing-dots::after { content: '...'; animation: dots 1.5s steps(4, end) infinite; }
+        @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen py-8 px-4">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8 animate-float">
+            <div class="inline-block bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-4">
+                <i class="fas fa-file-pdf text-white text-5xl"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-2">CV Builder Pro</h1>
+            <p class="text-white/80 text-lg">Paste your CV text and get a professional PDF in seconds</p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="glass-card rounded-3xl shadow-2xl p-6 md:p-8">
+            {% if error %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                    <p class="text-red-700">{{ error }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <form id="cvForm" action="/generate" method="POST">
+                <!-- Text Area -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-paste text-blue-600 mr-2"></i> Paste Your CV Text
+                    </label>
+                    <textarea name="cv_text" id="cvText" rows="16" 
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none font-mono text-sm"
+                        placeholder="Paste your CV here... Include sections like: EDUCATION, EMPLOYMENT, SKILLS, REFERENCES..."></textarea>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <i class="fas fa-info-circle text-blue-500 mr-1"></i> 
+                        Supports: EDUCATION, EMPLOYMENT, SKILLS, ADDITIONAL QUALIFICATIONS, REFERENCES
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit" id="generateBtn"
+                        class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] shadow-lg flex items-center justify-center">
+                        <i class="fas fa-magic mr-3"></i> Generate CV
+                    </button>
+                    <button type="button" onclick="loadSample()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center">
+                        <i class="fas fa-file-alt mr-3"></i> Load Sample
+                    </button>
+                </div>
+            </form>
+
+            <!-- Loading -->
+            <div id="loadingDiv" class="hidden text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p class="text-gray-600 font-semibold">Generating your professional CV...</p>
+                <p class="text-gray-400 text-sm">This may take a few seconds</p>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-5 text-center text-white">
+                <i class="fas fa-robot text-3xl mb-2"></i>
+                <h3 class="font-bold">AI-Powered</h3>
+                <p class="text-white/70 text-sm">Smart parsing of your CV content</p>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-5 text-center text-white">
+                <i class="fas fa-palette text-3xl mb-2"></i>
+                <h3 class="font-bold">Professional Design</h3>
+                <p class="text-white/70 text-sm">Clean, modern CV templates</p>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-5 text-center text-white">
+                <i class="fas fa-download text-3xl mb-2"></i>
+                <h3 class="font-bold">Instant Download</h3>
+                <p class="text-white/70 text-sm">Get your PDF in seconds</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadSample() {
+            document.getElementById('cvText').value = `JOHN AMWAYI NGATIA
+
+I am a highly motivated and results-driven Compliance Account Manager with over 5 years of experience in tax administration, revenue management, and financial compliance. Currently pursuing a Master's degree at Moi University, I have developed strong expertise in tax laws, auditing, data analytics, and customer service.
+
+EDUCATION
+2024 – To Date: Master's Degree (Ongoing), Moi University.
+2016 – 2021: Kenyatta University – Bachelor's Degree in Economics and Finance.
+2012 – 2015: Maranda High School.
+
+EMPLOYMENT
+2023 – To Date: Compliance Account Manager – Kenya Revenue Authority (KRA), Medium Taxpayers Office (MTO).
+2020 – 2022: Balkan Ltd (Maseno, Kenya) – Research Associate and Data Analyst.
+2019 – 2020: Nation Media Group (Nairobi, Kenya) – Volunteer Sales Assistant.
+
+SKILLS
+Tax Laws, Tax Administration, Customer Service, Data Analytics, Auditing, Relationship Building.
+
+ADDITIONAL QUALIFICATIONS
+Leadership Certificate – Kenyatta University.
+Technical Tax Administration Training - KESRA.
+
+REFERENCES
+Surbhi S. Vashisht (Mrs.)
+Head Teacher – Early Years and Preparatory
+Email: surbhi.vashisht@hillcrest.ac.ke
+Phone: +254 733 941 398`;
+        }
+
+        document.getElementById('cvForm').addEventListener('submit', function(e) {
+            const text = document.getElementById('cvText').value.trim();
+            if (!text) {
+                e.preventDefault();
+                alert('Please paste your CV text first.');
+                return;
+            }
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('generateBtn').innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Processing...';
+        });
+    </script>
+</body>
+</html>
