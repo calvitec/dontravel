@@ -38,97 +38,17 @@
         .hero-section .orb-1 { width: 600px; height: 600px; background: #fbbf24; top: -200px; right: -100px; }
         .hero-section .orb-2 { width: 400px; height: 400px; background: #7c3aed; bottom: -150px; left: -100px; }
         
-        /* Floating cars animation */
-        .floating-cars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .floating-car {
-            position: absolute;
-            font-size: 2.5rem;
-            color: rgba(251,191,36,0.04);
-            animation: floatCar 20s linear infinite;
-        }
-        .floating-car:nth-child(1) { top: 10%; left: -5%; animation-duration: 22s; }
-        .floating-car:nth-child(2) { top: 30%; left: -10%; animation-duration: 18s; animation-delay: 3s; }
-        .floating-car:nth-child(3) { top: 50%; left: -8%; animation-duration: 25s; animation-delay: 6s; }
-        .floating-car:nth-child(4) { top: 70%; left: -12%; animation-duration: 20s; animation-delay: 9s; }
-        .floating-car:nth-child(5) { top: 90%; left: -6%; animation-duration: 23s; animation-delay: 2s; }
-        
-        @keyframes floatCar {
-            0% { transform: translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateX(110vw) rotate(2deg); opacity: 0; }
-        }
-        
-        .glass-card {
+        .glass-nav {
             background: rgba(255,255,255,0.04);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.06);
-        }
-        .glass-card-light {
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        
-        .btn-gold {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
             transition: all 0.3s ease;
-            color: #0a0a1a;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
-        .btn-gold::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, #f59e0b, #fbbf24);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .glass-nav.scrolled {
+            background: rgba(10,10,26,0.92);
+            border-color: rgba(251,191,36,0.08);
         }
-        .btn-gold:hover::before { opacity: 1; }
-        .btn-gold:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(245, 158, 11, 0.3);
-        }
-        .btn-gold * { position: relative; z-index: 1; }
-        
-        .btn-outline-gold {
-            border: 2px solid #fbbf24;
-            color: #fbbf24;
-            background: transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-outline-gold::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: #fbbf24;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .btn-outline-gold:hover {
-            color: #0a0a1a;
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(251,191,36,0.15);
-        }
-        .btn-outline-gold:hover::before { opacity: 1; }
-        .btn-outline-gold * { position: relative; z-index: 1; }
         
         .nav-link {
             position: relative;
@@ -155,16 +75,29 @@
         .nav-link.active { color: white; }
         .nav-link.active::after { width: 80%; }
         
-        .glass-nav {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.06);
+        .btn-gold {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
             transition: all 0.3s ease;
+            color: #0a0a1a;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
         }
-        .glass-nav.scrolled {
-            background: rgba(10,10,26,0.92);
-            border-color: rgba(251,191,36,0.08);
+        .btn-gold:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(245, 158, 11, 0.3);
+        }
+        .btn-outline-gold {
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-outline-gold:hover {
+            background: #fbbf24;
+            color: #0a0a1a;
+            transform: translateY(-4px);
         }
         
         /* Vehicle Showcase */
@@ -179,6 +112,7 @@
             position: relative;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid rgba(255,255,255,0.06);
+            cursor: pointer;
         }
         .vehicle-showcase .vehicle-image:hover {
             transform: translateY(-8px);
@@ -199,22 +133,33 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 24px 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
         }
         .vehicle-showcase .vehicle-image .vehicle-overlay .vehicle-name {
             color: white;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
         .vehicle-showcase .vehicle-image .vehicle-overlay .vehicle-price {
             color: #fbbf24;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-weight: 700;
+            font-size: 1rem;
         }
         .vehicle-showcase .vehicle-image .vehicle-overlay .vehicle-desc {
             color: rgba(255,255,255,0.6);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+        }
+        .vehicle-showcase .vehicle-image .vehicle-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(251,191,36,0.9);
+            color: #0a0a1a;
+            padding: 4px 14px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
         }
         
         /* Vehicle Cards */
@@ -226,18 +171,7 @@
             text-align: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
-        .vehicle-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(251,191,36,0.05), rgba(124,58,237,0.05));
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .vehicle-card:hover::before { opacity: 1; }
         .vehicle-card:hover, .vehicle-card.selected {
             border-color: #fbbf24;
             background: rgba(251,191,36,0.05);
@@ -249,12 +183,10 @@
             color: #fbbf24;
             margin-bottom: 6px;
             display: block;
-            transition: all 0.4s ease;
         }
-        .vehicle-card:hover .vehicle-icon { transform: scale(1.1) rotate(-3deg); }
         .vehicle-card .vehicle-name { color: white; font-weight: 600; font-size: 0.9rem; }
         .vehicle-card .vehicle-price { color: #fbbf24; font-weight: 700; font-size: 0.85rem; }
-        .vehicle-card .vehicle-desc { color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 2px; }
+        .vehicle-card .vehicle-desc { color: rgba(255,255,255,0.3); font-size: 0.7rem; }
         .vehicle-card .vehicle-seats { 
             display: inline-block; 
             background: rgba(255,255,255,0.05); 
@@ -262,7 +194,6 @@
             border-radius: 12px; 
             font-size: 0.65rem; 
             color: rgba(255,255,255,0.4);
-            margin-top: 4px;
         }
         
         /* Booking Form */
@@ -274,18 +205,6 @@
             border: 1px solid rgba(255,255,255,0.08);
             padding: 40px;
             box-shadow: 0 40px 80px rgba(0,0,0,0.4);
-            position: relative;
-            overflow: hidden;
-        }
-        .booking-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(251,191,36,0.03) 0%, transparent 70%);
-            pointer-events: none;
         }
         .booking-card .form-input {
             background: rgba(255,255,255,0.04);
@@ -297,11 +216,9 @@
             width: 100%;
             font-size: 0.95rem;
         }
-        .booking-card .form-input::placeholder { color: rgba(255,255,255,0.2); }
         .booking-card .form-input:focus {
             outline: none;
             border-color: #fbbf24;
-            background: rgba(255,255,255,0.06);
             box-shadow: 0 0 0 4px rgba(251,191,36,0.05);
         }
         .booking-card .form-select {
@@ -317,7 +234,6 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fbbf24' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
-            cursor: pointer;
         }
         .booking-card .form-select:focus {
             outline: none;
@@ -334,7 +250,6 @@
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
-        
         .booking-card .success-message {
             background: rgba(251,191,36,0.08);
             border-left: 4px solid #fbbf24;
@@ -344,7 +259,6 @@
         }
         .booking-card .success-message p { color: rgba(255,255,255,0.8); font-size: 0.9rem; }
         
-        /* Stats */
         .stats-bar {
             display: flex;
             justify-content: center;
@@ -357,9 +271,8 @@
         }
         .stats-bar .stat-item { text-align: center; }
         .stats-bar .stat-number { font-size: 1.6rem; font-weight: 800; color: #fbbf24; }
-        .stats-bar .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
+        .stats-bar .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.3); }
         
-        /* Features */
         .feature-card {
             background: white;
             border-radius: 20px;
@@ -384,17 +297,10 @@
             font-size: 1.5rem;
             color: #2d1b69;
             margin: 0 auto 16px;
-            transition: all 0.4s ease;
         }
-        .feature-card:hover .icon-wrap {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: white;
-            transform: scale(1.05) rotate(-3deg);
-        }
-        .feature-card h3 { font-size: 1.1rem; font-weight: 700; color: #0a0a1a; margin-bottom: 8px; }
+        .feature-card h3 { font-size: 1.1rem; font-weight: 700; color: #0a0a1a; }
         .feature-card p { font-size: 0.9rem; color: #6b7280; line-height: 1.6; }
         
-        /* Testimonial */
         .testimonial-card {
             background: white;
             border-radius: 20px;
@@ -402,19 +308,15 @@
             border: 1px solid #f3f4f6;
             transition: all 0.3s ease;
         }
-        .testimonial-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
-        }
+        .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.04); }
         .testimonial-card .stars { color: #fbbf24; font-size: 0.9rem; margin-bottom: 12px; }
-        .testimonial-card .quote { font-size: 0.95rem; color: #1f2937; line-height: 1.7; font-style: italic; margin-bottom: 16px; }
-        .testimonial-card .author { display: flex; align-items: center; gap: 12px; }
+        .testimonial-card .quote { font-size: 0.95rem; color: #1f2937; line-height: 1.7; font-style: italic; }
+        .testimonial-card .author { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
         .testimonial-card .author .avatar {
             width: 44px; height: 44px; border-radius: 50%;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             display: flex; align-items: center; justify-content: center;
             color: #0a0a1a; font-weight: 700; font-size: 1rem;
-            flex-shrink: 0;
         }
         .testimonial-card .author .name { font-weight: 700; color: #0a0a1a; font-size: 0.9rem; }
         .testimonial-card .author .role { font-size: 0.75rem; color: #6b7280; }
@@ -423,24 +325,23 @@
             .hero-content-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
             .hero-title { font-size: 2.8rem !important; }
             .booking-card { padding: 28px 20px; }
-            .stats-bar { gap: 24px; flex-wrap: wrap; }
             .vehicle-showcase { grid-template-columns: 1fr !important; }
             .vehicle-showcase .vehicle-image img { height: 220px; }
+            .stats-bar { gap: 24px; flex-wrap: wrap; }
         }
         @media (max-width: 768px) {
             .hero-section { padding: 80px 0 30px; min-height: auto; }
             .hero-title { font-size: 2.2rem !important; }
-            .booking-card { padding: 20px 16px; border-radius: 20px; }
+            .booking-card { padding: 20px 16px; }
             .vehicle-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
             .vehicle-card { padding: 14px 10px; }
             .vehicle-card .vehicle-icon { font-size: 1.8rem; }
             .vehicle-card .vehicle-name { font-size: 0.8rem; }
-            .vehicle-card .vehicle-price { font-size: 0.75rem; }
+            .booking-form-grid { grid-template-columns: 1fr !important; }
             .stats-bar { gap: 12px; padding: 10px 16px; flex-wrap: wrap; }
             .stats-bar .stat-number { font-size: 1.2rem; }
-            .glass-nav { padding: 0 12px !important; border-radius: 12px; }
+            .glass-nav { padding: 0 12px !important; }
             .glass-nav > div { height: 56px; }
-            .booking-form-grid { grid-template-columns: 1fr !important; }
             .feature-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
             .testimonial-grid { grid-template-columns: 1fr !important; }
             .vehicle-showcase .vehicle-image img { height: 180px; }
@@ -455,8 +356,6 @@
             .feature-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
             .feature-card { padding: 16px 12px; }
             .feature-card .icon-wrap { width: 44px; height: 44px; font-size: 1.1rem; }
-            .feature-card h3 { font-size: 0.85rem; }
-            .feature-card p { font-size: 0.75rem; }
             .vehicle-showcase .vehicle-image img { height: 150px; }
         }
     </style>
@@ -503,15 +402,6 @@
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         
-        <!-- Floating Cars -->
-        <div class="floating-cars">
-            <div class="floating-car"><i class="fas fa-car"></i></div>
-            <div class="floating-car"><i class="fas fa-car-side"></i></div>
-            <div class="floating-car"><i class="fas fa-caravan"></i></div>
-            <div class="floating-car"><i class="fas fa-bus"></i></div>
-            <div class="floating-car"><i class="fas fa-crown"></i></div>
-        </div>
-        
         <div style="width:100%; max-width:1200px; margin:0 auto; padding:0 20px; position:relative; z-index:2;">
             <div class="hero-content-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;">
                 <!-- Left Content -->
@@ -541,10 +431,10 @@
                     </div>
                 </div>
                 
-                <!-- Right Content - Image -->
+                <!-- Right Content - Van Image -->
                 <div>
                     <div style="background:rgba(255,255,255,0.03); border-radius:24px; padding:20px; border:1px solid rgba(255,255,255,0.04);">
-                        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop" alt="Luxury Car" style="width:100%; border-radius:16px; height:350px; object-fit:cover;" />
+                        <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=600&fit=crop" alt="Executive Van" style="width:100%; border-radius:16px; height:380px; object-fit:cover;" />
                         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:16px;">
                             <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.03);">
                                 <i class="fas fa-user-shield" style="color:#fbbf24; font-size:1.2rem;"></i>
@@ -565,7 +455,7 @@
         </div>
     </section>
 
-    <!-- VEHICLES - SHOWCASING TOYOTA HIACE & EXECUTIVE VAN -->
+    <!-- VEHICLES - SHOWCASING TOYOTA HIACE & SEDAN -->
     <section id="vehicles" style="padding:60px 20px; background:white;">
         <div style="max-width:1200px; margin:0 auto;">
             <div style="text-align:center; margin-bottom:40px;">
@@ -579,6 +469,7 @@
                 <!-- Toyota Hiace -->
                 <div class="vehicle-image" onclick="selectVehicle('Toyota Hiace')">
                     <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop" alt="Toyota Hiace" />
+                    <span class="vehicle-badge">Popular</span>
                     <div class="vehicle-overlay">
                         <div class="vehicle-name">Toyota Hiace</div>
                         <div class="vehicle-price">KSh 3,500</div>
@@ -586,13 +477,14 @@
                     </div>
                 </div>
                 
-                <!-- Executive Van -->
-                <div class="vehicle-image" onclick="selectVehicle('Executive Van')">
-                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop" alt="Executive Van" />
+                <!-- Executive Sedan -->
+                <div class="vehicle-image" onclick="selectVehicle('Executive Sedan')">
+                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop" alt="Executive Sedan" />
+                    <span class="vehicle-badge">Luxury</span>
                     <div class="vehicle-overlay">
-                        <div class="vehicle-name">Executive Van</div>
-                        <div class="vehicle-price">KSh 6,500</div>
-                        <div class="vehicle-desc"><i class="fas fa-user"></i> 8 Seats · Executive Transport</div>
+                        <div class="vehicle-name">Executive Sedan</div>
+                        <div class="vehicle-price">KSh 4,500</div>
+                        <div class="vehicle-desc"><i class="fas fa-user"></i> 4 Seats · Executive Comfort</div>
                     </div>
                 </div>
             </div>
@@ -617,6 +509,15 @@
                     <span class="vehicle-seats"><i class="fas fa-user"></i> 4 Seats</span>
                 </div>
                 
+                <!-- Toyota Hiace -->
+                <div class="vehicle-card" onclick="selectVehicle('Toyota Hiace')" data-vehicle="Toyota Hiace">
+                    <span class="vehicle-icon"><i class="fas fa-bus"></i></span>
+                    <div class="vehicle-name">Toyota Hiace</div>
+                    <div class="vehicle-price">KSh 3,500</div>
+                    <div class="vehicle-desc">Spacious minibus</div>
+                    <span class="vehicle-seats"><i class="fas fa-user"></i> 14 Seats</span>
+                </div>
+                
                 <!-- Luxury SUV -->
                 <div class="vehicle-card" onclick="selectVehicle('Luxury SUV')" data-vehicle="Luxury SUV">
                     <span class="vehicle-icon"><i class="fas fa-caravan"></i></span>
@@ -626,16 +527,7 @@
                     <span class="vehicle-seats"><i class="fas fa-user"></i> 7 Seats</span>
                 </div>
                 
-                <!-- Toyota Hiace (Card) -->
-                <div class="vehicle-card" onclick="selectVehicle('Toyota Hiace')" data-vehicle="Toyota Hiace">
-                    <span class="vehicle-icon"><i class="fas fa-bus"></i></span>
-                    <div class="vehicle-name">Toyota Hiace</div>
-                    <div class="vehicle-price">KSh 3,500</div>
-                    <div class="vehicle-desc">Spacious minibus</div>
-                    <span class="vehicle-seats"><i class="fas fa-user"></i> 14 Seats</span>
-                </div>
-                
-                <!-- Executive Van (Card) -->
+                <!-- Executive Van -->
                 <div class="vehicle-card" onclick="selectVehicle('Executive Van')" data-vehicle="Executive Van">
                     <span class="vehicle-icon"><i class="fas fa-shuttle-van"></i></span>
                     <div class="vehicle-name">Executive Van</div>
@@ -657,7 +549,6 @@
             </div>
 
             <div id="book-section" class="booking-card">
-                <!-- Success Message -->
                 <div id="successMessage" style="display:none;" class="success-message">
                     <div style="display:flex; align-items:flex-start; gap:10px;">
                         <i class="fas fa-check-circle" style="color:#fbbf24; font-size:1.1rem; margin-top:2px;"></i>
@@ -700,6 +591,7 @@
                                 <option value="Standard">Standard Sedan - KSh 1,500</option>
                                 <option value="Premium">Premium Sedan - KSh 2,500</option>
                                 <option value="Toyota Hiace">Toyota Hiace - KSh 3,500</option>
+                                <option value="Executive Sedan">Executive Sedan - KSh 4,500</option>
                                 <option value="Luxury SUV">Luxury SUV - KSh 5,500</option>
                                 <option value="Executive Van">Executive Van - KSh 6,500</option>
                             </select>
@@ -735,7 +627,6 @@
                 </form>
             </div>
 
-            <!-- Stats Bar -->
             <div class="stats-bar">
                 <div class="stat-item">
                     <div class="stat-number">500+</div>
@@ -811,7 +702,7 @@
                 </div>
                 <div class="testimonial-card">
                     <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <p class="quote">"Executive Van was luxurious and spacious. The driver was punctual and professional. Highly recommend Don Travels!"</p>
+                    <p class="quote">"Executive Sedan was luxurious and spacious. The driver was punctual and professional. Highly recommend Don Travels!"</p>
                     <div class="author">
                         <div class="avatar">SO</div>
                         <div><div class="name">Sarah Ochieng</div><div class="role">Kisumu, Kenya · 5 days ago</div></div>
@@ -878,7 +769,6 @@
     </style>
 
     <script>
-        // ===== VEHICLE SELECTION =====
         function selectVehicle(vehicle) {
             const select = document.getElementById('vehicleSelect');
             const options = select.options;
@@ -888,7 +778,6 @@
                     break;
                 }
             }
-            // Highlight selected
             document.querySelectorAll('.vehicle-card').forEach(card => {
                 card.classList.remove('selected');
                 if (card.dataset.vehicle === vehicle) {
@@ -897,7 +786,6 @@
             });
         }
 
-        // ===== NAVBAR SCROLL EFFECT =====
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('.glass-nav');
             if (window.scrollY > 40) {
@@ -907,10 +795,8 @@
             }
         });
 
-        // ===== FORM SUBMIT =====
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const formData = new FormData();
             formData.append('name', document.querySelector('input[name="name"]').value);
             formData.append('email', document.querySelector('input[name="email"]').value);
@@ -931,13 +817,10 @@
             try {
                 const response = await fetch('/api/book', { method: 'POST', body: formData });
                 const data = await response.json();
-                
                 if (data.success) {
                     document.getElementById('successMessage').style.display = 'block';
                     document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
                     e.target.reset();
-                    
-                    // Show amount
                     const amountMsg = document.createElement('div');
                     amountMsg.style.cssText = 'margin-top:12px; padding:12px 16px; background:rgba(251,191,36,0.08); border-radius:12px; border:1px solid rgba(251,191,36,0.1);';
                     amountMsg.innerHTML = `<p style="color:white; font-size:0.9rem;">💰 <span style="color:#fbbf24; font-weight:700;">KSh ${data.amount}</span> - Payment will be collected upon arrival</p>`;
@@ -948,12 +831,10 @@
             } catch (error) {
                 alert('Booking failed: ' + error.message);
             }
-            
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         });
 
-        // ===== SMOOTH SCROLL =====
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -966,17 +847,14 @@
             });
         });
 
-        // Set today's date as min for date input
         const dateInput = document.querySelector('input[name="date"]');
         if (dateInput) {
             const today = new Date().toISOString().split('T')[0];
             dateInput.setAttribute('min', today);
         }
 
-        // ===== ACTIVE NAV LINK =====
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.nav-link');
-
         window.addEventListener('scroll', () => {
             let current = '';
             sections.forEach(section => {
@@ -985,7 +863,6 @@
                     current = section.getAttribute('id');
                 }
             });
-
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === `#${current}`) {
