@@ -441,6 +441,8 @@ def create_booking():
         
         save_booking(booking_data)
         
+        print(f"✅ Booking created: {booking_ref}")
+        
         return jsonify({
             'success': True,
             'message': 'Booking confirmed!',
@@ -449,7 +451,7 @@ def create_booking():
         }), 200
         
     except Exception as e:
-        print("❌ BOOKING ERROR:", str(e))
+        print(f"❌ BOOKING ERROR: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -457,10 +459,15 @@ def create_booking():
 
 @app.route('/confirmation/<booking_ref>')
 def confirmation(booking_ref):
+    print(f"🔍 Looking for booking: {booking_ref}")
     booking = get_booking_by_ref(booking_ref)
+    
     if not booking:
+        print(f"❌ Booking not found: {booking_ref}")
         flash('Booking not found', 'danger')
         return redirect(url_for('index'))
+    
+    print(f"✅ Booking found: {booking}")
     return render_template('confirmation.html', booking=booking)
 
 @app.route('/check-booking', methods=['GET', 'POST'])
