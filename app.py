@@ -7,29 +7,20 @@ import json
 app = Flask(__name__)
 app.secret_key = 'dev-secret-key-12345'
 
-# ===== GET SUPABASE CREDENTIALS FROM ENVIRONMENT =====
-# These are automatically set by Vercel/Supabase integration
-SUPABASE_URL = os.environ.get('SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_PUBLISHABLE_KEY') or os.environ.get('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
-
-print(f"🔗 SUPABASE_URL: {SUPABASE_URL[:30] if SUPABASE_URL else 'Not found'}...")
-print(f"🔑 SUPABASE_KEY: {SUPABASE_KEY[:20] if SUPABASE_KEY else 'Not found'}...")
+# ===== YOUR SUPABASE CREDENTIALS =====
+SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
+SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
 # Try to connect to Supabase
 try:
     from supabase import create_client
-    if SUPABASE_URL and SUPABASE_KEY:
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-        # Test connection
-        supabase.table('bookings').select('count', count='exact').limit(1).execute()
-        DB_CONNECTED = True
-        DB_TYPE = 'supabase'
-        print("✅ Supabase connected successfully!")
-    else:
-        supabase = None
-        DB_CONNECTED = False
-        DB_TYPE = 'json'
-        print("⚠️ Supabase credentials not found. Using JSON storage.")
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    # Test connection
+    test = supabase.table('bookings').select('count', count='exact').limit(1).execute()
+    DB_CONNECTED = True
+    DB_TYPE = 'supabase'
+    print("✅ Supabase connected successfully!")
+    print(f"📊 Project: {SUPABASE_URL}")
 except Exception as e:
     supabase = None
     DB_CONNECTED = False
@@ -63,7 +54,8 @@ def load_bookings():
         try:
             response = supabase.table('bookings').select('*').order('created_at', desc=True).execute()
             return response.data
-        except:
+        except Exception as e:
+            print(f"Supabase load error: {e}")
             return load_bookings_json()
     return load_bookings_json()
 
@@ -71,8 +63,11 @@ def save_booking(booking_data):
     if DB_CONNECTED:
         try:
             response = supabase.table('bookings').insert(booking_data).execute()
+            print(f"✅ Booking saved to Supabase: {booking_data['booking_id']}")
             return response.data[0]['id'] if response.data else None
-        except:
+        except Exception as e:
+            print(f"Supabase save error: {e}")
+            # Fallback to JSON
             bookings = load_bookings_json()
             booking_data['id'] = len(bookings) + 1
             bookings.append(booking_data)
@@ -264,5 +259,7 @@ if __name__ == '__main__':
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
+    if DB_CONNECTED:
+        print(f"📊 Supabase URL: {SUPABASE_URL}")
     print("="*60)
     app.run(debug=True, host='0.0.0.0', port=5000)
