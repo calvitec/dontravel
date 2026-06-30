@@ -157,9 +157,11 @@
                     </div>
                 </div>
                 
+                <!-- Calculate booked count from seat data -->
+                {% set booked_count = seats|selectattr('status', 'equalto', 'booked')|list|length %}
                 {% set total_seats = bus.total_seats or 40 %}
-                {% set booked_count = bus.booked_seats or 0 %}
                 {% set available_count = total_seats - booked_count %}
+                
                 <div class="seat-status">
                     <span class="available-count">{{ available_count }}</span> seats available · 
                     <span class="booked-count">{{ booked_count }}</span> seats booked
