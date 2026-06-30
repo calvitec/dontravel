@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard · BusCar</title>
+    <title>Admin Dashboard · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -66,10 +66,21 @@
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-cancelled { background: #fee2e2; color: #991b1b; }
         
+        .db-status {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .db-connected { background: #d1fae5; color: #065f46; }
+        .db-disconnected { background: #fee2e2; color: #991b1b; }
+        
         @media (max-width: 768px) {
             .admin-nav { flex-direction: column; align-items: stretch; }
             .admin-nav .nav-links { display: flex; flex-wrap: wrap; gap: 4px; }
             .admin-nav .nav-link { padding: 6px 12px; font-size: 0.8rem; }
+            .stat-card .stat-number { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -79,12 +90,17 @@
     <nav class="admin-nav">
         <div style="display:flex; align-items:center; gap:12px;">
             <i class="fas fa-bus" style="color:#f59e0b; font-size:1.5rem;"></i>
-            <span style="font-weight:800; font-size:1.2rem; color:#0f172a;">BusCar <span style="color:#f59e0b;">Admin</span></span>
+            <span style="font-weight:800; font-size:1.2rem; color:#0f172a;">Don <span style="color:#f59e0b;">Travels</span></span>
+            <span style="font-size:0.75rem; color:#94a3b8; background:#f1f5f9; padding:2px 12px; border-radius:12px;">
+                Admin
+            </span>
+            <span class="db-status {% if db_connected %}db-connected{% else %}db-disconnected{% endif %}">
+                <i class="fas {% if db_connected %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                {{ db_type|capitalize }}
+            </span>
         </div>
         <div class="nav-links">
             <a href="/admin" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="/admin/buses" class="nav-link"><i class="fas fa-bus"></i> Buses</a>
-            <a href="/admin/routes" class="nav-link"><i class="fas fa-route"></i> Routes</a>
             <a href="/admin/bookings" class="nav-link"><i class="fas fa-ticket-alt"></i> Bookings</a>
             <a href="/admin/logout" class="nav-link" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
@@ -95,36 +111,46 @@
         <!-- Stats -->
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:16px; margin-bottom:24px;">
             <div class="stat-card">
-                <div class="stat-number">{{ stats.total_bookings }}</div>
+                <div class="stat-number">{{ stats.total_bookings|default(0) }}</div>
                 <div class="stat-label"><i class="fas fa-ticket-alt"></i> Total Bookings</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">KSh {{ stats.total_revenue }}</div>
+                <div class="stat-number">KSh {{ stats.total_revenue|default(0)|int }}</div>
                 <div class="stat-label"><i class="fas fa-coins"></i> Revenue</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ stats.total_buses }}</div>
-                <div class="stat-label"><i class="fas fa-bus"></i> Buses</div>
+                <div class="stat-number">{{ stats.total_vehicles|default(0) }}</div>
+                <div class="stat-label"><i class="fas fa-car"></i> Vehicles</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ stats.total_routes }}</div>
+                <div class="stat-number">{{ stats.total_routes|default(0) }}</div>
                 <div class="stat-label"><i class="fas fa-route"></i> Routes</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ stats.today_bookings }}</div>
+                <div class="stat-number">{{ stats.total_buses|default(0) }}</div>
+                <div class="stat-label"><i class="fas fa-bus"></i> Buses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.today_bookings|default(0) }}</div>
                 <div class="stat-label"><i class="fas fa-calendar-day"></i> Today</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ stats.pending_payments }}</div>
+                <div class="stat-number">{{ stats.pending_payments|default(0) }}</div>
                 <div class="stat-label"><i class="fas fa-clock"></i> Pending Payments</div>
             </div>
         </div>
 
         <!-- Recent Bookings -->
         <div class="table-container">
-            <h3 style="font-weight:700; color:#0f172a; margin-bottom:16px;">
-                <i class="fas fa-clock" style="color:#f59e0b;"></i> Recent Bookings
-            </h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                <h3 style="font-weight:700; color:#0f172a;">
+                    <i class="fas fa-clock" style="color:#f59e0b;"></i> Recent Bookings
+                </h3>
+                <span style="font-size:0.8rem; color:#94a3b8;">
+                    Total: {{ bookings|length }}
+                </span>
+            </div>
+            
             {% if bookings %}
             <table>
                 <thead>
@@ -140,25 +166,42 @@
                 <tbody>
                     {% for booking in bookings[:10] %}
                     <tr>
-                        <td style="font-weight:600; color:#f59e0b;">{{ booking.booking_ref }}</td>
+                        <td style="font-weight:600; color:#f59e0b; font-family:monospace;">{{ booking.booking_ref }}</td>
                         <td>{{ booking.passenger_name }}</td>
                         <td>{{ booking.selected_seats|join(', ') }}</td>
                         <td>KSh {{ booking.total_fare }}</td>
-                        <td><span class="status-badge status-{{ booking.status }}">{{ booking.status|capitalize }}</span></td>
-                        <td style="color:#64748b; font-size:0.8rem;">{{ booking.created_at[:10] }}</td>
+                        <td>
+                            <span class="status-badge status-{{ booking.status }}">
+                                {{ booking.status|capitalize }}
+                            </span>
+                        </td>
+                        <td style="color:#64748b; font-size:0.8rem;">
+                            {{ booking.created_at[:10] if booking.created_at else 'N/A' }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% else %}
-            <p style="color:#94a3b8; text-align:center; padding:40px 0;">No bookings yet</p>
+            <div style="text-align:center; padding:40px 20px; color:#94a3b8;">
+                <i class="fas fa-inbox" style="font-size:3rem; display:block; margin-bottom:12px; opacity:0.5;"></i>
+                <p style="font-size:1rem;">No bookings yet</p>
+                <p style="font-size:0.85rem;">When customers book rides, they'll appear here</p>
+            </div>
             {% endif %}
         </div>
     </section>
 
     <!-- ===== FOOTER ===== -->
     <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9; margin-top:24px;">
-        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar Admin Panel</p>
+        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 Don Travels Admin Panel</p>
+        <p style="color:#cbd5e1; font-size:0.7rem; margin-top:4px;">
+            <i class="fas fa-database"></i> Database: {{ db_type|capitalize }}
+            <span class="{% if db_connected %}text-green-600{% else %}text-red-600{% endif %}" style="margin-left:8px;">
+                {% if db_connected %}✅ Connected{% else %}❌ Disconnected{% endif %}
+            </span>
+        </p>
     </footer>
+
 </body>
 </html>
