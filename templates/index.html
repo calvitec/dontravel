@@ -2,44 +2,205 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BusCar · Book Bus Tickets Online</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Don Travels · Premium Bus & Taxi Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f0f4f8; }
         
+        /* ===== ANIMATIONS ===== */
+        @keyframes float {
+            0%,100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
+        
+        /* ===== HEADER ===== */
+        .app-header {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            padding: 14px 20px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.02);
+        }
+        .app-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .app-header .brand .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+        .app-header .brand .brand-text {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #0f172a;
+        }
+        .app-header .brand .brand-text span { color: #f59e0b; }
+        
+        .header-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+        .nav-link:hover { color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+        
+        /* ===== HERO ===== */
         .hero-section {
             background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-            padding: 80px 20px 100px;
+            padding: 60px 20px 80px;
             text-align: center;
             color: white;
             position: relative;
             overflow: hidden;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .hero-section::before {
-            content: '';
+        .hero-section .bg-pattern {
             position: absolute;
             inset: 0;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='none'/%3E%3Cpath d='M10 10 L90 10 L90 90 L10 90 Z' stroke='rgba(255,255,255,0.02)' stroke-width='1'/%3E%3C/svg%3E");
+            background-image: radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.03) 0%, transparent 60%);
             pointer-events: none;
         }
-        .hero-section h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 12px; }
-        .hero-section h1 span { color: #f59e0b; }
-        .hero-section p { color: #94a3b8; max-width: 500px; margin: 0 auto 32px; font-size: 1.1rem; line-height: 1.7; }
+        .hero-section .floating-elements {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .hero-section .floating-elements .float-icon {
+            position: absolute;
+            font-size: 2.5rem;
+            color: rgba(245, 158, 11, 0.04);
+        }
+        .hero-section .floating-elements .float-icon:nth-child(1) { top: 10%; left: 5%; animation: float 6s ease-in-out infinite; }
+        .hero-section .floating-elements .float-icon:nth-child(2) { top: 20%; right: 8%; animation: float 8s ease-in-out infinite 1s; }
+        .hero-section .floating-elements .float-icon:nth-child(3) { bottom: 20%; left: 10%; animation: float 7s ease-in-out infinite 2s; }
+        .hero-section .floating-elements .float-icon:nth-child(4) { bottom: 30%; right: 5%; animation: float 9s ease-in-out infinite 0.5s; }
         
+        .hero-section .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 6px 18px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: #fbbf24;
+            font-weight: 600;
+            border: 1px solid rgba(245, 158, 11, 0.1);
+            margin-bottom: 16px;
+        }
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1.05;
+            margin-bottom: 12px;
+        }
+        .hero-section h1 .highlight { 
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-section .hero-subtitle {
+            color: #94a3b8;
+            max-width: 500px;
+            margin: 0 auto 28px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        .hero-section .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+        .hero-section .hero-stats .stat-item { text-align: center; }
+        .hero-section .hero-stats .stat-item .number { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            color: #f59e0b;
+            display: block;
+        }
+        .hero-section .hero-stats .stat-item .label { 
+            font-size: 0.75rem; 
+            color: #64748b; 
+        }
+        
+        /* ===== SEARCH CARD ===== */
         .search-card {
             background: white;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 900px;
-            margin: -60px auto 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            border-radius: 28px;
+            padding: 32px 36px;
+            max-width: 1000px;
+            margin: -50px auto 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
             position: relative;
             z-index: 10;
+            border: 1px solid rgba(0,0,0,0.02);
         }
+        .search-card .form-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #475569;
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .search-card .form-label i { color: #f59e0b; margin-right: 4px; }
         .search-card .form-input {
             border: 1.5px solid #e2e8f0;
             border-radius: 14px;
@@ -47,141 +208,321 @@
             width: 100%;
             font-size: 0.95rem;
             transition: all 0.2s;
+            background: #f8fafc;
         }
         .search-card .form-input:focus {
             outline: none;
             border-color: #f59e0b;
-            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.06);
+            background: white;
         }
         .btn-primary {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
             padding: 14px 32px;
-            border-radius: 9999px;
+            border-radius: 14px;
             font-weight: 700;
             border: none;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
+            font-size: 1rem;
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
         
-        .section-title { font-size: 2rem; font-weight: 800; color: #0f172a; }
-        .section-title span { color: #f59e0b; }
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -1px;
+        }
+        .section-title .highlight { color: #f59e0b; }
+        .section-subtitle {
+            color: #64748b;
+            max-width: 500px;
+            margin: 8px auto 0;
+            font-size: 0.95rem;
+        }
         
+        /* ===== FEATURE CARDS ===== */
         .feature-card {
             background: white;
             border-radius: 20px;
-            padding: 24px;
+            padding: 28px 24px;
             text-align: center;
             border: 1px solid #f1f5f9;
-            transition: all 0.3s;
-        }
-        .feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); }
-        .feature-card i { color: #f59e0b; font-size: 2.5rem; display: block; margin-bottom: 12px; }
-        .feature-card h4 { font-weight: 700; color: #0f172a; }
-        .feature-card p { color: #64748b; font-size: 0.85rem; }
-        
-        .offer-card {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-radius: 20px;
-            padding: 24px;
-            color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
         }
-        .offer-card::before {
+        .feature-card::before {
             content: '';
             position: absolute;
-            top: -50%;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.02), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border-color: rgba(245, 158, 11, 0.1);
+        }
+        .feature-card .icon-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.02));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #f59e0b;
+            margin: 0 auto 12px;
+            transition: all 0.4s;
+        }
+        .feature-card:hover .icon-wrap {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            transform: scale(1.05) rotate(-3deg);
+        }
+        .feature-card h4 { font-weight: 700; color: #0f172a; font-size: 1.05rem; }
+        .feature-card p { color: #64748b; font-size: 0.85rem; margin-top: 4px; line-height: 1.5; }
+        
+        /* ===== OFFER CARDS ===== */
+        .offer-card {
+            border-radius: 20px;
+            padding: 28px 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        .offer-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .offer-card .offer-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 2px 14px;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .offer-card .offer-price { font-size: 2.8rem; font-weight: 900; margin: 8px 0; }
+        .offer-card .offer-desc { font-size: 0.95rem; opacity: 0.9; }
+        .offer-card .offer-route { font-size: 0.75rem; opacity: 0.7; margin-top: 4px; }
+        .offer-card .offer-bg-pattern {
+            position: absolute;
+            top: -30%;
             right: -20%;
             width: 200px;
             height: 200px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.04);
             border-radius: 50%;
+            pointer-events: none;
         }
-        .offer-card .offer-price { font-size: 2.5rem; font-weight: 900; }
-        .offer-card .offer-desc { font-size: 0.9rem; opacity: 0.9; }
+        .offer-card .offer-bg-pattern-2 {
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 50%;
+            pointer-events: none;
+        }
         
+        /* ===== TESTIMONIALS ===== */
         .testimonial-card {
             background: white;
             border-radius: 20px;
             padding: 24px;
             border: 1px solid #f1f5f9;
+            transition: all 0.3s;
         }
-        .testimonial-card .stars { color: #f59e0b; margin-bottom: 8px; }
-        .testimonial-card .quote { font-style: italic; color: #475569; line-height: 1.6; }
-        .testimonial-card .author { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+        .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); }
+        .testimonial-card .stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 8px; }
+        .testimonial-card .quote { 
+            font-style: italic; 
+            color: #1e293b; 
+            line-height: 1.7; 
+            font-size: 0.95rem;
+        }
+        .testimonial-card .author { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin-top: 14px; 
+            padding-top: 14px;
+            border-top: 1px solid #f1f5f9;
+        }
         .testimonial-card .author .avatar {
-            width: 44px; height: 44px; border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
         }
+        .testimonial-card .author .name { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
+        .testimonial-card .author .route { font-size: 0.75rem; color: #94a3b8; }
         
+        /* ===== FOOTER ===== */
+        .app-footer {
+            background: white;
+            padding: 32px 20px 20px;
+            text-align: center;
+            border-top: 1px solid #f1f5f9;
+        }
+        .app-footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .app-footer .footer-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .app-footer .footer-links a:hover { color: #f59e0b; }
+        .app-footer p { color: #94a3b8; font-size: 0.8rem; }
+        .app-footer .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            margin-top: 6px;
+        }
+        .app-footer .secure-badge i { color: #f59e0b; }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .hero-section h1 { font-size: 2.8rem; }
+            .search-card { padding: 24px 20px; margin-top: -40px; }
+            .search-grid { grid-template-columns: 1fr 1fr !important; }
+            .search-grid .full-width { grid-column: span 2; }
+            .offer-grid { grid-template-columns: 1fr 1fr !important; }
+        }
         @media (max-width: 768px) {
+            .hero-section { padding: 40px 20px 60px; min-height: auto; }
             .hero-section h1 { font-size: 2.2rem; }
-            .search-card { padding: 20px; margin-top: -40px; }
+            .hero-section .hero-subtitle { font-size: 0.95rem; }
+            .hero-section .hero-stats { gap: 20px; flex-wrap: wrap; }
+            .hero-section .hero-stats .stat-item .number { font-size: 1.4rem; }
+            .search-card { padding: 16px; margin-top: -30px; border-radius: 20px; }
             .search-grid { grid-template-columns: 1fr !important; }
-            .feature-grid { grid-template-columns: 1fr 1fr !important; }
+            .search-grid .full-width { grid-column: span 1; }
+            .feature-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
             .offer-grid { grid-template-columns: 1fr !important; }
+            .testimonial-grid { grid-template-columns: 1fr !important; }
+            .app-header .brand .brand-text { font-size: 1.1rem; }
+            .app-header .brand .brand-icon { width: 36px; height: 36px; font-size: 1rem; }
+            .header-btn { padding: 8px 16px; font-size: 0.75rem; }
+            .nav-links { display: none !important; }
+        }
+        @media (max-width: 480px) {
+            .hero-section h1 { font-size: 1.8rem; }
+            .section-title { font-size: 1.6rem; }
+            .feature-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+            .feature-card { padding: 16px 12px; }
+            .feature-card .icon-wrap { width: 48px; height: 48px; font-size: 1.3rem; }
+            .feature-card h4 { font-size: 0.85rem; }
+            .feature-card p { font-size: 0.7rem; }
+            .offer-card .offer-price { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
     <!-- ===== HEADER ===== -->
-    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
-        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
-            <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
-                <i class="fas fa-bus" style="color:#f59e0b;"></i> Bus<span style="color:#f59e0b;">Car</span>
-            </a>
-            <div style="display:flex; align-items:center; gap:16px;">
-                <a href="/check-booking" style="color:#64748b; text-decoration:none; font-weight:500; font-size:0.9rem;">
-                    <i class="fas fa-ticket-alt"></i> Check Booking
-                </a>
-                <a href="/admin/login" style="color:#64748b; text-decoration:none; font-weight:500; font-size:0.9rem;">
-                    <i class="fas fa-user-shield"></i> Admin
-                </a>
+    <header class="app-header">
+        <a href="/" class="brand">
+            <div class="brand-icon"><i class="fas fa-car"></i></div>
+            <div class="brand-text">Don<span>Travels</span></div>
+        </a>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div class="nav-links" style="display:flex; align-items:center; gap:6px;">
+                <a href="/" class="nav-link active" style="color:#f59e0b;">Home</a>
+                <a href="#vehicles" class="nav-link">Vehicles</a>
+                <a href="#offers" class="nav-link">Offers</a>
+                <a href="/check-booking" class="nav-link"><i class="fas fa-ticket-alt"></i> Check</a>
+                <a href="/admin/login" class="nav-link" style="color:#64748b;"><i class="fas fa-user-shield"></i> Admin</a>
             </div>
+            <button class="header-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
+                <i class="fas fa-search"></i> Book Now
+            </button>
         </div>
     </header>
 
     <!-- ===== HERO ===== -->
     <section class="hero-section">
-        <h1>Travel <span>Smart</span>, Travel <span>Safe</span></h1>
-        <p>Book your bus tickets online with ease. Compare prices, choose your seats, and travel comfortably.</p>
+        <div class="bg-pattern"></div>
+        <div class="floating-elements">
+            <div class="float-icon"><i class="fas fa-bus"></i></div>
+            <div class="float-icon"><i class="fas fa-car"></i></div>
+            <div class="float-icon"><i class="fas fa-shuttle-van"></i></div>
+            <div class="float-icon"><i class="fas fa-crown"></i></div>
+        </div>
+        
+        <div style="position:relative; z-index:2;">
+            <div class="hero-tag"><i class="fas fa-crown"></i> Premium Executive Transport</div>
+            <h1>Travel <span class="highlight">Smart</span>,<br>Travel in <span class="highlight">Comfort</span></h1>
+            <p class="hero-subtitle">Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="number">500+</span>
+                    <span class="label">Happy Travelers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">4.9</span>
+                    <span class="label">Average Rating</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">24/7</span>
+                    <span class="label">Service</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">100%</span>
+                    <span class="label">Satisfaction</span>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- ===== SEARCH CARD ===== -->
-    <div class="search-card">
+    <div class="search-card" id="search-section">
         <form action="/search" method="GET">
             <div class="search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:16px; align-items:end;">
                 <div>
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                        <i class="fas fa-map-marker-alt" style="color:#f59e0b;"></i> From
-                    </label>
+                    <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
                     <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                        <i class="fas fa-flag-checkered" style="color:#f59e0b;"></i> To
-                    </label>
+                    <label class="form-label"><i class="fas fa-flag-checkered"></i> To</label>
                     <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                        <i class="fas fa-calendar" style="color:#f59e0b;"></i> Date
-                    </label>
+                    <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
                     <input type="date" name="date" class="form-input" required />
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                        <i class="fas fa-users" style="color:#f59e0b;"></i> Passengers
-                    </label>
-                    <input type="number" name="passengers" class="form-input" min="1" max="10" value="1" required />
+                    <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
+                    <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
                 </div>
                 <div>
-                    <button type="submit" class="btn-primary" style="padding:14px 28px; width:100%;">
+                    <button type="submit" class="btn-primary">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </div>
@@ -189,104 +530,181 @@
         </form>
     </div>
 
-    <!-- ===== FEATURES ===== -->
-    <section style="max-width:1200px; margin:0 auto; padding:0 20px 40px;">
+    <!-- ===== WHY CHOOSE US ===== -->
+    <section style="max-width:1200px; margin:0 auto; padding:0 20px 48px;">
         <div style="text-align:center; margin-bottom:32px;">
-            <h2 class="section-title">Why <span>BusCar</span></h2>
-            <p style="color:#64748b; max-width:500px; margin:0 auto;">The smartest way to book bus tickets online</p>
+            <h2 class="section-title">Why <span class="highlight">Don Travels</span></h2>
+            <p class="section-subtitle">Experience the best in executive transport and premium bus services</p>
         </div>
         <div class="feature-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
             <div class="feature-card">
-                <i class="fas fa-shield-alt"></i>
-                <h4>Safe Travel</h4>
-                <p>Verified buses with safety standards</p>
+                <div class="icon-wrap"><i class="fas fa-user-shield"></i></div>
+                <h4>Professional Drivers</h4>
+                <p>Experienced, licensed, and courteous drivers</p>
             </div>
             <div class="feature-card">
-                <i class="fas fa-chair"></i>
-                <h4>Choose Seats</h4>
-                <p>Pick your preferred seat location</p>
+                <div class="icon-wrap"><i class="fas fa-car"></i></div>
+                <h4>Luxury Fleet</h4>
+                <p>Premium vehicles including Toyota Hiace and Executive Vans</p>
             </div>
             <div class="feature-card">
-                <i class="fas fa-tag"></i>
-                <h4>Best Prices</h4>
-                <p>Compare and save on your trip</p>
+                <div class="icon-wrap"><i class="fas fa-clock"></i></div>
+                <h4>24/7 Service</h4>
+                <p>Available anytime, anywhere in Kenya</p>
             </div>
             <div class="feature-card">
-                <i class="fas fa-headset"></i>
-                <h4>24/7 Support</h4>
-                <p>We're here to help anytime</p>
+                <div class="icon-wrap"><i class="fas fa-shield-alt"></i></div>
+                <h4>Safe & Secure</h4>
+                <p>GPS tracked and fully insured rides</p>
             </div>
         </div>
     </section>
 
-    <!-- ===== OFFERS ===== -->
-    <section style="max-width:1200px; margin:0 auto; padding:0 20px 40px;">
+    <!-- ===== VEHICLES / OFFERS ===== -->
+    <section id="vehicles" style="background:#f8fafc; padding:48px 20px;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="text-align:center; margin-bottom:32px;">
+                <h2 class="section-title">Our Premium <span class="highlight">Vehicles</span></h2>
+                <p class="section-subtitle">Choose from our range of luxury and executive vehicles</p>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+                <div class="offer-card" style="background:linear-gradient(145deg, #f59e0b, #d97706);">
+                    <div class="offer-bg-pattern"></div>
+                    <div class="offer-bg-pattern-2"></div>
+                    <div class="offer-badge">Popular</div>
+                    <div class="offer-price">Toyota Hiace</div>
+                    <div class="offer-desc">14 Seater Minibus</div>
+                    <div class="offer-route"><i class="fas fa-user"></i> 14 Seats · Perfect for groups</div>
+                </div>
+                <div class="offer-card" style="background:linear-gradient(145deg, #0f172a, #1e293b);">
+                    <div class="offer-bg-pattern"></div>
+                    <div class="offer-bg-pattern-2"></div>
+                    <div class="offer-badge">Executive</div>
+                    <div class="offer-price">Executive Van</div>
+                    <div class="offer-desc">8 Seater Luxury Van</div>
+                    <div class="offer-route"><i class="fas fa-user"></i> 8 Seats · Business class</div>
+                </div>
+                <div class="offer-card" style="background:linear-gradient(145deg, #3b82f6, #1d4ed8);">
+                    <div class="offer-bg-pattern"></div>
+                    <div class="offer-bg-pattern-2"></div>
+                    <div class="offer-badge">Luxury</div>
+                    <div class="offer-price">Luxury SUV</div>
+                    <div class="offer-desc">7 Seater Premium SUV</div>
+                    <div class="offer-route"><i class="fas fa-user"></i> 7 Seats · Executive travel</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SPECIAL OFFERS ===== -->
+    <section id="offers" style="max-width:1200px; margin:0 auto; padding:48px 20px;">
         <div style="text-align:center; margin-bottom:32px;">
-            <h2 class="section-title">Special <span>Offers</span></h2>
-            <p style="color:#64748b;">Grab these deals before they're gone</p>
+            <h2 class="section-title">Special <span class="highlight">Offers</span></h2>
+            <p class="section-subtitle">Grab these deals before they're gone</p>
         </div>
         <div class="offer-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
-            <div class="offer-card">
+            <div class="offer-card" style="background:linear-gradient(145deg, #f59e0b, #d97706);">
+                <div class="offer-bg-pattern"></div>
+                <div class="offer-bg-pattern-2"></div>
+                <span class="offer-badge">Limited Time</span>
                 <div class="offer-price">KSh 500</div>
                 <div class="offer-desc">Nairobi → Kisumu</div>
-                <div style="font-size:0.8rem; opacity:0.8;">Limited seats available</div>
+                <div class="offer-route">Executive bus · Limited seats available</div>
             </div>
-            <div class="offer-card" style="background:linear-gradient(135deg, #3b82f6, #1d4ed8);">
+            <div class="offer-card" style="background:linear-gradient(145deg, #0f172a, #1e293b);">
+                <div class="offer-bg-pattern"></div>
+                <div class="offer-bg-pattern-2"></div>
+                <span class="offer-badge">Weekend Special</span>
                 <div class="offer-price">KSh 800</div>
                 <div class="offer-desc">Nairobi → Mombasa</div>
-                <div style="font-size:0.8rem; opacity:0.8;">Executive class</div>
+                <div class="offer-route">Executive class · Free WiFi & refreshments</div>
             </div>
         </div>
     </section>
 
     <!-- ===== TESTIMONIALS ===== -->
-    <section style="max-width:1200px; margin:0 auto; padding:0 20px 40px;">
-        <div style="text-align:center; margin-bottom:32px;">
-            <h2 class="section-title">What Our <span>Customers</span> Say</h2>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
-            <div class="testimonial-card">
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <div class="quote">"BusCar made booking my trip so easy. The seat selection was great!"</div>
-                <div class="author">
-                    <div class="avatar">JM</div>
-                    <div><strong>James Mwangi</strong><br><span style="font-size:0.75rem; color:#94a3b8;">Nairobi → Mombasa</span></div>
-                </div>
+    <section style="background:#f8fafc; padding:48px 20px;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="text-align:center; margin-bottom:32px;">
+                <h2 class="section-title">What Our <span class="highlight">Customers</span> Say</h2>
+                <p class="section-subtitle">Real reviews from real travelers</p>
             </div>
-            <div class="testimonial-card">
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <div class="quote">"Best bus booking platform in Kenya. Fast, reliable, and affordable."</div>
-                <div class="author">
-                    <div class="avatar">SO</div>
-                    <div><strong>Sarah Ochieng</strong><br><span style="font-size:0.75rem; color:#94a3b8;">Kisumu → Nairobi</span></div>
+            <div class="testimonial-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+                <div class="testimonial-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <div class="quote">"Don Travels made our group trip amazing! The Toyota Hiace was spacious and comfortable. Professional driver too."</div>
+                    <div class="author">
+                        <div class="avatar">JM</div>
+                        <div><div class="name">James Mwangi</div><div class="route">Nairobi → Mombasa · 2 days ago</div></div>
+                    </div>
                 </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <div class="quote">"I love the real-time seat availability. Highly recommend BusCar!"</div>
-                <div class="author">
-                    <div class="avatar">DK</div>
-                    <div><strong>David Kiprop</strong><br><span style="font-size:0.75rem; color:#94a3b8;">Eldoret → Nairobi</span></div>
+                <div class="testimonial-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <div class="quote">"Executive van was perfect for our business trip. Very professional service and the vehicle was spotless."</div>
+                    <div class="author">
+                        <div class="avatar">SO</div>
+                        <div><div class="name">Sarah Ochieng</div><div class="route">Kisumu → Nairobi · 5 days ago</div></div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <div class="quote">"Best transport service in Kenya! The premium sedan was luxurious and the ride was smooth. Highly recommend!"</div>
+                    <div class="author">
+                        <div class="avatar">DK</div>
+                        <div><div class="name">David Kiprop</div><div class="route">Eldoret → Nairobi · 1 week ago</div></div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ===== FOOTER ===== -->
-    <footer style="background:white; padding:24px 20px; text-align:center; border-top:1px solid #f1f5f9;">
-        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar. All rights reserved.</p>
-        <p style="color:#cbd5e1; font-size:0.75rem; margin-top:4px;">
-            <i class="fas fa-lock" style="color:#f59e0b;"></i> Secure booking
-        </p>
+    <footer class="app-footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="#vehicles">Vehicles</a>
+            <a href="#offers">Offers</a>
+            <a href="/check-booking">Check Booking</a>
+            <a href="/admin/login">Admin</a>
+        </div>
+        <p>© 2026 Don Travels. Premium Executive Transport Services.</p>
+        <div class="secure-badge">
+            <i class="fas fa-lock"></i> Secure booking · 100% private
+        </div>
     </footer>
 
     <script>
-        // Set min date to today
+        // ===== SET MIN DATE =====
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.querySelector('input[name="date"]');
             if (dateInput) {
                 const today = new Date().toISOString().split('T')[0];
                 dateInput.setAttribute('min', today);
+            }
+        });
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.app-header');
+            if (window.scrollY > 20) {
+                header.style.background = 'rgba(255,255,255,0.98)';
+                header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
+            } else {
+                header.style.background = 'rgba(255,255,255,0.92)';
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.04)';
             }
         });
     </script>
