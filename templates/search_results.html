@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Results · BusCar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f4f8; }
+        
+        .bus-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+        .bus-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.04); transform: translateY(-2px); }
+        .bus-card .bus-name { font-weight: 700; font-size: 1.1rem; color: #0f172a; }
+        .bus-card .bus-type { color: #64748b; font-size: 0.85rem; }
+        .bus-card .bus-time { font-weight: 600; color: #0f172a; }
+        .bus-card .bus-price { font-weight: 800; font-size: 1.3rem; color: #f59e0b; }
+        .bus-card .bus-seats { color: #64748b; font-size: 0.85rem; }
+        
+        .btn-book {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-book:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
+        
+        .btn-outline {
+            border: 2px solid #f59e0b;
+            color: #f59e0b;
+            background: transparent;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-outline:hover { background: #f59e0b; color: white; }
+        
+        @media (max-width: 768px) {
+            .bus-card { grid-template-columns: 1fr; text-align: center; }
+            .bus-card .bus-actions { display: flex; flex-direction: column; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
+        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
+            <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
+                <i class="fas fa-bus" style="color:#f59e0b;"></i> Bus<span style="color:#f59e0b;">Car</span>
+            </a>
+            <a href="/" style="color:#64748b; text-decoration:none;">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </header>
+
+    <!-- ===== RESULTS ===== -->
+    <section style="max-width:900px; margin:40px auto; padding:0 20px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+            <div>
+                <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a;">
+                    <i class="fas fa-bus" style="color:#f59e0b;"></i> 
+                    {{ origin }} → {{ destination }}
+                </h2>
+                <p style="color:#64748b; font-size:0.9rem;">
+                    {{ results|length }} buses found · {{ passengers }} passenger(s)
+                </p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a href="/" class="btn-outline"><i class="fas fa-search"></i> New Search</a>
+            </div>
+        </div>
+
+        {% if results %}
+            {% for bus in results %}
+            <div class="bus-card" style="margin-bottom:16px;">
+                <div>
+                    <div class="bus-name">{{ bus.company_name or 'BusCar Express' }}</div>
+                    <div class="bus-type">
+                        <i class="fas fa-clock"></i> {{ bus.route.departure_time or '08:00' }} - {{ bus.route.arrival_time or '14:00' }}
+                        <span style="color:#94a3b8; margin:0 8px;">|</span>
+                        <i class="fas fa-chair"></i> {{ bus.available_seats }} seats available
+                    </div>
+                    <div class="bus-time" style="margin-top:4px;">
+                        <i class="fas fa-route"></i> {{ bus.route.origin }} → {{ bus.route.destination }}
+                    </div>
+                </div>
+                <div class="bus-actions" style="text-align:right;">
+                    <div class="bus-price">KSh {{ bus.fare or 1500 }}</div>
+                    <div class="bus-seats"><i class="fas fa-user"></i> {{ bus.total_seats or 40 }} seats</div>
+                    <a href="/booking/{{ bus.id }}" class="btn-book">
+                        <i class="fas fa-calendar-check"></i> Book Now
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center; padding:60px 20px; background:white; border-radius:20px; border:1px solid #f1f5f9;">
+                <i class="fas fa-bus" style="font-size:4rem; color:#cbd5e1; display:block; margin-bottom:16px;"></i>
+                <h3 style="font-size:1.3rem; font-weight:700; color:#0f172a;">No buses found</h3>
+                <p style="color:#64748b; max-width:400px; margin:8px auto;">Try adjusting your search criteria or choose a different date.</p>
+                <a href="/" class="btn-primary" style="display:inline-block; margin-top:16px; padding:12px 32px; border-radius:9999px; background:linear-gradient(135deg, #f59e0b, #d97706); color:white; text-decoration:none; font-weight:600;">
+                    <i class="fas fa-search"></i> New Search
+                </a>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9;">
+        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar. All rights reserved.</p>
+    </footer>
+</body>
+</html>
