@@ -41,6 +41,7 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            transition: all 0.3s;
         }
         .btn-home:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
         .detail-row {
@@ -52,9 +53,26 @@
         .detail-row:last-child { border-bottom: none; }
         .detail-row .label { color: #64748b; }
         .detail-row .value { font-weight: 600; color: #0f172a; }
+        .print-btn {
+            background: #0f172a;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 8px;
+        }
+        .print-btn:hover { background: #1e293b; }
+        @media (max-width: 768px) {
+            .confirmation-card { padding: 24px 16px; margin: 20px 16px; }
+            .detail-row { flex-direction: column; align-items: center; gap: 4px; }
+        }
     </style>
 </head>
 <body>
+
     <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04);">
         <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
             <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
@@ -95,12 +113,25 @@
                 <span class="label">Payment</span>
                 <span class="value">{{ booking.payment_method|upper }}</span>
             </div>
+            <div class="detail-row">
+                <span class="label">Status</span>
+                <span class="value" style="color:#10b981; font-weight:600;">
+                    <i class="fas fa-check-circle"></i> {{ booking.status|capitalize }}
+                </span>
+            </div>
         </div>
         
-        <a href="/" class="btn-home"><i class="fas fa-home"></i> Back to Home</a>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <button onclick="window.print()" class="print-btn">
+                <i class="fas fa-print"></i> Print Ticket
+            </button>
+            <a href="/" class="btn-home"><i class="fas fa-home"></i> Back to Home</a>
+        </div>
+        
         <p style="color:#94a3b8; font-size:0.75rem; margin-top:16px;">
             <i class="fas fa-envelope"></i> A confirmation has been sent to your email.
         </p>
     </div>
+
 </body>
 </html>
