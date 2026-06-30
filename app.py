@@ -7,10 +7,10 @@ import requests
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'don-travels-secret-key-2026'
+app.secret_key = 'buscar-secret-key-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
-# ===== YOUR SUPABASE CREDENTIALS =====
+# ===== SUPABASE CONFIGURATION =====
 SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
 SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
@@ -27,7 +27,7 @@ DB_TYPE = 'json'
 def test_supabase_connection():
     try:
         response = requests.get(
-            f"{SUPABASE_URL}/rest/v1/bookings?select=count",
+            f"{SUPABASE_URL}/rest/v1/buses?select=count",
             headers=SUPABASE_HEADERS,
             timeout=10
         )
@@ -43,10 +43,7 @@ try:
 except:
     print("📁 Using JSON storage")
 
-# ===== JSON BACKUP =====
-ORDERS_FILE = 'bookings.json'
-PAYMENTS_FILE = 'payments.json'
-
+# ===== JSON FALLBACK =====
 def load_json(file_path):
     try:
         if os.path.exists(file_path):
@@ -65,6 +62,34 @@ def save_json(file_path, data):
         return False
 
 # ===== DATABASE FUNCTIONS =====
+def load_buses():
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/buses?select=*",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json()
+        except:
+            pass
+    return load_json('buses.json')
+
+def load_routes():
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/routes?select=*",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json()
+        except:
+            pass
+    return load_json('routes.json')
+
 def load_bookings():
     if DB_CONNECTED:
         try:
@@ -77,7 +102,7 @@ def load_bookings():
                 return response.json()
         except:
             pass
-    return load_json(ORDERS_FILE)
+    return load_json('bookings.json')
 
 def save_booking(booking_data):
     if DB_CONNECTED:
@@ -93,10 +118,10 @@ def save_booking(booking_data):
                 return data[0]['id'] if data else None
         except:
             pass
-    bookings = load_json(ORDERS_FILE)
+    bookings = load_json('bookings.json')
     booking_data['id'] = len(bookings) + 1
     bookings.append(booking_data)
-    save_json(ORDERS_FILE, bookings)
+    save_json('bookings.json', bookings)
     return booking_data['id']
 
 def update_booking(booking_id, updates):
@@ -112,19 +137,19 @@ def update_booking(booking_id, updates):
                 return True
         except:
             pass
-    bookings = load_json(ORDERS_FILE)
+    bookings = load_json('bookings.json')
     for booking in bookings:
         if booking.get('id') == booking_id:
             booking.update(updates)
-            save_json(ORDERS_FILE, bookings)
+            save_json('bookings.json', bookings)
             return True
     return False
 
-def get_booking(booking_id):
+def get_booking_by_ref(booking_ref):
     if DB_CONNECTED:
         try:
             response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
+                f"{SUPABASE_URL}/rest/v1/bookings?booking_ref=eq.{booking_ref}",
                 headers=SUPABASE_HEADERS,
                 timeout=10
             )
@@ -133,279 +158,235 @@ def get_booking(booking_id):
                 return data[0] if data else None
         except:
             pass
-    bookings = load_json(ORDERS_FILE)
+    bookings = load_json('bookings.json')
     for booking in bookings:
-        if booking.get('id') == booking_id:
+        if booking.get('booking_ref') == booking_ref:
             return booking
     return None
 
-def delete_booking(booking_id):
-    if DB_CONNECTED:
-        try:
-            response = requests.delete(
-                f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
-                headers=SUPABASE_HEADERS,
-                timeout=10
-            )
-            if response.status_code == 204:
-                return True
-        except:
-            pass
-    bookings = load_json(ORDERS_FILE)
-    bookings = [b for b in bookings if b.get('id') != booking_id]
-    save_json(ORDERS_FILE, bookings)
-    return True
+# ===== HELPER FUNCTIONS =====
+def generate_booking_ref():
+    return 'BC-' + str(uuid.uuid4().hex[:8]).upper()
 
-# ===== PAYMENT FUNCTIONS =====
-def load_payments():
-    if DB_CONNECTED:
-        try:
-            response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/payments?select=*&order=created_at.desc",
-                headers=SUPABASE_HEADERS,
-                timeout=10
-            )
-            if response.status_code == 200:
-                return response.json()
-        except:
-            pass
-    return load_json(PAYMENTS_FILE)
+def generate_seat_layout(total_seats=40):
+    """Generate a seat layout with rows"""
+    seats = []
+    for row in range(1, 11):  # 10 rows
+        for side in ['L', 'R']:  # Left and Right side
+            for seat_num in range(1, 3):  # 2 seats per side
+                seat_id = f"{row}{side}{seat_num}"
+                seats.append({
+                    'id': seat_id,
+                    'row': row,
+                    'side': side,
+                    'number': seat_num,
+                    'status': 'available'  # available, booked, selected
+                })
+    return seats
 
-def save_payment(payment_data):
-    if DB_CONNECTED:
-        try:
-            response = requests.post(
-                f"{SUPABASE_URL}/rest/v1/payments",
-                headers=SUPABASE_HEADERS,
-                json=payment_data,
-                timeout=10
-            )
-            if response.status_code == 201:
-                data = response.json()
-                return data[0]['id'] if data else None
-        except:
-            pass
-    payments = load_json(PAYMENTS_FILE)
-    payment_data['id'] = len(payments) + 1
-    payments.append(payment_data)
-    save_json(PAYMENTS_FILE, payments)
-    return payment_data['id']
+# ===== ADMIN AUTH =====
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'buscar2026')
 
-def update_payment(payment_id, updates):
-    if DB_CONNECTED:
-        try:
-            response = requests.patch(
-                f"{SUPABASE_URL}/rest/v1/payments?id=eq.{payment_id}",
-                headers=SUPABASE_HEADERS,
-                json=updates,
-                timeout=10
-            )
-            if response.status_code == 200:
-                return True
-        except:
-            pass
-    payments = load_json(PAYMENTS_FILE)
-    for payment in payments:
-        if payment.get('id') == payment_id:
-            payment.update(updates)
-            save_json(PAYMENTS_FILE, payments)
-            return True
-    return False
-
-# ===== HELPERS =====
-def generate_booking_id():
-    return 'DON-' + str(uuid.uuid4().hex[:8]).upper()
-
-def generate_payment_id():
-    return 'PAY-' + str(uuid.uuid4().hex[:8]).upper()
-
-def calculate_price(vehicle_type, distance_km=10):
-    prices = {
-        'Standard Sedan': 1500,
-        'Premium Sedan': 2500,
-        'Toyota Hiace': 3500,
-        'Executive Sedan': 4500,
-        'Luxury SUV': 5500,
-        'Executive Van': 6500
-    }
-    return prices.get(vehicle_type, 2000)
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            flash('Please login to access admin panel', 'warning')
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # ===== ROUTES =====
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    routes = load_routes()
+    return render_template('index.html', routes=routes)
 
-@app.route('/admin')
-def admin():
-    bookings = load_bookings()
-    payments = load_payments()
+@app.route('/search')
+def search_results():
+    origin = request.args.get('origin', '')
+    destination = request.args.get('destination', '')
+    date = request.args.get('date', '')
+    passengers = int(request.args.get('passengers', 1))
     
-    stats = {
-        'total': len(bookings),
-        'pending': len([b for b in bookings if b.get('status') == 'pending']),
-        'confirmed': len([b for b in bookings if b.get('status') == 'confirmed']),
-        'completed': len([b for b in bookings if b.get('status') == 'completed']),
-        'cancelled': len([b for b in bookings if b.get('status') == 'cancelled']),
-        'revenue': sum([float(b.get('amount', 0)) for b in bookings if b.get('status') == 'completed']),
-        'payments': len(payments),
-        'today': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))])
-    }
-    return render_template('admin.html', bookings=bookings, payments=payments, stats=stats, db_type=DB_TYPE, db_connected=DB_CONNECTED)
+    buses = load_buses()
+    routes = load_routes()
+    
+    # Filter buses based on search
+    results = []
+    for bus in buses:
+        # Check if bus route matches
+        route = next((r for r in routes if r.get('id') == bus.get('route_id')), {})
+        if route:
+            if route.get('origin', '').lower() == origin.lower() and route.get('destination', '').lower() == destination.lower():
+                # Check date and availability
+                bus['route'] = route
+                bus['available_seats'] = bus.get('total_seats', 40) - bus.get('booked_seats', 0)
+                if bus['available_seats'] >= passengers:
+                    results.append(bus)
+    
+    return render_template('search_results.html', results=results, origin=origin, destination=destination, date=date, passengers=passengers)
 
-@app.route('/api/status')
-def api_status():
-    bookings = load_bookings()
-    return jsonify({
-        'database': DB_TYPE,
-        'connected': DB_CONNECTED,
-        'bookings': len(bookings),
-        'timestamp': datetime.utcnow().isoformat()
-    })
-
-@app.route('/api/reconnect')
-def reconnect_db():
-    global DB_CONNECTED
-    DB_CONNECTED = test_supabase_connection()
-    return jsonify({'connected': DB_CONNECTED})
+@app.route('/booking/<bus_id>')
+def booking(bus_id):
+    buses = load_buses()
+    bus = next((b for b in buses if str(b.get('id')) == bus_id), None)
+    
+    if not bus:
+        flash('Bus not found', 'danger')
+        return redirect(url_for('index'))
+    
+    # Generate seat layout
+    seats = generate_seat_layout(bus.get('total_seats', 40))
+    bus['seats'] = seats
+    
+    return render_template('booking.html', bus=bus)
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
     try:
-        customer_name = request.form.get('name', '').strip()
-        customer_email = request.form.get('email', '').strip()
-        customer_phone = request.form.get('phone', '').strip()
-        pickup_location = request.form.get('pickup', '').strip()
-        dropoff_location = request.form.get('dropoff', '').strip()
-        vehicle_type = request.form.get('vehicle', '').strip()
-        booking_date = request.form.get('date', '').strip()
-        booking_time = request.form.get('time', '').strip()
-        passengers = request.form.get('passengers', '1').strip()
-        special_requests = request.form.get('special_requests', '').strip()
-
-        if not all([customer_name, customer_email, pickup_location, dropoff_location, vehicle_type, booking_date]):
+        data = request.get_json()
+        
+        bus_id = data.get('bus_id')
+        passenger_name = data.get('passenger_name', '').strip()
+        passenger_phone = data.get('passenger_phone', '').strip()
+        passenger_email = data.get('passenger_email', '').strip()
+        selected_seats = data.get('selected_seats', [])
+        total_fare = data.get('total_fare', 0)
+        
+        if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
-
-        amount = calculate_price(vehicle_type)
-        booking_id = generate_booking_id()
+        
+        # Generate booking reference
+        booking_ref = generate_booking_ref()
         
         booking_data = {
-            'booking_id': booking_id,
-            'customer_name': customer_name,
-            'customer_email': customer_email,
-            'customer_phone': customer_phone,
-            'pickup_location': pickup_location,
-            'dropoff_location': dropoff_location,
-            'vehicle_type': vehicle_type,
-            'booking_date': booking_date,
-            'booking_time': booking_time,
-            'passengers': int(passengers),
-            'special_requests': special_requests,
-            'amount': amount,
-            'status': 'pending',
+            'booking_ref': booking_ref,
+            'bus_id': bus_id,
+            'passenger_name': passenger_name,
+            'passenger_phone': passenger_phone,
+            'passenger_email': passenger_email,
+            'selected_seats': selected_seats,
+            'total_fare': total_fare,
+            'status': 'confirmed',
             'payment_status': 'pending',
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow().isoformat(),
+            'payment_method': data.get('payment_method', 'cash')
         }
         
         save_booking(booking_data)
-
-        return jsonify({
-            'success': True, 
-            'message': 'Booking created successfully!',
-            'booking_id': booking_id,
-            'amount': amount
-        }), 200
-
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/payment', methods=['POST'])
-def process_payment():
-    try:
-        data = request.get_json()
-        booking_id = data.get('booking_id')
-        payment_method = data.get('payment_method', 'mpesa')
-        phone_number = data.get('phone_number', '')
         
-        booking = get_booking(int(booking_id)) if booking_id else None
-        if not booking:
-            return jsonify({'success': False, 'error': 'Booking not found'}), 404
-        
-        payment_id = generate_payment_id()
-        
-        payment_data = {
-            'payment_id': payment_id,
-            'booking_id': booking_id,
-            'customer_name': booking.get('customer_name'),
-            'customer_email': booking.get('customer_email'),
-            'customer_phone': booking.get('customer_phone'),
-            'amount': booking.get('amount'),
-            'payment_method': payment_method,
-            'payment_status': 'processing',
-            'created_at': datetime.utcnow().isoformat()
-        }
-        
-        save_payment(payment_data)
-        
-        # Simulate payment processing
-        # In production, this would call M-Pesa API
-        
-        # Update booking status
-        update_booking(int(booking_id), {'payment_status': 'paid', 'status': 'confirmed'})
+        # Update bus booked seats
+        buses = load_buses()
+        for bus in buses:
+            if str(bus.get('id')) == bus_id:
+                bus['booked_seats'] = bus.get('booked_seats', 0) + len(selected_seats)
+                if DB_CONNECTED:
+                    try:
+                        requests.patch(
+                            f"{SUPABASE_URL}/rest/v1/buses?id=eq.{bus_id}",
+                            headers=SUPABASE_HEADERS,
+                            json={'booked_seats': bus['booked_seats']},
+                            timeout=10
+                        )
+                    except:
+                        pass
+                break
+        save_json('buses.json', buses)
         
         return jsonify({
             'success': True,
-            'message': 'Payment processed successfully!',
-            'payment_id': payment_id,
-            'receipt': {
-                'booking_id': booking_id,
-                'amount': booking.get('amount'),
-                'payment_method': payment_method,
-                'status': 'completed',
-                'paid_at': datetime.utcnow().isoformat()
-            }
+            'message': 'Booking confirmed!',
+            'booking_ref': booking_ref,
+            'booking': booking_data
         }), 200
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/bookings/<int:booking_id>/status', methods=['PUT'])
-def update_booking_status(booking_id):
-    try:
-        data = request.get_json()
-        new_status = data.get('status')
+@app.route('/confirmation/<booking_ref>')
+def confirmation(booking_ref):
+    booking = get_booking_by_ref(booking_ref)
+    if not booking:
+        flash('Booking not found', 'danger')
+        return redirect(url_for('index'))
+    
+    return render_template('confirmation.html', booking=booking)
+
+@app.route('/check-booking', methods=['GET', 'POST'])
+def check_booking():
+    if request.method == 'POST':
+        booking_ref = request.form.get('booking_ref', '').strip()
+        phone = request.form.get('phone', '').strip()
         
-        if new_status not in ['pending', 'confirmed', 'completed', 'cancelled']:
-            return jsonify({'success': False, 'error': 'Invalid status'}), 400
+        booking = get_booking_by_ref(booking_ref)
+        if booking and booking.get('passenger_phone') == phone:
+            return render_template('check_booking.html', booking=booking)
+        else:
+            flash('No booking found. Please check your details.', 'danger')
+    
+    return render_template('check_booking.html')
 
-        booking = get_booking(booking_id)
-        if not booking:
-            return jsonify({'success': False, 'error': 'Booking not found'}), 404
+# ===== ADMIN ROUTES =====
 
-        updates = {'status': new_status}
-        if new_status == 'confirmed':
-            updates['payment_status'] = 'paid'
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
         
-        update_booking(booking_id, updates)
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session['admin_logged_in'] = True
+            flash('Login successful!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid credentials', 'danger')
+    
+    return render_template('admin_login.html')
 
-        return jsonify({'success': True, 'message': f'Status updated to {new_status}'}), 200
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    flash('Logged out successfully', 'info')
+    return redirect(url_for('admin_login'))
 
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+@app.route('/admin')
+@admin_required
+def admin_dashboard():
+    bookings = load_bookings()
+    buses = load_buses()
+    routes = load_routes()
+    
+    stats = {
+        'total_bookings': len(bookings),
+        'total_revenue': sum([float(b.get('total_fare', 0)) for b in bookings if b.get('status') == 'confirmed']),
+        'total_buses': len(buses),
+        'total_routes': len(routes),
+        'today_bookings': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))]),
+        'pending_payments': len([b for b in bookings if b.get('payment_status') == 'pending'])
+    }
+    
+    return render_template('admin.html', bookings=bookings, buses=buses, routes=routes, stats=stats)
 
-@app.route('/api/bookings/<int:booking_id>', methods=['DELETE'])
-def delete_booking_route(booking_id):
-    try:
-        booking = get_booking(booking_id)
-        if not booking:
-            return jsonify({'success': False, 'error': 'Booking not found'}), 404
+@app.route('/admin/buses')
+@admin_required
+def admin_buses():
+    buses = load_buses()
+    return render_template('admin_buses.html', buses=buses)
 
-        delete_booking(booking_id)
+@app.route('/admin/routes')
+@admin_required
+def admin_routes():
+    routes = load_routes()
+    return render_template('admin_routes.html', routes=routes)
 
-        return jsonify({'success': True, 'message': 'Booking deleted successfully'}), 200
-
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+@app.route('/admin/bookings')
+@admin_required
+def admin_bookings():
+    bookings = load_bookings()
+    return render_template('admin_bookings.html', bookings=bookings)
 
 # ===== VERCEL HANDLER =====
 def handler(request, context):
@@ -413,7 +394,7 @@ def handler(request, context):
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("🚀 DON TRAVELS - Premium Taxi & Executive Services")
+    print("🚌 BUSCAR - Complete Bus Booking System")
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
