@@ -348,6 +348,9 @@ def booking_page(bus_id):
             'status': 'booked' if is_booked else 'available'
         })
     
+    # Debug output
+    print(f"📊 Booking page: Bus {bus_id}, Date {date}, Total seats {len(seats)}")
+    
     return render_template('booking.html', 
         bus=bus, 
         vehicle=vehicle, 
