@@ -3,42 +3,44 @@ from datetime import datetime
 import os
 import uuid
 import json
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'dev-secret-key-12345'
 
-# ===== YOUR SUPABASE CREDENTIALS (HARDCODED) =====
+# ===== YOUR SUPABASE CREDENTIALS =====
 SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
 SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
-print(f"🔍 Using Supabase URL: {SUPABASE_URL[:30]}...")
-print(f"🔑 Using Supabase Key: {SUPABASE_KEY[:20]}...")
+# Supabase REST API headers
+SUPABASE_HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json"
+}
 
-# Try to connect to Supabase
+# Test connection
 DB_CONNECTED = False
 DB_TYPE = 'json'
 
 try:
-    from supabase import create_client
-    print("✅ Supabase package found. Connecting...")
+    # Try to get bookings count
+    response = requests.get(
+        f"{SUPABASE_URL}/rest/v1/bookings?select=count",
+        headers=SUPABASE_HEADERS
+    )
     
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    
-    # Test connection
-    test = supabase.table('bookings').select('count', count='exact').limit(1).execute()
-    
-    DB_CONNECTED = True
-    DB_TYPE = 'supabase'
-    print(f"✅ Supabase connected successfully!")
-    
-except ImportError:
-    print("❌ Supabase package not installed")
-    supabase = None
-    
+    if response.status_code == 200:
+        DB_CONNECTED = True
+        DB_TYPE = 'supabase'
+        print("✅ Supabase connected successfully!")
+    else:
+        print(f"❌ Supabase error: {response.status_code}")
+        print(f"   Response: {response.text[:100]}")
+        
 except Exception as e:
-    print(f"❌ Supabase error: {e}")
+    print(f"❌ Supabase connection error: {e}")
     print("📁 Using JSON storage instead")
-    supabase = None
 
 # ===== JSON BACKUP =====
 ORDERS_FILE = 'bookings.json'
@@ -64,8 +66,12 @@ def save_bookings_json(bookings):
 def load_bookings():
     if DB_CONNECTED:
         try:
-            response = supabase.table('bookings').select('*').order('created_at', desc=True).execute()
-            return response.data
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/bookings?select=*&order=created_at.desc",
+                headers=SUPABASE_HEADERS
+            )
+            if response.status_code == 200:
+                return response.json()
         except:
             return load_bookings_json()
     return load_bookings_json()
@@ -73,9 +79,18 @@ def load_bookings():
 def save_booking(booking_data):
     if DB_CONNECTED:
         try:
-            response = supabase.table('bookings').insert(booking_data).execute()
-            return response.data[0]['id'] if response.data else None
-        except:
+            response = requests.post(
+                f"{SUPABASE_URL}/rest/v1/bookings",
+                headers=SUPABASE_HEADERS,
+                json=booking_data
+            )
+            if response.status_code == 201:
+                data = response.json()
+                print(f"✅ Booking saved to Supabase: {booking_data['booking_id']}")
+                return data[0]['id'] if data else None
+        except Exception as e:
+            print(f"❌ Supabase save error: {e}")
+            # Fallback to JSON
             bookings = load_bookings_json()
             booking_data['id'] = len(bookings) + 1
             bookings.append(booking_data)
@@ -91,8 +106,13 @@ def save_booking(booking_data):
 def get_booking(booking_id):
     if DB_CONNECTED:
         try:
-            response = supabase.table('bookings').select('*').eq('id', booking_id).execute()
-            return response.data[0] if response.data else None
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
+                headers=SUPABASE_HEADERS
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return data[0] if data else None
         except:
             pass
     bookings = load_bookings_json()
@@ -104,8 +124,13 @@ def get_booking(booking_id):
 def update_booking(booking_id, updates):
     if DB_CONNECTED:
         try:
-            response = supabase.table('bookings').update(updates).eq('id', booking_id).execute()
-            return True if response.data else False
+            response = requests.patch(
+                f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
+                headers=SUPABASE_HEADERS,
+                json=updates
+            )
+            if response.status_code == 200:
+                return True
         except:
             pass
     bookings = load_bookings_json()
@@ -119,8 +144,12 @@ def update_booking(booking_id, updates):
 def delete_booking(booking_id):
     if DB_CONNECTED:
         try:
-            response = supabase.table('bookings').delete().eq('id', booking_id).execute()
-            return True if response.data else False
+            response = requests.delete(
+                f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
+                headers=SUPABASE_HEADERS
+            )
+            if response.status_code == 204:
+                return True
         except:
             pass
     bookings = load_bookings_json()
