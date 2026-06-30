@@ -323,6 +323,7 @@ def search_results():
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
+    # Get bus data
     bus = get_bus_by_id(bus_id)
     if not bus:
         flash('Bus not found', 'danger')
@@ -331,13 +332,16 @@ def booking_page(bus_id):
     # Get the date from query params or use today
     date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
     
+    # Get vehicle and route
     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
     route = get_route_by_id(bus.get('route_id'))
     
+    # Get seat data for this specific date
     total_seats = bus.get('total_seats', 40)
     seat_data = load_bus_seats(bus_id, date)
     booked_seats_list = seat_data.get('booked_seats_list', [])
     
+    # Build seats array with date-specific status
     seats = []
     for i in range(1, total_seats + 1):
         seat_id = str(i)
@@ -349,13 +353,15 @@ def booking_page(bus_id):
         })
     
     # Debug output
-    print(f"📊 Booking page: Bus {bus_id}, Date {date}, Total seats {len(seats)}")
+    print(f"📊 Booking page: Bus {bus_id}, Date {date}")
+    print(f"   Total seats: {total_seats}, Booked: {len(booked_seats_list)}")
+    print(f"   Booked seats: {booked_seats_list}")
     
     return render_template('booking.html', 
-        bus=bus, 
-        vehicle=vehicle, 
-        route=route, 
-        seats=seats, 
+        bus=bus,
+        vehicle=vehicle,
+        route=route,
+        seats=seats,
         date=date
     )
 
@@ -376,22 +382,22 @@ def create_booking():
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
         
-        # Get current seat data for this date
+        # Get current seat data for this specific date
         seat_data = load_bus_seats(bus_id, booking_date)
         booked_seats_list = seat_data.get('booked_seats_list', [])
         
-        # Check if seats are still available
+        # Check if seats are still available for this date
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
                 return jsonify({'success': False, 'error': f'Seat {seat} is already booked for {booking_date}. Please refresh and try again.'}), 400
         
-        # Create new booked list
+        # Create new booked list for this date
         new_booked_list = booked_seats_list.copy()
         for seat in selected_seats:
             if str(seat) not in new_booked_list:
                 new_booked_list.append(str(seat))
         
-        # Update bus seats for this date
+        # Update bus seats for this specific date
         update_success = update_bus_seats(bus_id, booking_date, new_booked_list)
         if not update_success:
             return jsonify({'success': False, 'error': 'Failed to update seats. Please try again.'}), 500
