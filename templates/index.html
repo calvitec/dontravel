@@ -12,14 +12,12 @@
         body { background: #f0f4f8; }
         
         @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         
         /* ===== HEADER ===== */
         .app-header {
-            background: rgba(255,255,255,0.92);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(12px);
             padding: 14px 20px;
             box-shadow: 0 2px 20px rgba(0,0,0,0.04);
@@ -84,7 +82,7 @@
         }
         .nav-link:hover { color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
         
-        /* ===== HERO ===== */
+        /* ===== HERO WITH CAROUSEL ===== */
         .hero-section {
             background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
             padding: 60px 20px 80px;
@@ -92,7 +90,7 @@
             color: white;
             position: relative;
             overflow: hidden;
-            min-height: 60vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -169,6 +167,83 @@
             color: #64748b; 
         }
         
+        /* ===== CAROUSEL ===== */
+        .carousel-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .carousel-slide {
+            min-width: 100%;
+            position: relative;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+        .carousel-slide .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        }
+        .carousel-slide .slide-overlay .slide-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .carousel-slide .slide-overlay .slide-desc {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-btn:hover { background: rgba(251,191,36,0.3); }
+        .carousel-btn.prev { left: 16px; }
+        .carousel-btn.next { right: 16px; }
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .carousel-dot.active { background: #f59e0b; width: 30px; border-radius: 6px; }
+        
         /* ===== SEARCH CARD ===== */
         .search-card {
             background: white;
@@ -220,124 +295,14 @@
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
         
-        /* ===== VEHICLE CARDS WITH IMAGES ===== */
-        .vehicle-card {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-        }
-        .vehicle-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
-            border-color: rgba(245, 158, 11, 0.15);
-        }
-        .vehicle-card .vehicle-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: all 0.6s;
-        }
-        .vehicle-card:hover .vehicle-image {
-            transform: scale(1.03);
-        }
-        .vehicle-card .vehicle-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 4px 14px;
-            border-radius: 9999px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: rgba(245, 158, 11, 0.9);
-            color: white;
-            backdrop-filter: blur(4px);
-        }
-        .vehicle-card .vehicle-content {
-            padding: 20px 20px 24px;
-        }
-        .vehicle-card .vehicle-name {
-            font-weight: 800;
-            font-size: 1.15rem;
-            color: #0f172a;
-        }
-        .vehicle-card .vehicle-desc {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-top: 2px;
-        }
-        .vehicle-card .vehicle-features {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        .vehicle-card .vehicle-features .feature {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            color: #475569;
-        }
-        .vehicle-card .vehicle-features .feature i { color: #f59e0b; }
-        .vehicle-card .vehicle-price {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #f59e0b;
-            margin-top: 12px;
-        }
-        .vehicle-card .vehicle-btn {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 8px 20px;
-            font-weight: 600;
-            color: #0f172a;
-            transition: all 0.3s;
-            cursor: pointer;
-            font-size: 0.85rem;
-            margin-top: 12px;
-            width: 100%;
-            text-align: center;
-        }
-        .vehicle-card .vehicle-btn:hover {
-            background: #f59e0b;
-            color: white;
-            border-color: #f59e0b;
-        }
-        
-        .image-wrapper {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* ===== SECTION TITLES ===== */
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -1px;
-        }
-        .section-title .highlight { color: #f59e0b; }
-        .section-subtitle {
-            color: #64748b;
-            max-width: 500px;
-            margin: 8px auto 0;
-            font-size: 0.95rem;
-        }
-        
-        /* ===== FEATURE CARDS ===== */
+        /* ===== FEATURES ===== */
         .feature-card {
             background: white;
             border-radius: 20px;
             padding: 28px 24px;
             text-align: center;
             border: 1px solid #f1f5f9;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s;
         }
         .feature-card:hover {
             transform: translateY(-8px);
@@ -364,90 +329,6 @@
         .feature-card h4 { font-weight: 700; color: #0f172a; font-size: 1.05rem; }
         .feature-card p { color: #64748b; font-size: 0.85rem; margin-top: 4px; line-height: 1.5; }
         
-        /* ===== OFFER CARDS ===== */
-        .offer-card {
-            border-radius: 20px;
-            padding: 28px 24px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s;
-            cursor: pointer;
-        }
-        .offer-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .offer-card .offer-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.15);
-            padding: 2px 14px;
-            border-radius: 9999px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .offer-card .offer-price { font-size: 2.8rem; font-weight: 900; margin: 8px 0; }
-        .offer-card .offer-desc { font-size: 0.95rem; opacity: 0.9; }
-        .offer-card .offer-route { font-size: 0.75rem; opacity: 0.7; margin-top: 4px; }
-        .offer-card .offer-bg-pattern {
-            position: absolute;
-            top: -30%;
-            right: -20%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        .offer-card .offer-bg-pattern-2 {
-            position: absolute;
-            bottom: -40%;
-            left: -10%;
-            width: 150px;
-            height: 150px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        
-        /* ===== TESTIMONIALS ===== */
-        .testimonial-card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid #f1f5f9;
-            transition: all 0.3s;
-        }
-        .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.04); }
-        .testimonial-card .stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 8px; }
-        .testimonial-card .quote { 
-            font-style: italic; 
-            color: #1e293b; 
-            line-height: 1.7; 
-            font-size: 0.95rem;
-        }
-        .testimonial-card .author { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            margin-top: 14px; 
-            padding-top: 14px;
-            border-top: 1px solid #f1f5f9;
-        }
-        .testimonial-card .author .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-        }
-        .testimonial-card .author .name { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
-        .testimonial-card .author .route { font-size: 0.75rem; color: #94a3b8; }
-        
         /* ===== FOOTER ===== */
         .app-footer {
             background: white;
@@ -470,24 +351,13 @@
         }
         .app-footer .footer-links a:hover { color: #f59e0b; }
         .app-footer p { color: #94a3b8; font-size: 0.8rem; }
-        .app-footer .secure-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #cbd5e1;
-            font-size: 0.7rem;
-            margin-top: 6px;
-        }
-        .app-footer .secure-badge i { color: #f59e0b; }
         
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .hero-section h1 { font-size: 2.8rem; }
             .search-card { padding: 24px 20px; margin-top: -40px; }
             .search-grid { grid-template-columns: 1fr 1fr !important; }
-            .search-grid .full-width { grid-column: span 2; }
-            .vehicle-grid { grid-template-columns: 1fr 1fr !important; }
-            .offer-grid { grid-template-columns: 1fr 1fr !important; }
+            .carousel-slide img { height: 280px; }
         }
         @media (max-width: 768px) {
             .hero-section { padding: 40px 20px 60px; min-height: auto; }
@@ -497,27 +367,20 @@
             .hero-section .hero-stats .stat-item .number { font-size: 1.4rem; }
             .search-card { padding: 16px; margin-top: -30px; border-radius: 20px; }
             .search-grid { grid-template-columns: 1fr !important; }
-            .search-grid .full-width { grid-column: span 1; }
-            .vehicle-grid { grid-template-columns: 1fr !important; }
-            .vehicle-card .vehicle-image { height: 180px; }
-            .feature-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
-            .offer-grid { grid-template-columns: 1fr !important; }
-            .testimonial-grid { grid-template-columns: 1fr !important; }
+            .carousel-slide img { height: 200px; }
+            .carousel-btn { width: 32px; height: 32px; font-size: 0.7rem; }
             .app-header .brand .brand-text { font-size: 1.1rem; }
             .app-header .brand .brand-icon { width: 36px; height: 36px; font-size: 1rem; }
             .header-btn { padding: 8px 16px; font-size: 0.75rem; }
             .nav-links { display: none !important; }
+            .feature-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
+            .feature-card { padding: 16px 12px; }
+            .feature-card .icon-wrap { width: 48px; height: 48px; font-size: 1.3rem; }
         }
         @media (max-width: 480px) {
             .hero-section h1 { font-size: 1.8rem; }
-            .section-title { font-size: 1.6rem; }
-            .feature-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
-            .feature-card { padding: 16px 12px; }
-            .feature-card .icon-wrap { width: 48px; height: 48px; font-size: 1.3rem; }
-            .feature-card h4 { font-size: 0.85rem; }
-            .feature-card p { font-size: 0.7rem; }
-            .offer-card .offer-price { font-size: 2rem; }
-            .vehicle-card .vehicle-image { height: 150px; }
+            .carousel-slide img { height: 160px; }
+            .carousel-slide .slide-overlay .slide-title { font-size: 1rem; }
         }
     </style>
 </head>
@@ -531,9 +394,8 @@
         </a>
         <div style="display:flex; align-items:center; gap:12px;">
             <div class="nav-links" style="display:flex; align-items:center; gap:6px;">
-                <a href="/" class="nav-link active" style="color:#f59e0b;">Home</a>
+                <a href="/" class="nav-link" style="color:#f59e0b;">Home</a>
                 <a href="#vehicles" class="nav-link">Vehicles</a>
-                <a href="#offers" class="nav-link">Offers</a>
                 <a href="/check-booking" class="nav-link"><i class="fas fa-ticket-alt"></i> Check</a>
                 <a href="/admin/login" class="nav-link" style="color:#64748b;"><i class="fas fa-user-shield"></i> Admin</a>
             </div>
@@ -543,7 +405,7 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
+    <!-- ===== HERO WITH CAROUSEL ===== -->
     <section class="hero-section">
         <div class="bg-pattern"></div>
         <div class="floating-elements">
@@ -553,26 +415,75 @@
             <div class="float-icon"><i class="fas fa-crown"></i></div>
         </div>
         
-        <div style="position:relative; z-index:2;">
-            <div class="hero-tag"><i class="fas fa-crown"></i> Premium Executive Transport</div>
-            <h1>Travel <span class="highlight">Smart</span>,<br>Travel in <span class="highlight">Comfort</span></h1>
-            <p class="hero-subtitle">Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.</p>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="number">500+</span>
-                    <span class="label">Happy Travelers</span>
+        <div style="position:relative; z-index:2; width:100%; max-width:1200px; margin:0 auto;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;">
+                <!-- Left Content -->
+                <div style="text-align:left;">
+                    <div class="hero-tag"><i class="fas fa-crown"></i> Premium Executive Transport</div>
+                    <h1 style="font-size:3.5rem; font-weight:900; color:white; letter-spacing:-2px; line-height:1.05; margin-bottom:12px;">
+                        Travel <span class="highlight">Smart</span>,<br>Travel in <span class="highlight">Comfort</span>
+                    </h1>
+                    <p class="hero-subtitle" style="max-width:480px; margin:0 0 24px; font-size:1.05rem; line-height:1.7; color:#94a3b8;">
+                        Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
+                    </p>
+                    <div class="hero-stats" style="justify-content:flex-start;">
+                        <div class="stat-item">
+                            <span class="number">500+</span>
+                            <span class="label">Happy Travelers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">4.9</span>
+                            <span class="label">Average Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">24/7</span>
+                            <span class="label">Service</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <span class="number">4.9</span>
-                    <span class="label">Average Rating</span>
-                </div>
-                <div class="stat-item">
-                    <span class="number">24/7</span>
-                    <span class="label">Service</span>
-                </div>
-                <div class="stat-item">
-                    <span class="number">100%</span>
-                    <span class="label">Satisfaction</span>
+                
+                <!-- Right Content - Carousel -->
+                <div>
+                    <div class="carousel-container">
+                        <div class="carousel-slides" id="carouselSlides">
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=800&h=500&fit=crop" alt="Luxury Bus" />
+                                <div class="slide-overlay">
+                                    <div class="slide-title">🚌 Executive Bus Service</div>
+                                    <div class="slide-desc">Comfortable travel with premium amenities</div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=500&fit=crop" alt="Executive Van" />
+                                <div class="slide-overlay">
+                                    <div class="slide-title">🚐 Executive Van</div>
+                                    <div class="slide-desc">Luxury travel for groups and business</div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=800&h=500&fit=crop" alt="Luxury SUV" />
+                                <div class="slide-overlay">
+                                    <div class="slide-title">🚙 Luxury SUV</div>
+                                    <div class="slide-desc">Premium executive travel experience</div>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=800&h=500&fit=crop" alt="Premium Sedan" />
+                                <div class="slide-overlay">
+                                    <div class="slide-title">🚗 Premium Sedan</div>
+                                    <div class="slide-desc">Elegant and comfortable city travel</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-btn prev" onclick="moveCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-btn next" onclick="moveCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="carousel-dots" id="carouselDots">
+                        <button class="carousel-dot active" onclick="goToSlide(0)"></button>
+                        <button class="carousel-dot" onclick="goToSlide(1)"></button>
+                        <button class="carousel-dot" onclick="goToSlide(2)"></button>
+                        <button class="carousel-dot" onclick="goToSlide(3)"></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -607,88 +518,11 @@
         </form>
     </div>
 
-    <!-- ===== VEHICLES WITH IMAGES ===== -->
-    <section id="vehicles" style="padding:48px 20px; background:white;">
-        <div style="max-width:1200px; margin:0 auto;">
-            <div style="text-align:center; margin-bottom:40px;">
-                <h2 class="section-title">Our Premium <span class="highlight">Vehicles</span></h2>
-                <p class="section-subtitle">Choose from our range of luxury and executive vehicles</p>
-            </div>
-            <div class="vehicle-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
-                
-                <!-- Vehicle 1: Toyota Hiace -->
-                <div class="vehicle-card">
-                    <div class="image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop" alt="Toyota Hiace" class="vehicle-image" />
-                        <span class="vehicle-badge">⭐ Popular</span>
-                    </div>
-                    <div class="vehicle-content">
-                        <div class="vehicle-name">Toyota Hiace</div>
-                        <div class="vehicle-desc">Spacious 14-seater minibus</div>
-                        <div class="vehicle-features">
-                            <span class="feature"><i class="fas fa-user"></i> 14 Seats</span>
-                            <span class="feature"><i class="fas fa-snowflake"></i> A/C</span>
-                            <span class="feature"><i class="fas fa-wifi"></i> WiFi</span>
-                        </div>
-                        <div class="vehicle-price">From KSh 3,500</div>
-                        <button class="vehicle-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
-                            <i class="fas fa-calendar-check"></i> Book Now
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Vehicle 2: Executive Van -->
-                <div class="vehicle-card">
-                    <div class="image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop" alt="Executive Van" class="vehicle-image" />
-                        <span class="vehicle-badge" style="background:rgba(59,130,246,0.9);">👔 Executive</span>
-                    </div>
-                    <div class="vehicle-content">
-                        <div class="vehicle-name">Executive Van</div>
-                        <div class="vehicle-desc">Luxury 8-seater executive van</div>
-                        <div class="vehicle-features">
-                            <span class="feature"><i class="fas fa-user"></i> 8 Seats</span>
-                            <span class="feature"><i class="fas fa-snowflake"></i> A/C</span>
-                            <span class="feature"><i class="fas fa-wifi"></i> WiFi</span>
-                            <span class="feature"><i class="fas fa-water"></i> Refreshments</span>
-                        </div>
-                        <div class="vehicle-price">From KSh 6,500</div>
-                        <button class="vehicle-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
-                            <i class="fas fa-calendar-check"></i> Book Now
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Vehicle 3: Luxury SUV -->
-                <div class="vehicle-card">
-                    <div class="image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop" alt="Luxury SUV" class="vehicle-image" />
-                        <span class="vehicle-badge" style="background:rgba(16,185,129,0.9);">💎 Luxury</span>
-                    </div>
-                    <div class="vehicle-content">
-                        <div class="vehicle-name">Luxury SUV</div>
-                        <div class="vehicle-desc">Premium 7-seater luxury SUV</div>
-                        <div class="vehicle-features">
-                            <span class="feature"><i class="fas fa-user"></i> 7 Seats</span>
-                            <span class="feature"><i class="fas fa-snowflake"></i> Climate Control</span>
-                            <span class="feature"><i class="fas fa-wifi"></i> WiFi</span>
-                            <span class="feature"><i class="fas fa-crown"></i> Premium</span>
-                        </div>
-                        <div class="vehicle-price">From KSh 5,500</div>
-                        <button class="vehicle-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
-                            <i class="fas fa-calendar-check"></i> Book Now
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== WHY CHOOSE US ===== -->
-    <section style="max-width:1200px; margin:0 auto; padding:48px 20px;">
+    <!-- ===== FEATURES ===== -->
+    <section style="max-width:1200px; margin:0 auto; padding:0 20px 48px;">
         <div style="text-align:center; margin-bottom:32px;">
-            <h2 class="section-title">Why <span class="highlight">Don Travels</span></h2>
-            <p class="section-subtitle">Experience the best in executive transport and premium bus services</p>
+            <h2 style="font-size:2.2rem; font-weight:800; color:#0f172a;">Why <span style="color:#f59e0b;">Don Travels</span></h2>
+            <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Experience the best in executive transport and premium bus services</p>
         </div>
         <div class="feature-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
             <div class="feature-card">
@@ -714,84 +548,47 @@
         </div>
     </section>
 
-    <!-- ===== SPECIAL OFFERS ===== -->
-    <section id="offers" style="background:#f8fafc; padding:48px 20px;">
-        <div style="max-width:1200px; margin:0 auto;">
-            <div style="text-align:center; margin-bottom:32px;">
-                <h2 class="section-title">Special <span class="highlight">Offers</span></h2>
-                <p class="section-subtitle">Grab these deals before they're gone</p>
-            </div>
-            <div class="offer-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
-                <div class="offer-card" style="background:linear-gradient(145deg, #f59e0b, #d97706);">
-                    <div class="offer-bg-pattern"></div>
-                    <div class="offer-bg-pattern-2"></div>
-                    <span class="offer-badge">Limited Time</span>
-                    <div class="offer-price">KSh 500</div>
-                    <div class="offer-desc">Nairobi → Kisumu</div>
-                    <div class="offer-route">Executive bus · Limited seats available</div>
-                </div>
-                <div class="offer-card" style="background:linear-gradient(145deg, #0f172a, #1e293b);">
-                    <div class="offer-bg-pattern"></div>
-                    <div class="offer-bg-pattern-2"></div>
-                    <span class="offer-badge">Weekend Special</span>
-                    <div class="offer-price">KSh 800</div>
-                    <div class="offer-desc">Nairobi → Mombasa</div>
-                    <div class="offer-route">Executive class · Free WiFi & refreshments</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== TESTIMONIALS ===== -->
-    <section style="max-width:1200px; margin:0 auto; padding:48px 20px;">
-        <div style="text-align:center; margin-bottom:32px;">
-            <h2 class="section-title">What Our <span class="highlight">Customers</span> Say</h2>
-            <p class="section-subtitle">Real reviews from real travelers</p>
-        </div>
-        <div class="testimonial-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
-            <div class="testimonial-card">
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <div class="quote">"Don Travels made our group trip amazing! The Toyota Hiace was spacious and comfortable. Professional driver too."</div>
-                <div class="author">
-                    <div class="avatar">JM</div>
-                    <div><div class="name">James Mwangi</div><div class="route">Nairobi → Mombasa · 2 days ago</div></div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <div class="quote">"Executive van was perfect for our business trip. Very professional service and the vehicle was spotless."</div>
-                <div class="author">
-                    <div class="avatar">SO</div>
-                    <div><div class="name">Sarah Ochieng</div><div class="route">Kisumu → Nairobi · 5 days ago</div></div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <div class="quote">"Best transport service in Kenya! The premium sedan was luxurious and the ride was smooth. Highly recommend!"</div>
-                <div class="author">
-                    <div class="avatar">DK</div>
-                    <div><div class="name">David Kiprop</div><div class="route">Eldoret → Nairobi · 1 week ago</div></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- ===== FOOTER ===== -->
     <footer class="app-footer">
         <div class="footer-links">
             <a href="/">Home</a>
             <a href="#vehicles">Vehicles</a>
-            <a href="#offers">Offers</a>
             <a href="/check-booking">Check Booking</a>
             <a href="/admin/login">Admin</a>
         </div>
         <p>© 2026 Don Travels. Premium Executive Transport Services.</p>
-        <div class="secure-badge">
-            <i class="fas fa-lock"></i> Secure booking · 100% private
-        </div>
     </footer>
 
     <script>
+        // ===== CAROUSEL =====
+        let currentSlide = 0;
+        const totalSlides = 4;
+
+        function moveCarousel(direction) {
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const slides = document.getElementById('carouselSlides');
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        let autoPlay = setInterval(() => moveCarousel(1), 5000);
+        document.querySelector('.carousel-container').addEventListener('mouseenter', () => clearInterval(autoPlay));
+        document.querySelector('.carousel-container').addEventListener('mouseleave', () => {
+            autoPlay = setInterval(() => moveCarousel(1), 5000);
+        });
+
         // ===== SET MIN DATE =====
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.querySelector('input[name="date"]');
@@ -812,18 +609,6 @@
                     window.scrollTo({ top: targetPosition, behavior: 'smooth' });
                 }
             });
-        });
-
-        // ===== NAVBAR SCROLL EFFECT =====
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.app-header');
-            if (window.scrollY > 20) {
-                header.style.background = 'rgba(255,255,255,0.98)';
-                header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
-            } else {
-                header.style.background = 'rgba(255,255,255,0.92)';
-                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.04)';
-            }
         });
     </script>
 </body>
