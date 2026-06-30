@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'don-travels-secret-key-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
-# ===== YOUR SUPABASE CREDENTIALS =====
+# ===== YOUR SUPABASE CREDENTIALS (HARDCODED FOR RELIABILITY) =====
 SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
 SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
@@ -20,31 +20,37 @@ SUPABASE_HEADERS = {
     "Content-Type": "application/json"
 }
 
-# ===== DATABASE CONNECTION =====
+# ===== DATABASE CONNECTION WITH RETRY LOGIC =====
 DB_CONNECTED = False
 DB_TYPE = 'json'
 
+def test_supabase_connection():
+    """Test Supabase connection with retry"""
+    try:
+        response = requests.get(
+            f"{SUPABASE_URL}/rest/v1/bookings?select=count",
+            headers=SUPABASE_HEADERS,
+            timeout=10
+        )
+        return response.status_code == 200
+    except:
+        return False
+
+# Try to connect
 try:
-    # Test connection
-    response = requests.get(
-        f"{SUPABASE_URL}/rest/v1/bookings?select=count",
-        headers=SUPABASE_HEADERS
-    )
-    
-    if response.status_code == 200:
+    if test_supabase_connection():
         DB_CONNECTED = True
         DB_TYPE = 'supabase'
         print("✅ Supabase connected successfully!")
     else:
-        print(f"❌ Supabase error: {response.status_code}")
-        
+        print("❌ Supabase connection failed")
+        print("📁 Using JSON storage")
 except Exception as e:
-    print(f"❌ Supabase connection error: {e}")
+    print(f"❌ Supabase error: {e}")
     print("📁 Using JSON storage")
 
 # ===== JSON BACKUP =====
 ORDERS_FILE = 'bookings.json'
-USERS_FILE = 'users.json'
 
 def load_json(file_path):
     try:
@@ -63,13 +69,24 @@ def save_json(file_path, data):
     except:
         return False
 
-# ===== DATABASE FUNCTIONS =====
+# ===== DATABASE FUNCTIONS WITH AUTO-RETRY =====
+def ensure_connection():
+    """Check and reconnect if needed"""
+    global DB_CONNECTED
+    if not DB_CONNECTED:
+        DB_CONNECTED = test_supabase_connection()
+    return DB_CONNECTED
+
 def load_bookings():
+    # Try to reconnect if needed
+    ensure_connection()
+    
     if DB_CONNECTED:
         try:
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/bookings?select=*&order=created_at.desc",
-                headers=SUPABASE_HEADERS
+                headers=SUPABASE_HEADERS,
+                timeout=10
             )
             if response.status_code == 200:
                 return response.json()
@@ -78,36 +95,50 @@ def load_bookings():
     return load_json(ORDERS_FILE)
 
 def save_booking(booking_data):
+    # Try to reconnect if needed
+    ensure_connection()
+    
     if DB_CONNECTED:
         try:
             response = requests.post(
                 f"{SUPABASE_URL}/rest/v1/bookings",
                 headers=SUPABASE_HEADERS,
-                json=booking_data
+                json=booking_data,
+                timeout=10
             )
             if response.status_code == 201:
                 data = response.json()
+                print(f"✅ Booking saved to Supabase: {booking_data['booking_id']}")
                 return data[0]['id'] if data else None
-        except:
-            pass
+        except Exception as e:
+            print(f"⚠️ Supabase save error: {e}")
+    
+    # Fallback to JSON
     bookings = load_json(ORDERS_FILE)
     booking_data['id'] = len(bookings) + 1
     bookings.append(booking_data)
     save_json(ORDERS_FILE, bookings)
+    print(f"📁 Booking saved to JSON: {booking_data['booking_id']}")
     return booking_data['id']
 
 def update_booking(booking_id, updates):
+    # Try to reconnect if needed
+    ensure_connection()
+    
     if DB_CONNECTED:
         try:
             response = requests.patch(
                 f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
                 headers=SUPABASE_HEADERS,
-                json=updates
+                json=updates,
+                timeout=10
             )
             if response.status_code == 200:
                 return True
         except:
             pass
+    
+    # Fallback to JSON
     bookings = load_json(ORDERS_FILE)
     for booking in bookings:
         if booking.get('id') == booking_id:
@@ -117,17 +148,22 @@ def update_booking(booking_id, updates):
     return False
 
 def get_booking(booking_id):
+    # Try to reconnect if needed
+    ensure_connection()
+    
     if DB_CONNECTED:
         try:
             response = requests.get(
                 f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
-                headers=SUPABASE_HEADERS
+                headers=SUPABASE_HEADERS,
+                timeout=10
             )
             if response.status_code == 200:
                 data = response.json()
                 return data[0] if data else None
         except:
             pass
+    
     bookings = load_json(ORDERS_FILE)
     for booking in bookings:
         if booking.get('id') == booking_id:
@@ -135,59 +171,25 @@ def get_booking(booking_id):
     return None
 
 def delete_booking(booking_id):
+    # Try to reconnect if needed
+    ensure_connection()
+    
     if DB_CONNECTED:
         try:
             response = requests.delete(
                 f"{SUPABASE_URL}/rest/v1/bookings?id=eq.{booking_id}",
-                headers=SUPABASE_HEADERS
+                headers=SUPABASE_HEADERS,
+                timeout=10
             )
             if response.status_code == 204:
                 return True
         except:
             pass
+    
     bookings = load_json(ORDERS_FILE)
     bookings = [b for b in bookings if b.get('id') != booking_id]
     save_json(ORDERS_FILE, bookings)
     return True
-
-# ===== USER FUNCTIONS =====
-def load_users():
-    if DB_CONNECTED:
-        try:
-            response = requests.get(
-                f"{SUPABASE_URL}/rest/v1/users?select=*",
-                headers=SUPABASE_HEADERS
-            )
-            if response.status_code == 200:
-                return response.json()
-        except:
-            pass
-    return load_json(USERS_FILE)
-
-def save_user(user_data):
-    if DB_CONNECTED:
-        try:
-            response = requests.post(
-                f"{SUPABASE_URL}/rest/v1/users",
-                headers=SUPABASE_HEADERS,
-                json=user_data
-            )
-            if response.status_code == 201:
-                return True
-        except:
-            pass
-    users = load_json(USERS_FILE)
-    user_data['id'] = len(users) + 1
-    users.append(user_data)
-    save_json(USERS_FILE, users)
-    return True
-
-def get_user_by_email(email):
-    users = load_users()
-    for user in users:
-        if user.get('email') == email:
-            return user
-    return None
 
 # ===== HELPERS =====
 def generate_booking_id():
@@ -196,12 +198,9 @@ def generate_booking_id():
 def generate_user_id():
     return 'USR-' + str(uuid.uuid4().hex[:8]).upper()
 
-def generate_payment_id():
-    return 'PAY-' + str(uuid.uuid4().hex[:8]).upper()
-
 def calculate_price(vehicle_type, distance_km=10):
-    """Calculate price based on vehicle type and distance"""
-    base_prices = {
+    """Calculate price based on vehicle type"""
+    prices = {
         'Standard Sedan': 1500,
         'Premium Sedan': 2500,
         'Toyota Hiace': 3500,
@@ -209,167 +208,63 @@ def calculate_price(vehicle_type, distance_km=10):
         'Luxury SUV': 5500,
         'Executive Van': 6500
     }
-    
-    per_km_rates = {
-        'Standard Sedan': 50,
-        'Premium Sedan': 80,
-        'Toyota Hiace': 70,
-        'Executive Sedan': 100,
-        'Luxury SUV': 120,
-        'Executive Van': 110
-    }
-    
-    base = base_prices.get(vehicle_type, 2000)
-    per_km = per_km_rates.get(vehicle_type, 60)
-    
-    # Minimum 5km included in base price
-    if distance_km <= 5:
-        return base
-    else:
-        return base + (distance_km - 5) * per_km
-
-# ===== AUTH DECORATOR =====
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            flash('Please login to access this page', 'warning')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+    return prices.get(vehicle_type, 2000)
 
 # ===== ROUTES =====
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        user = get_user_by_email(email)
-        if user and user.get('password') == password:  # In production, use password hashing
-            session.permanent = True
-            session['user_id'] = user.get('id')
-            session['user_name'] = user.get('full_name')
-            session['user_email'] = user.get('email')
-            session['user_role'] = user.get('role', 'customer')
-            
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid email or password', 'danger')
-    
-    return render_template('login.html')
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        full_name = request.form.get('full_name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        password = request.form.get('password')
-        
-        # Check if user exists
-        if get_user_by_email(email):
-            flash('Email already registered', 'danger')
-            return redirect(url_for('register'))
-        
-        user_data = {
-            'user_id': generate_user_id(),
-            'full_name': full_name,
-            'email': email,
-            'phone': phone,
-            'password': password,  # In production, hash this!
-            'role': 'customer',
-            'is_verified': True,
-            'created_at': datetime.utcnow().isoformat()
-        }
-        
-        if save_user(user_data):
-            flash('Registration successful! Please login.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Registration failed. Please try again.', 'danger')
-    
-    return render_template('register.html')
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('Logged out successfully', 'info')
-    return redirect(url_for('index'))
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    bookings = load_bookings()
-    user_bookings = [b for b in bookings if b.get('customer_email') == session.get('user_email')]
-    
-    stats = {
-        'total': len(user_bookings),
-        'pending': len([b for b in user_bookings if b.get('status') == 'pending']),
-        'confirmed': len([b for b in user_bookings if b.get('status') == 'confirmed']),
-        'completed': len([b for b in user_bookings if b.get('status') == 'completed']),
-        'cancelled': len([b for b in user_bookings if b.get('status') == 'cancelled'])
-    }
-    
-    return render_template('dashboard.html', bookings=user_bookings, stats=stats)
-
-@app.route('/booking/<booking_id>')
-@login_required
-def view_booking(booking_id):
-    booking = get_booking(int(booking_id)) if booking_id.isdigit() else None
-    if not booking:
-        flash('Booking not found', 'danger')
-        return redirect(url_for('dashboard'))
-    
-    if booking.get('customer_email') != session.get('user_email'):
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('dashboard'))
-    
-    return render_template('booking_detail.html', booking=booking)
-
-@app.route('/booking/cancel/<int:booking_id>', methods=['POST'])
-@login_required
-def cancel_booking(booking_id):
-    booking = get_booking(booking_id)
-    if not booking:
-        return jsonify({'success': False, 'error': 'Booking not found'})
-    
-    if booking.get('status') in ['completed', 'cancelled']:
-        return jsonify({'success': False, 'error': 'Cannot cancel this booking'})
-    
-    updates = {
-        'status': 'cancelled',
-        'cancelled_at': datetime.utcnow().isoformat(),
-        'cancellation_reason': request.json.get('reason', 'Customer cancelled')
-    }
-    
-    if update_booking(booking_id, updates):
-        return jsonify({'success': True, 'message': 'Booking cancelled successfully'})
-    
-    return jsonify({'success': False, 'error': 'Failed to cancel booking'})
-
 @app.route('/admin')
 def admin():
     bookings = load_bookings()
-    
-    # Calculate stats
     stats = {
         'total': len(bookings),
         'pending': len([b for b in bookings if b.get('status') == 'pending']),
         'confirmed': len([b for b in bookings if b.get('status') == 'confirmed']),
         'completed': len([b for b in bookings if b.get('status') == 'completed']),
         'cancelled': len([b for b in bookings if b.get('status') == 'cancelled']),
-        'revenue': sum([float(b.get('amount', 0)) for b in bookings if b.get('status') == 'completed']),
-        'today': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))])
+        'revenue': sum([float(b.get('amount', 0)) for b in bookings if b.get('status') == 'completed'])
     }
+    return render_template('admin.html', bookings=bookings, stats=stats, db_type=DB_TYPE, db_connected=DB_CONNECTED)
+
+@app.route('/api/status')
+def api_status():
+    # Force recheck connection
+    global DB_CONNECTED
+    DB_CONNECTED = test_supabase_connection()
+    bookings = load_bookings()
     
-    return render_template('admin.html', bookings=bookings, stats=stats)
+    return jsonify({
+        'database': DB_TYPE,
+        'connected': DB_CONNECTED,
+        'bookings': len(bookings),
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
+@app.route('/api/test-db')
+def test_db():
+    # Force recheck connection
+    global DB_CONNECTED
+    DB_CONNECTED = test_supabase_connection()
+    bookings = load_bookings()
+    
+    return jsonify({
+        'connected': DB_CONNECTED,
+        'type': DB_TYPE,
+        'bookings_count': len(bookings),
+        'message': '✅ Connected to Supabase!' if DB_CONNECTED else '📁 Using JSON storage'
+    })
+
+@app.route('/api/reconnect')
+def reconnect_db():
+    """Force reconnection to Supabase"""
+    global DB_CONNECTED
+    DB_CONNECTED = test_supabase_connection()
+    return jsonify({
+        'connected': DB_CONNECTED,
+        'message': '✅ Reconnected to Supabase!' if DB_CONNECTED else '❌ Still disconnected'
+    })
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
@@ -388,9 +283,7 @@ def create_booking():
         if not all([customer_name, customer_email, pickup_location, dropoff_location, vehicle_type, booking_date]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
 
-        # Calculate price
         amount = calculate_price(vehicle_type)
-
         booking_id = generate_booking_id()
         
         booking_data = {
@@ -465,16 +358,6 @@ def delete_booking_route(booking_id):
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/status')
-def api_status():
-    bookings = load_bookings()
-    return jsonify({
-        'database': DB_TYPE,
-        'connected': DB_CONNECTED,
-        'bookings': len(bookings),
-        'timestamp': datetime.utcnow().isoformat()
-    })
 
 # ===== VERCEL HANDLER =====
 def handler(request, context):
