@@ -3,26 +3,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>Don Travels · Book a Ride</title>
-    <!-- Tailwind & Font Awesome -->
+    <title>Don Travels · Premium Taxi & Executive Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        * { font-family: 'Inter', sans-serif; }
-
-        body {
-            background-color: #f8fafc;
-        }
-
-        /* ===== Mobile-First Header ===== */
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { background: #f0f4f8; }
+        
+        /* ===== HEADER ===== */
         .app-header {
             background: white;
-            padding: 12px 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            padding: 14px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
             position: sticky;
             top: 0;
-            z-index: 40;
+            z-index: 50;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -30,98 +27,140 @@
         .app-header .brand {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #0f172a;
+            gap: 10px;
             text-decoration: none;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #0f172a;
+        }
+        .app-header .brand .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
         }
         .app-header .brand span { color: #f59e0b; }
-        .app-header .brand i { color: #f59e0b; font-size: 1.4rem; }
-
+        
         .header-btn {
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-            padding: 8px 16px;
+            padding: 10px 22px;
             border-radius: 9999px;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             border: none;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .header-btn:hover { background: #d97706; transform: scale(1.02); }
-
-        /* ===== Hero Section ===== */
+        .header-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
+        
+        /* ===== HERO ===== */
         .hero-section {
-            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
             padding: 40px 20px 60px;
             text-align: center;
             color: white;
             position: relative;
             overflow: hidden;
         }
-        .hero-section::after {
+        .hero-section::before {
             content: '';
             position: absolute;
-            bottom: -40px;
-            right: -40px;
-            width: 200px;
-            height: 200px;
-            background: rgba(245, 158, 11, 0.05);
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
             border-radius: 50%;
         }
         .hero-section .hero-tag {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             background: rgba(245, 158, 11, 0.1);
-            padding: 4px 14px;
+            padding: 6px 18px;
             border-radius: 9999px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #fbbf24;
             font-weight: 600;
-            margin-bottom: 12px;
             border: 1px solid rgba(245, 158, 11, 0.1);
+            margin-bottom: 16px;
         }
         .hero-section h1 {
-            font-size: 2.8rem;
+            font-size: 3.2rem;
             font-weight: 900;
-            letter-spacing: -1px;
-            line-height: 1.1;
+            letter-spacing: -2px;
+            line-height: 1.05;
             margin-bottom: 12px;
         }
         .hero-section h1 span { color: #f59e0b; }
         .hero-section p {
             color: #94a3b8;
-            max-width: 400px;
+            max-width: 500px;
             margin: 0 auto 24px;
-            font-size: 1rem;
-            line-height: 1.6;
+            font-size: 1.05rem;
+            line-height: 1.7;
         }
-
-        /* ===== Booking Card (Main Feature) ===== */
-        .booking-card {
-            background: white;
-            border-radius: 24px;
-            padding: 24px 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            max-width: 480px;
-            margin: -30px auto 0;
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 16px;
+        }
+        .hero-stats .stat { text-align: center; }
+        .hero-stats .stat .number { font-size: 1.8rem; font-weight: 800; color: #f59e0b; }
+        .hero-stats .stat .label { font-size: 0.75rem; color: #64748b; }
+        
+        /* ===== MAIN BOOKING CARD ===== */
+        .booking-wrapper {
+            max-width: 800px;
+            margin: -40px auto 0;
+            padding: 0 16px;
             position: relative;
             z-index: 10;
+        }
+        .booking-card {
+            background: white;
+            border-radius: 28px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
             border: 1px solid #f1f5f9;
         }
-        .booking-card .form-label {
+        .booking-card .card-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .booking-card .card-subtitle {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
             font-size: 0.75rem;
             font-weight: 600;
             color: #475569;
             display: block;
             margin-bottom: 4px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
         }
-        .booking-card .form-input, 
-        .booking-card .form-select {
+        .form-label .required { color: #ef4444; }
+        
+        .form-input, .form-select {
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            border: 1.5px solid #e2e8f0;
             border-radius: 14px;
             padding: 14px 16px;
             width: 100%;
@@ -129,108 +168,139 @@
             transition: all 0.2s;
             color: #0f172a;
         }
-        .booking-card .form-input:focus, 
-        .booking-card .form-select:focus {
+        .form-input:focus, .form-select:focus {
             outline: none;
             border-color: #f59e0b;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
             background: white;
         }
-        .booking-card .form-select { 
+        .form-select {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475569' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
         }
-        .booking-card .btn-book {
-            background: #f59e0b;
-            color: white;
-            width: 100%;
-            padding: 16px;
-            border-radius: 9999px;
-            font-weight: 700;
-            font-size: 1rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-            margin-top: 8px;
-        }
-        .booking-card .btn-book:hover { background: #d97706; transform: translateY(-2px); }
-        .booking-card .btn-book:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* ===== Vehicle Selection Cards ===== */
+        
+        /* ===== VEHICLE SELECTION ===== */
         .vehicle-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            margin: 16px 0 8px;
+            margin: 8px 0 16px;
         }
         .vehicle-option {
             background: #f8fafc;
             border: 2px solid #e2e8f0;
             border-radius: 16px;
-            padding: 12px 8px;
+            padding: 16px 8px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s;
+            position: relative;
         }
+        .vehicle-option:hover { border-color: #fbbf24; }
         .vehicle-option.selected {
             border-color: #f59e0b;
             background: #fffbeb;
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
-        .vehicle-option .v-icon { font-size: 1.4rem; color: #f59e0b; }
-        .vehicle-option .v-name { font-weight: 600; font-size: 0.75rem; color: #0f172a; margin-top: 2px; }
-        .vehicle-option .v-price { font-weight: 700; font-size: 0.7rem; color: #f59e0b; }
-
-        /* ===== Success Message ===== */
+        .vehicle-option .v-icon { font-size: 1.8rem; color: #f59e0b; display: block; }
+        .vehicle-option .v-name { font-weight: 700; font-size: 0.85rem; color: #0f172a; margin-top: 4px; }
+        .vehicle-option .v-price { font-weight: 600; font-size: 0.75rem; color: #f59e0b; }
+        .vehicle-option .v-seats { font-size: 0.65rem; color: #94a3b8; }
+        .vehicle-option .v-check {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #f59e0b;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+        }
+        .vehicle-option.selected .v-check { display: flex; }
+        
+        /* ===== SUCCESS ===== */
         .success-message {
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
             border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
+            padding: 16px 20px;
             display: none;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
         }
-        .success-message.show { display: block; }
-
-        /* ===== Features ===== */
+        .success-message.show { display: flex; }
+        .success-message i { color: #10b981; font-size: 1.5rem; }
+        .success-message .msg-title { font-weight: 700; color: #065f46; }
+        .success-message .msg-desc { font-size: 0.85rem; color: #047857; }
+        
+        /* ===== FEATURES ===== */
+        .features-section {
+            max-width: 800px;
+            margin: 24px auto 0;
+            padding: 0 16px 40px;
+        }
         .feature-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px;
-            margin-top: 24px;
         }
         .feature-item {
             background: white;
-            padding: 16px;
-            border-radius: 16px;
+            padding: 20px 16px;
+            border-radius: 20px;
             text-align: center;
             border: 1px solid #f1f5f9;
+            transition: all 0.3s;
         }
-        .feature-item i { color: #f59e0b; font-size: 1.5rem; margin-bottom: 4px; display: block; }
-        .feature-item h4 { font-weight: 600; color: #0f172a; font-size: 0.9rem; }
-        .feature-item p { font-size: 0.75rem; color: #64748b; }
-
-        /* ===== Footer ===== */
+        .feature-item:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.04); }
+        .feature-item i { color: #f59e0b; font-size: 1.8rem; display: block; margin-bottom: 8px; }
+        .feature-item h4 { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
+        .feature-item p { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+        
+        /* ===== FOOTER ===== */
         .app-footer {
             background: white;
             padding: 24px 16px 16px;
             text-align: center;
             border-top: 1px solid #f1f5f9;
-            margin-top: 20px;
+            margin-top: 8px;
         }
-        .app-footer p { font-size: 0.7rem; color: #94a3b8; }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 480px) {
-            .hero-section h1 { font-size: 2.2rem; }
+        .app-footer p { font-size: 0.75rem; color: #94a3b8; }
+        .app-footer .footer-links { display: flex; justify-content: center; gap: 24px; margin: 8px 0; }
+        .app-footer .footer-links a { color: #64748b; text-decoration: none; font-size: 0.75rem; }
+        .app-footer .footer-links a:hover { color: #f59e0b; }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-section h1 { font-size: 2.5rem; }
+            .hero-stats { gap: 20px; flex-wrap: wrap; }
+            .hero-stats .stat .number { font-size: 1.4rem; }
+            .booking-card { padding: 24px 16px; border-radius: 20px; }
             .vehicle-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-            .vehicle-option { padding: 10px 4px; }
-            .vehicle-option .v-icon { font-size: 1.2rem; }
-            .vehicle-option .v-name { font-size: 0.65rem; }
-            .feature-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .vehicle-option { padding: 12px 6px; }
+            .vehicle-option .v-icon { font-size: 1.4rem; }
+            .vehicle-option .v-name { font-size: 0.75rem; }
+            .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .feature-item { padding: 16px 12px; }
+            .feature-item i { font-size: 1.4rem; }
+        }
+        @media (max-width: 480px) {
+            .hero-section h1 { font-size: 2rem; }
+            .hero-section p { font-size: 0.9rem; }
+            .app-header .brand { font-size: 1.1rem; }
+            .app-header .brand .brand-icon { width: 34px; height: 34px; font-size: 1rem; }
+            .header-btn { padding: 8px 16px; font-size: 0.75rem; }
+            .booking-card .card-title { font-size: 1.2rem; }
+            .vehicle-grid { grid-template-columns: repeat(2, 1fr); }
+            .feature-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .booking-wrapper { margin-top: -30px; }
         }
     </style>
 </head>
@@ -239,7 +309,7 @@
     <!-- ===== HEADER ===== -->
     <header class="app-header">
         <a href="/" class="brand">
-            <i class="fas fa-car"></i>
+            <div class="brand-icon"><i class="fas fa-car"></i></div>
             Don<span>Travels</span>
         </a>
         <button class="header-btn" onclick="document.getElementById('booking-section').scrollIntoView({behavior:'smooth'})">
@@ -251,72 +321,144 @@
     <section class="hero-section">
         <div class="hero-tag"><i class="fas fa-crown"></i> Premium Executive Service</div>
         <h1>Eagle <span>Above</span> The Rest</h1>
-        <p>Professional drivers, luxury vehicles, and unmatched comfort for your executive travel needs.</p>
+        <p>Professional drivers, luxury vehicles, and unmatched comfort for your executive travel needs across Kenya.</p>
+        <div class="hero-stats">
+            <div class="stat"><div class="number">500+</div><div class="label">Happy Riders</div></div>
+            <div class="stat"><div class="number">4.9</div><div class="label">Rating</div></div>
+            <div class="stat"><div class="number">24/7</div><div class="label">Service</div></div>
+        </div>
     </section>
 
     <!-- ===== BOOKING CARD ===== -->
-    <div class="booking-card" id="booking-section">
-        <!-- Success Message -->
-        <div class="success-message" id="successMessage">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <i class="fas fa-check-circle" style="color:#10b981; font-size:1.2rem;"></i>
+    <div class="booking-wrapper">
+        <div class="booking-card" id="booking-section">
+            <div class="card-title">📅 Book Your Ride</div>
+            <div class="card-subtitle">Premium executive transport at your service</div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
                 <div>
-                    <p style="font-weight:600; color:#065f46;">Booking Confirmed!</p>
-                    <p style="font-size:0.8rem; color:#047857;">We'll contact you shortly.</p>
+                    <div class="msg-title">Booking Confirmed! 🎉</div>
+                    <div class="msg-desc">We'll contact you shortly to confirm your ride details.</div>
                 </div>
             </div>
+
+            <form id="bookingForm">
+                <!-- Row 1: Name & Phone -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                        <label class="form-label"><i class="fas fa-user"></i> Full Name <span class="required">*</span></label>
+                        <input type="text" name="name" class="form-input" placeholder="John Doe" required />
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="tel" name="phone" class="form-input" placeholder="+254 745 793 27" />
+                    </div>
+                </div>
+
+                <!-- Row 2: Email & Passengers -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                        <label class="form-label"><i class="fas fa-envelope"></i> Email Address <span class="required">*</span></label>
+                        <input type="email" name="email" class="form-input" placeholder="john@example.com" required />
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
+                        <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" />
+                    </div>
+                </div>
+
+                <!-- Row 3: Pickup & Dropoff -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                        <label class="form-label"><i class="fas fa-map-marker-alt"></i> Pickup Location <span class="required">*</span></label>
+                        <input type="text" name="pickup" class="form-input" placeholder="Nairobi, Kenya" required />
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-flag-checkered"></i> Drop-off Location <span class="required">*</span></label>
+                        <input type="text" name="dropoff" class="form-input" placeholder="Mombasa, Kenya" required />
+                    </div>
+                </div>
+
+                <!-- Row 4: Date & Time -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                        <label class="form-label"><i class="fas fa-calendar"></i> Date <span class="required">*</span></label>
+                        <input type="date" name="date" class="form-input" required />
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-clock"></i> Time</label>
+                        <input type="time" name="time" class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Row 5: Vehicle Selection -->
+                <div style="margin-bottom:16px;">
+                    <label class="form-label"><i class="fas fa-car"></i> Select Vehicle <span class="required">*</span></label>
+                    <div class="vehicle-grid" id="vehicleGrid">
+                        <div class="vehicle-option selected" data-vehicle="Standard Sedan" data-price="1500">
+                            <span class="v-check"><i class="fas fa-check"></i></span>
+                            <span class="v-icon"><i class="fas fa-car"></i></span>
+                            <div class="v-name">Standard</div>
+                            <div class="v-price">KSh 1,500</div>
+                            <div class="v-seats"><i class="fas fa-user"></i> 4 Seats</div>
+                        </div>
+                        <div class="vehicle-option" data-vehicle="Premium Sedan" data-price="2500">
+                            <span class="v-check"><i class="fas fa-check"></i></span>
+                            <span class="v-icon"><i class="fas fa-car-side"></i></span>
+                            <div class="v-name">Premium</div>
+                            <div class="v-price">KSh 2,500</div>
+                            <div class="v-seats"><i class="fas fa-user"></i> 4 Seats</div>
+                        </div>
+                        <div class="vehicle-option" data-vehicle="Toyota Hiace" data-price="3500">
+                            <span class="v-check"><i class="fas fa-check"></i></span>
+                            <span class="v-icon"><i class="fas fa-bus"></i></span>
+                            <div class="v-name">Hiace</div>
+                            <div class="v-price">KSh 3,500</div>
+                            <div class="v-seats"><i class="fas fa-user"></i> 14 Seats</div>
+                        </div>
+                        <div class="vehicle-option" data-vehicle="Executive Sedan" data-price="4500">
+                            <span class="v-check"><i class="fas fa-check"></i></span>
+                            <span class="v-icon"><i class="fas fa-crown"></i></span>
+                            <div class="v-name">Executive</div>
+                            <div class="v-price">KSh 4,500</div>
+                            <div class="v-seats"><i class="fas fa-user"></i> 4 Seats</div>
+                        </div>
+                        <div class="vehicle-option" data-vehicle="Luxury SUV" data-price="5500">
+                            <span class="v-check"><i class="fas fa-check"></i></span>
+                            <span class="v-icon"><i class="fas fa-caravan"></i></span>
+                            <div class="v-name">Luxury SUV</div>
+                            <div class="v-price">KSh 5,500</div>
+                            <div class="v-seats"><i class="fas fa-user"></i> 7 Seats</div>
+                        </div>
+                        <div class="vehicle-option" data-vehicle="Executive Van" data-price="6500">
+                            <span class="v-check"><i class="fas fa-check"></i></span>
+                            <span class="v-icon"><i class="fas fa-shuttle-van"></i></span>
+                            <div class="v-name">Exec Van</div>
+                            <div class="v-price">KSh 6,500</div>
+                            <div class="v-seats"><i class="fas fa-user"></i> 8 Seats</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="vehicle" id="selectedVehicle" value="Standard Sedan">
+                </div>
+
+                <!-- Row 6: Special Requests -->
+                <div style="margin-bottom:20px;">
+                    <label class="form-label"><i class="fas fa-info-circle"></i> Special Requests</label>
+                    <input type="text" name="special_requests" class="form-input" placeholder="Baby seat, extra luggage, wheelchair access, etc." />
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="header-btn" style="width:100%; justify-content:center; padding:16px; font-size:1.05rem; border-radius:16px;">
+                    <i class="fas fa-calendar-check"></i> Book Your Ride
+                </button>
+            </form>
         </div>
-
-        <form id="bookingForm">
-            <!-- Vehicle Selection -->
-            <div style="margin-bottom:16px;">
-                <label class="form-label"><i class="fas fa-car"></i> Select Vehicle</label>
-                <div class="vehicle-grid" id="vehicleGrid">
-                    <div class="vehicle-option selected" data-vehicle="Standard Sedan">
-                        <div class="v-icon"><i class="fas fa-car"></i></div>
-                        <div class="v-name">Standard</div>
-                        <div class="v-price">KSh 1,500</div>
-                    </div>
-                    <div class="vehicle-option" data-vehicle="Toyota Hiace">
-                        <div class="v-icon"><i class="fas fa-bus"></i></div>
-                        <div class="v-name">Hiace</div>
-                        <div class="v-price">KSh 3,500</div>
-                    </div>
-                    <div class="vehicle-option" data-vehicle="Executive Van">
-                        <div class="v-icon"><i class="fas fa-shuttle-van"></i></div>
-                        <div class="v-name">Executive</div>
-                        <div class="v-price">KSh 4,500</div>
-                    </div>
-                </div>
-                <input type="hidden" name="vehicle" id="selectedVehicle" value="Standard Sedan">
-            </div>
-
-            <!-- Customer Details -->
-            <div style="margin-bottom:12px;">
-                <label class="form-label"><i class="fas fa-user"></i> Full Name</label>
-                <input type="text" name="name" class="form-input" placeholder="John Doe" required />
-            </div>
-            <div style="margin-bottom:12px;">
-                <label class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
-                <input type="tel" name="phone" class="form-input" placeholder="+254 745 793 27" />
-            </div>
-            <div style="margin-bottom:12px;">
-                <label class="form-label"><i class="fas fa-map-marker-alt"></i> Pickup Location</label>
-                <input type="text" name="pickup" class="form-input" placeholder="Nairobi, Kenya" required />
-            </div>
-            <div style="margin-bottom:16px;">
-                <label class="form-label"><i class="fas fa-flag-checkered"></i> Drop-off Location</label>
-                <input type="text" name="dropoff" class="form-input" placeholder="Mombasa, Kenya" required />
-            </div>
-
-            <button type="submit" class="btn-book">
-                <i class="fas fa-calendar-check"></i> Book Your Ride
-            </button>
-        </form>
     </div>
 
     <!-- ===== FEATURES ===== -->
-    <div style="max-width:480px; margin:24px auto 0; padding:0 16px;">
+    <div class="features-section">
         <div class="feature-grid">
             <div class="feature-item">
                 <i class="fas fa-user-shield"></i>
@@ -343,6 +485,12 @@
 
     <!-- ===== FOOTER ===== -->
     <footer class="app-footer">
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="/admin">Dashboard</a>
+            <a href="#">Privacy</a>
+        </div>
         <p>© 2026 Don Travels. Premium Taxi & Executive Services.</p>
         <p style="margin-top:4px; font-size:0.65rem; color:#cbd5e1;">
             <i class="fas fa-lock" style="color:#f59e0b;"></i> Secure booking
@@ -350,7 +498,16 @@
     </footer>
 
     <script>
-        // ===== Vehicle Selection =====
+        // ===== SET MIN DATE =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[name="date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+        });
+
+        // ===== VEHICLE SELECTION =====
         document.querySelectorAll('.vehicle-option').forEach(opt => {
             opt.addEventListener('click', function() {
                 document.querySelectorAll('.vehicle-option').forEach(o => o.classList.remove('selected'));
@@ -359,15 +516,31 @@
             });
         });
 
-        // ===== Booking Form =====
+        // ===== BOOKING FORM =====
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.target;
-            const submitBtn = form.querySelector('.btn-book');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Validate all required fields
+            const required = form.querySelectorAll('[required]');
+            let valid = true;
+            required.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
+                    valid = false;
+                } else {
+                    field.style.borderColor = '#e2e8f0';
+                }
+            });
+            
+            if (!valid) {
+                alert('❌ Please fill in all required fields marked with *');
+                return;
+            }
             
             // Get form data
             const formData = new FormData(form);
-            formData.append('email', 'guest@example.com'); // Add dummy email for demo
             
             // Show loading
             submitBtn.disabled = true;
@@ -380,15 +553,26 @@
                 if (data.success) {
                     document.getElementById('successMessage').classList.add('show');
                     form.reset();
+                    
                     // Reset vehicle selection to default
                     document.querySelectorAll('.vehicle-option').forEach(o => o.classList.remove('selected'));
                     document.querySelector('.vehicle-option[data-vehicle="Standard Sedan"]').classList.add('selected');
                     document.getElementById('selectedVehicle').value = 'Standard Sedan';
                     
+                    // Show amount
+                    const amountMsg = document.createElement('div');
+                    amountMsg.style.cssText = 'margin-top:12px; padding:12px 16px; background:#fffbeb; border-radius:12px; border:1px solid #fbbf24;';
+                    amountMsg.innerHTML = `<p style="color:#0f172a; font-size:0.9rem;">💰 <span style="color:#f59e0b; font-weight:700;">KSh ${data.amount}</span> - Payment will be collected upon arrival</p>`;
+                    document.getElementById('successMessage').after(amountMsg);
+                    
                     // Auto-hide success after 5 seconds
                     setTimeout(() => {
                         document.getElementById('successMessage').classList.remove('show');
-                    }, 5000);
+                        if (amountMsg) amountMsg.remove();
+                    }, 8000);
+                    
+                    // Scroll to success
+                    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
                     alert('❌ Booking failed: ' + data.error);
                 }
@@ -398,6 +582,19 @@
             
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-calendar-check"></i> Book Your Ride';
+        });
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            });
         });
     </script>
 </body>
