@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Booking Confirmed · BusCar</title>
+    <title>Booking Confirmed · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f4f8; }
-        
         .confirmation-card {
             background: white;
             border-radius: 24px;
@@ -21,11 +20,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.04);
             text-align: center;
         }
-        .confirmation-card .success-icon {
-            font-size: 4rem;
-            color: #10b981;
-            margin-bottom: 16px;
-        }
+        .confirmation-card .success-icon { font-size: 4rem; color: #10b981; margin-bottom: 16px; }
         .confirmation-card .booking-ref {
             background: #f8fafc;
             padding: 12px;
@@ -36,28 +31,6 @@
             color: #0f172a;
             margin: 16px 0;
         }
-        .confirmation-card .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .confirmation-card .detail-row:last-child { border-bottom: none; }
-        .confirmation-card .detail-label { color: #64748b; }
-        .confirmation-card .detail-value { font-weight: 600; color: #0f172a; }
-        
-        .btn-print {
-            background: #0f172a;
-            color: white;
-            padding: 12px 32px;
-            border-radius: 9999px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-print:hover { background: #1e293b; }
-        
         .btn-home {
             background: #f59e0b;
             color: white;
@@ -66,86 +39,68 @@
             font-weight: 600;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
             text-decoration: none;
             display: inline-block;
         }
         .btn-home:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
-        
-        @media (max-width: 768px) {
-            .confirmation-card { padding: 24px 16px; margin: 20px 16px; }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
         }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row .label { color: #64748b; }
+        .detail-row .value { font-weight: 600; color: #0f172a; }
     </style>
 </head>
 <body>
-
-    <!-- ===== HEADER ===== -->
     <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04);">
         <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
             <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
-                <i class="fas fa-bus" style="color:#f59e0b;"></i> Bus<span style="color:#f59e0b;">Car</span>
+                <i class="fas fa-bus" style="color:#f59e0b;"></i> Don<span style="color:#f59e0b;">Travels</span>
             </a>
         </div>
     </header>
 
-    <!-- ===== CONFIRMATION ===== -->
     <div class="confirmation-card">
         <div class="success-icon"><i class="fas fa-check-circle"></i></div>
         <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a;">Booking Confirmed! 🎉</h2>
         <p style="color:#64748b;">Your bus tickets have been reserved successfully.</p>
         
-        <div class="booking-ref">
-            <i class="fas fa-ticket-alt" style="color:#f59e0b;"></i> {{ booking.booking_ref }}
-        </div>
+        <div class="booking-ref"><i class="fas fa-ticket-alt" style="color:#f59e0b;"></i> {{ booking.booking_ref }}</div>
         
         <div style="text-align:left; margin:20px 0;">
             <div class="detail-row">
-                <span class="detail-label">Passenger</span>
-                <span class="detail-value">{{ booking.passenger_name }}</span>
+                <span class="label">Passenger</span>
+                <span class="value">{{ booking.passenger_name }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Phone</span>
-                <span class="detail-value">{{ booking.passenger_phone }}</span>
+                <span class="label">Phone</span>
+                <span class="value">{{ booking.passenger_phone }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Bus</span>
-                <span class="detail-value">BusCar Express</span>
+                <span class="label">Date</span>
+                <span class="value" style="color:#f59e0b;">{{ booking.booking_date }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Seats</span>
-                <span class="detail-value">{{ booking.selected_seats|join(', ') }}</span>
+                <span class="label">Seats</span>
+                <span class="value">{{ booking.selected_seats|join(', ') }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Total Fare</span>
-                <span class="detail-value" style="color:#f59e0b; font-weight:800;">KSh {{ booking.total_fare }}</span>
+                <span class="label">Total Fare</span>
+                <span class="value" style="color:#f59e0b; font-weight:800;">KSh {{ booking.total_fare }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Payment Method</span>
-                <span class="detail-value">{{ booking.payment_method|upper }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Status</span>
-                <span class="detail-value" style="color:#10b981;">Confirmed ✅</span>
+                <span class="label">Payment</span>
+                <span class="value">{{ booking.payment_method|upper }}</span>
             </div>
         </div>
         
-        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-            <button onclick="window.print()" class="btn-print">
-                <i class="fas fa-print"></i> Print Ticket
-            </button>
-            <a href="/" class="btn-home">
-                <i class="fas fa-home"></i> Back to Home
-            </a>
-        </div>
-        
+        <a href="/" class="btn-home"><i class="fas fa-home"></i> Back to Home</a>
         <p style="color:#94a3b8; font-size:0.75rem; margin-top:16px;">
             <i class="fas fa-envelope"></i> A confirmation has been sent to your email.
         </p>
     </div>
-
-    <!-- ===== FOOTER ===== -->
-    <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9;">
-        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar. All rights reserved.</p>
-    </footer>
 </body>
 </html>
