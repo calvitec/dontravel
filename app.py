@@ -338,7 +338,17 @@ def index():
     
     vehicles = load_vehicles()
     routes = load_routes()
-    return render_template('index.html', vehicles=vehicles, routes=routes)
+    
+    # Get today's date and max date (30 days from now)
+    today = datetime.now().strftime('%Y-%m-%d')
+    max_date = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+    
+    return render_template('index.html', 
+        vehicles=vehicles, 
+        routes=routes,
+        today=today,
+        max_date=max_date
+    )
 
 @app.route('/search')
 def search_results():
@@ -443,8 +453,6 @@ def booking_page(bus_id):
         seats.append(seat)
     
     return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats)
-
-# ... (rest of the code remains the same: /api/book, /confirmation, /check-booking, /admin routes, etc.)
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
