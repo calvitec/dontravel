@@ -10,11 +10,9 @@ app = Flask(__name__)
 app.secret_key = 'don-travels-secret-key-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
-# ===== SUPABASE CONFIGURATION - USE ENVIRONMENT VARIABLES =====
-SUPABASE_URL = os.environ.get('SUPABASE_URL', "https://hzqrdwerkgfmfaufabjr.supabase.co")
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY', "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld")
-
-print(f"🔗 Using Supabase URL: {SUPABASE_URL[:30]}...")
+# ===== SUPABASE CONFIGURATION =====
+SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
+SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_KEY,
