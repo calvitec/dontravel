@@ -10,9 +10,11 @@ app = Flask(__name__)
 app.secret_key = 'don-travels-secret-key-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
-# ===== SUPABASE CONFIGURATION =====
-SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
-SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
+# ===== SUPABASE CONFIGURATION - USE ENVIRONMENT VARIABLES =====
+SUPABASE_URL = os.environ.get('SUPABASE_URL', "https://hzqrdwerkgfmfaufabjr.supabase.co")
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY', "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld")
+
+print(f"🔗 Using Supabase URL: {SUPABASE_URL[:30]}...")
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_KEY,
@@ -352,11 +354,6 @@ def booking_page(bus_id):
             'status': 'booked' if is_booked else 'available'
         })
     
-    # Debug output
-    print(f"📊 Booking page: Bus {bus_id}, Date {date}")
-    print(f"   Total seats: {total_seats}, Booked: {len(booked_seats_list)}")
-    print(f"   Booked seats: {booked_seats_list}")
-    
     return render_template('booking.html', 
         bus=bus,
         vehicle=vehicle,
@@ -371,6 +368,15 @@ def create_booking():
         data = request.get_json()
         
         bus_id = data.get('bus_id')
+        
+        # Get bus details FIRST
+        bus = get_bus_by_id(bus_id)
+        if not bus:
+            return jsonify({
+                'success': False,
+                'error': 'Bus not found'
+            }), 404
+        
         booking_date = data.get('booking_date', datetime.now().strftime('%Y-%m-%d'))
         passenger_name = data.get('passenger_name', '').strip()
         passenger_phone = data.get('passenger_phone', '').strip()
@@ -379,28 +385,39 @@ def create_booking():
         total_fare = data.get('total_fare', 0)
         payment_method = data.get('payment_method', 'mpesa')
         
+        # Validate required fields
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
-            return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
+            return jsonify({
+                'success': False,
+                'error': 'Please fill in all required fields'
+            }), 400
         
-        # Get current seat data for this specific date
+        # Load seat data for this date
         seat_data = load_bus_seats(bus_id, booking_date)
         booked_seats_list = seat_data.get('booked_seats_list', [])
         
-        # Check if seats are still available for this date
+        # Check seat availability
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
-                return jsonify({'success': False, 'error': f'Seat {seat} is already booked for {booking_date}. Please refresh and try again.'}), 400
+                return jsonify({
+                    'success': False,
+                    'error': f'Seat {seat} is already booked for {booking_date}'
+                }), 400
         
-        # Create new booked list for this date
+        # Update booked seats
         new_booked_list = booked_seats_list.copy()
         for seat in selected_seats:
-            if str(seat) not in new_booked_list:
-                new_booked_list.append(str(seat))
+            seat = str(seat)
+            if seat not in new_booked_list:
+                new_booked_list.append(seat)
         
-        # Update bus seats for this specific date
+        # Save updated seats
         update_success = update_bus_seats(bus_id, booking_date, new_booked_list)
         if not update_success:
-            return jsonify({'success': False, 'error': 'Failed to update seats. Please try again.'}), 500
+            return jsonify({
+                'success': False,
+                'error': 'Failed to update seats. Please try again.'
+            }), 500
         
         # Create booking
         booking_ref = generate_booking_ref()
@@ -434,7 +451,11 @@ def create_booking():
         }), 200
         
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        print("❌ BOOKING ERROR:", str(e))
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/confirmation/<booking_ref>')
 def confirmation(booking_ref):
