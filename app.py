@@ -95,6 +95,92 @@ def load_buses():
             pass
     return load_json('buses.json')
 
+def load_bus_seats(bus_id, date):
+    """Get seat availability for a specific bus on a specific date"""
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/bus_seats?bus_id=eq.{bus_id}&booking_date=eq.{date}",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200:
+                data = response.json()
+                if data:
+                    return data[0]
+        except Exception as e:
+            print(f"Error loading seats: {e}")
+    
+    # JSON fallback
+    seats_data = load_json('bus_seats.json')
+    for seat in seats_data:
+        if seat.get('bus_id') == bus_id and seat.get('booking_date') == date:
+            return seat
+    
+    return {'bus_id': bus_id, 'booking_date': date, 'booked_seats_list': [], 'booked_seats': 0}
+
+def update_bus_seats(bus_id, date, booked_seats_list):
+    """Update seat availability for a specific bus on a specific date"""
+    if DB_CONNECTED:
+        try:
+            # Check if entry exists
+            check = requests.get(
+                f"{SUPABASE_URL}/rest/v1/bus_seats?bus_id=eq.{bus_id}&booking_date=eq.{date}",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            
+            if check.status_code == 200 and check.json():
+                # Update existing
+                response = requests.patch(
+                    f"{SUPABASE_URL}/rest/v1/bus_seats?bus_id=eq.{bus_id}&booking_date=eq.{date}",
+                    headers=SUPABASE_HEADERS,
+                    json={
+                        'booked_seats_list': booked_seats_list,
+                        'booked_seats': len(booked_seats_list),
+                        'updated_at': datetime.utcnow().isoformat()
+                    },
+                    timeout=10
+                )
+            else:
+                # Insert new
+                response = requests.post(
+                    f"{SUPABASE_URL}/rest/v1/bus_seats",
+                    headers=SUPABASE_HEADERS,
+                    json={
+                        'bus_id': bus_id,
+                        'booking_date': date,
+                        'booked_seats_list': booked_seats_list,
+                        'booked_seats': len(booked_seats_list)
+                    },
+                    timeout=10
+                )
+            return response.status_code in [200, 201, 204]
+        except Exception as e:
+            print(f"Update error: {e}")
+            return False
+    
+    # JSON fallback
+    seats_data = load_json('bus_seats.json')
+    found = False
+    for seat in seats_data:
+        if seat.get('bus_id') == bus_id and seat.get('booking_date') == date:
+            seat['booked_seats_list'] = booked_seats_list
+            seat['booked_seats'] = len(booked_seats_list)
+            found = True
+            break
+    
+    if not found:
+        seats_data.append({
+            'bus_id': bus_id,
+            'booking_date': date,
+            'booked_seats_list': booked_seats_list,
+            'booked_seats': len(booked_seats_list)
+        })
+    
+    save_json('bus_seats.json', seats_data)
+    return True
+
 def load_bookings():
     if DB_CONNECTED:
         try:
@@ -150,25 +236,6 @@ def get_route_by_id(route_id):
             return route
     return None
 
-def update_bus_seats(bus_id, booked_seats_list):
-    """Update bus booked seats in database"""
-    if DB_CONNECTED:
-        try:
-            response = requests.patch(
-                f"{SUPABASE_URL}/rest/v1/buses?id=eq.{bus_id}",
-                headers=SUPABASE_HEADERS,
-                json={
-                    'booked_seats_list': booked_seats_list,
-                    'booked_seats': len(booked_seats_list)
-                },
-                timeout=10
-            )
-            return response.status_code == 200
-        except Exception as e:
-            print(f"Update error: {e}")
-            return False
-    return False
-
 def save_booking(booking_data):
     if DB_CONNECTED:
         try:
@@ -181,8 +248,7 @@ def save_booking(booking_data):
             if response.status_code == 201:
                 data = response.json()
                 return data[0]['id'] if data else None
-        except Exception as e:
-            print(f"Save booking error: {e}")
+        except:
             pass
     bookings = load_json('bookings.json')
     booking_data['id'] = len(bookings) + 1
@@ -238,34 +304,39 @@ def search_results():
                 if bus.get('route_id') == route.get('id'):
                     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
                     if vehicle:
-                        available = bus.get('total_seats', 40) - bus.get('booked_seats', 0)
+                        # Get seat availability for the specific date
+                        seat_data = load_bus_seats(bus.get('id'), date)
+                        booked = seat_data.get('booked_seats', 0)
+                        total = bus.get('total_seats', 40)
+                        available = total - booked
                         if available >= passengers:
                             results.append({
                                 'bus': bus,
                                 'vehicle': vehicle,
                                 'route': route,
                                 'fare': bus.get('fare', route.get('base_fare', 1500)),
-                                'available_seats': available
+                                'available_seats': available,
+                                'date': date
                             })
     
     return render_template('search_results.html', results=results, origin=origin, destination=destination, date=date, passengers=passengers)
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
-    # Force refresh bus data from database
     bus = get_bus_by_id(bus_id)
     if not bus:
         flash('Bus not found', 'danger')
         return redirect(url_for('index'))
     
+    # Get the date from query params or use today
+    date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
+    
     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
     route = get_route_by_id(bus.get('route_id'))
     
     total_seats = bus.get('total_seats', 40)
-    booked_seats_list = bus.get('booked_seats_list', [])
-    
-    # Debug: Print booked seats
-    print(f"Bus {bus_id} - Booked seats: {booked_seats_list}")
+    seat_data = load_bus_seats(bus_id, date)
+    booked_seats_list = seat_data.get('booked_seats_list', [])
     
     seats = []
     for i in range(1, total_seats + 1):
@@ -277,7 +348,7 @@ def booking_page(bus_id):
             'status': 'booked' if is_booked else 'available'
         })
     
-    return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats)
+    return render_template('booking.html', bus=bus, vehicle=vehicle, route=route, seats=seats, date=date)
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
@@ -285,6 +356,7 @@ def create_booking():
         data = request.get_json()
         
         bus_id = data.get('bus_id')
+        booking_date = data.get('booking_date', datetime.now().strftime('%Y-%m-%d'))
         passenger_name = data.get('passenger_name', '').strip()
         passenger_phone = data.get('passenger_phone', '').strip()
         passenger_email = data.get('passenger_email', '').strip()
@@ -295,18 +367,14 @@ def create_booking():
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
         
-        # Get current bus data
-        bus = get_bus_by_id(bus_id)
-        if not bus:
-            return jsonify({'success': False, 'error': 'Bus not found'}), 404
-        
-        # Get current booked seats
-        booked_seats_list = bus.get('booked_seats_list', [])
+        # Get current seat data for this date
+        seat_data = load_bus_seats(bus_id, booking_date)
+        booked_seats_list = seat_data.get('booked_seats_list', [])
         
         # Check if seats are still available
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
-                return jsonify({'success': False, 'error': f'Seat {seat} is already booked. Please refresh and try again.'}), 400
+                return jsonify({'success': False, 'error': f'Seat {seat} is already booked for {booking_date}. Please refresh and try again.'}), 400
         
         # Create new booked list
         new_booked_list = booked_seats_list.copy()
@@ -314,17 +382,10 @@ def create_booking():
             if str(seat) not in new_booked_list:
                 new_booked_list.append(str(seat))
         
-        # Update bus in database
-        update_success = update_bus_seats(bus_id, new_booked_list)
-        if not update_success and DB_CONNECTED:
-            # Try JSON fallback
-            buses = load_json('buses.json')
-            for b in buses:
-                if str(b.get('id')) == str(bus_id):
-                    b['booked_seats_list'] = new_booked_list
-                    b['booked_seats'] = len(new_booked_list)
-                    save_json('buses.json', buses)
-                    break
+        # Update bus seats for this date
+        update_success = update_bus_seats(bus_id, booking_date, new_booked_list)
+        if not update_success:
+            return jsonify({'success': False, 'error': 'Failed to update seats. Please try again.'}), 500
         
         # Create booking
         booking_ref = generate_booking_ref()
@@ -341,6 +402,7 @@ def create_booking():
             'passenger_email': passenger_email,
             'selected_seats': selected_seats,
             'total_fare': total_fare,
+            'booking_date': booking_date,
             'status': 'confirmed',
             'payment_status': 'paid' if payment_method in ['mpesa', 'card'] else 'pending',
             'payment_method': payment_method,
