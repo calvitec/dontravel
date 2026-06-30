@@ -1,54 +1,46 @@
-from flask import Flask, request, jsonify, render_template, send_file, send_from_directory
+from flask import Flask, request, jsonify, render_template
 from datetime import datetime
 import os
 import uuid
 import json
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'dev-secret-key-12345'
 
-# ===== SUPABASE CONFIGURATION =====
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+# ===== GET SUPABASE CREDENTIALS FROM ENVIRONMENT =====
+# These are automatically set by Vercel/Supabase integration
+SUPABASE_URL = os.environ.get('SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_PUBLISHABLE_KEY') or os.environ.get('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
 
-# Try to import and connect to Supabase
+print(f"🔗 SUPABASE_URL: {SUPABASE_URL[:30] if SUPABASE_URL else 'Not found'}...")
+print(f"🔑 SUPABASE_KEY: {SUPABASE_KEY[:20] if SUPABASE_KEY else 'Not found'}...")
+
+# Try to connect to Supabase
 try:
     from supabase import create_client
     if SUPABASE_URL and SUPABASE_KEY:
         supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
         # Test connection
         supabase.table('bookings').select('count', count='exact').limit(1).execute()
-        DB_TYPE = 'supabase'
         DB_CONNECTED = True
-        print("✅ Supabase connected!")
+        DB_TYPE = 'supabase'
+        print("✅ Supabase connected successfully!")
     else:
         supabase = None
-        DB_TYPE = 'json'
         DB_CONNECTED = False
+        DB_TYPE = 'json'
         print("⚠️ Supabase credentials not found. Using JSON storage.")
 except Exception as e:
     supabase = None
-    DB_TYPE = 'json'
     DB_CONNECTED = False
+    DB_TYPE = 'json'
     print(f"⚠️ Supabase error: {e}")
     print("📁 Using JSON storage")
 
-# ===== FILE CONFIGURATION =====
-if os.environ.get('VERCEL'):
-    UPLOAD_FOLDER = '/tmp/uploads'
-    ORDERS_FILE = '/tmp/bookings.json'
-else:
-    UPLOAD_FOLDER = 'uploads'
-    ORDERS_FILE = 'bookings.json'
+# ===== JSON BACKUP =====
+ORDERS_FILE = 'bookings.json'
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
-
-# ===== DATABASE FUNCTIONS =====
 def load_bookings_json():
-    """Load bookings from JSON file"""
     try:
         if os.path.exists(ORDERS_FILE):
             with open(ORDERS_FILE, 'r') as f:
@@ -58,7 +50,6 @@ def load_bookings_json():
         return []
 
 def save_bookings_json(bookings):
-    """Save bookings to JSON file"""
     try:
         with open(ORDERS_FILE, 'w') as f:
             json.dump(bookings, f, indent=2)
@@ -66,8 +57,8 @@ def save_bookings_json(bookings):
     except:
         return False
 
+# ===== DATABASE FUNCTIONS =====
 def load_bookings():
-    """Load bookings from Supabase or JSON"""
     if DB_CONNECTED:
         try:
             response = supabase.table('bookings').select('*').order('created_at', desc=True).execute()
@@ -77,13 +68,11 @@ def load_bookings():
     return load_bookings_json()
 
 def save_booking(booking_data):
-    """Save booking to Supabase or JSON"""
     if DB_CONNECTED:
         try:
             response = supabase.table('bookings').insert(booking_data).execute()
             return response.data[0]['id'] if response.data else None
         except:
-            # Fallback to JSON
             bookings = load_bookings_json()
             booking_data['id'] = len(bookings) + 1
             bookings.append(booking_data)
@@ -97,14 +86,12 @@ def save_booking(booking_data):
         return booking_data['id']
 
 def get_booking(booking_id):
-    """Get booking from Supabase or JSON"""
     if DB_CONNECTED:
         try:
             response = supabase.table('bookings').select('*').eq('id', booking_id).execute()
             return response.data[0] if response.data else None
         except:
             pass
-    
     bookings = load_bookings_json()
     for booking in bookings:
         if booking.get('id') == booking_id:
@@ -112,14 +99,12 @@ def get_booking(booking_id):
     return None
 
 def update_booking(booking_id, updates):
-    """Update booking in Supabase or JSON"""
     if DB_CONNECTED:
         try:
             response = supabase.table('bookings').update(updates).eq('id', booking_id).execute()
             return True if response.data else False
         except:
             pass
-    
     bookings = load_bookings_json()
     for booking in bookings:
         if booking.get('id') == booking_id:
@@ -129,25 +114,22 @@ def update_booking(booking_id, updates):
     return False
 
 def delete_booking(booking_id):
-    """Delete booking from Supabase or JSON"""
     if DB_CONNECTED:
         try:
             response = supabase.table('bookings').delete().eq('id', booking_id).execute()
             return True if response.data else False
         except:
             pass
-    
     bookings = load_bookings_json()
     bookings = [b for b in bookings if b.get('id') != booking_id]
     save_bookings_json(bookings)
     return True
 
-# ===== HELPER FUNCTIONS =====
+# ===== HELPERS =====
 def generate_booking_id():
     return 'DON-' + str(uuid.uuid4().hex[:8]).upper()
 
 # ===== ROUTES =====
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -167,11 +149,10 @@ def admin():
 
 @app.route('/api/status')
 def api_status():
-    bookings = load_bookings()
     return jsonify({
         'database': DB_TYPE,
         'connected': DB_CONNECTED,
-        'bookings': len(bookings),
+        'bookings': len(load_bookings()),
         'timestamp': datetime.utcnow().isoformat()
     })
 
@@ -283,9 +264,5 @@ if __name__ == '__main__':
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
-    if DB_CONNECTED:
-        print(f"📊 Supabase URL: {SUPABASE_URL[:30]}...")
-    else:
-        print("📂 Using JSON file storage")
     print("="*60)
     app.run(debug=True, host='0.0.0.0', port=5000)
