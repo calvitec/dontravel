@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search Results · BusCar</title>
+    <title>Search Results · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -18,16 +18,38 @@
             border: 1px solid #f1f5f9;
             transition: all 0.3s;
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 2fr 1fr auto;
             gap: 20px;
             align-items: center;
+            margin-bottom: 16px;
         }
-        .bus-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.04); transform: translateY(-2px); }
+        .bus-card:hover { 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04); 
+            transform: translateY(-2px);
+            border-color: rgba(245, 158, 11, 0.15);
+        }
         .bus-card .bus-name { font-weight: 700; font-size: 1.1rem; color: #0f172a; }
-        .bus-card .bus-type { color: #64748b; font-size: 0.85rem; }
-        .bus-card .bus-time { font-weight: 600; color: #0f172a; }
+        .bus-card .bus-type { 
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .bus-card .bus-time { color: #475569; font-size: 0.9rem; }
         .bus-card .bus-price { font-weight: 800; font-size: 1.3rem; color: #f59e0b; }
-        .bus-card .bus-seats { color: #64748b; font-size: 0.85rem; }
+        .bus-card .bus-seats { 
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .bus-card .bus-route { color: #64748b; font-size: 0.85rem; }
         
         .btn-book {
             background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -58,8 +80,9 @@
         .btn-outline:hover { background: #f59e0b; color: white; }
         
         @media (max-width: 768px) {
-            .bus-card { grid-template-columns: 1fr; text-align: center; }
-            .bus-card .bus-actions { display: flex; flex-direction: column; gap: 8px; }
+            .bus-card { grid-template-columns: 1fr; text-align: center; padding: 16px; }
+            .bus-card .bus-actions { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+            .results-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -69,7 +92,7 @@
     <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
         <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
             <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
-                <i class="fas fa-bus" style="color:#f59e0b;"></i> Bus<span style="color:#f59e0b;">Car</span>
+                <i class="fas fa-bus" style="color:#f59e0b;"></i> Don<span style="color:#f59e0b;">Travels</span>
             </a>
             <a href="/" style="color:#64748b; text-decoration:none;">
                 <i class="fas fa-arrow-left"></i> Back to Home
@@ -79,39 +102,48 @@
 
     <!-- ===== RESULTS ===== -->
     <section style="max-width:900px; margin:40px auto; padding:0 20px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
-            <div>
-                <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a;">
-                    <i class="fas fa-bus" style="color:#f59e0b;"></i> 
-                    {{ origin }} → {{ destination }}
-                </h2>
-                <p style="color:#64748b; font-size:0.9rem;">
-                    {{ results|length }} buses found · {{ passengers }} passenger(s)
-                </p>
-            </div>
-            <div style="display:flex; gap:8px;">
+        <!-- Search Summary -->
+        <div style="background:white; border-radius:16px; padding:20px 24px; margin-bottom:24px; border:1px solid #f1f5f9;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h2 style="font-size:1.3rem; font-weight:800; color:#0f172a;">
+                        <i class="fas fa-route" style="color:#f59e0b;"></i> 
+                        {{ origin }} → {{ destination }}
+                    </h2>
+                    <p style="color:#64748b; font-size:0.9rem;">
+                        {{ results|length }} buses found · {{ passengers }} passenger(s) · {{ date }}
+                    </p>
+                </div>
                 <a href="/" class="btn-outline"><i class="fas fa-search"></i> New Search</a>
             </div>
         </div>
 
+        <!-- Results -->
         {% if results %}
-            {% for bus in results %}
-            <div class="bus-card" style="margin-bottom:16px;">
+            {% for item in results %}
+            <div class="bus-card">
                 <div>
-                    <div class="bus-name">{{ bus.company_name or 'BusCar Express' }}</div>
-                    <div class="bus-type">
-                        <i class="fas fa-clock"></i> {{ bus.route.departure_time or '08:00' }} - {{ bus.route.arrival_time or '14:00' }}
-                        <span style="color:#94a3b8; margin:0 8px;">|</span>
-                        <i class="fas fa-chair"></i> {{ bus.available_seats }} seats available
+                    <div class="bus-name">{{ item.bus.company_name or 'Don Travels Express' }}</div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
+                        <span class="bus-type">{{ item.vehicle.vehicle_type or 'Standard' }}</span>
+                        <span class="bus-seats"><i class="fas fa-chair"></i> {{ item.available_seats }} seats available</span>
                     </div>
-                    <div class="bus-time" style="margin-top:4px;">
-                        <i class="fas fa-route"></i> {{ bus.route.origin }} → {{ bus.route.destination }}
+                    <div class="bus-time" style="margin-top:6px;">
+                        <i class="fas fa-clock" style="color:#f59e0b;"></i> 
+                        {{ item.bus.departure_time or '08:00' }} - {{ item.bus.arrival_time or '14:00' }}
+                    </div>
+                    <div class="bus-route">
+                        <i class="fas fa-route" style="color:#f59e0b;"></i> 
+                        {{ item.route.origin }} → {{ item.route.destination }}
+                        <span style="color:#94a3b8; margin-left:8px;">· {{ item.route.distance_km or 0 }} km</span>
                     </div>
                 </div>
-                <div class="bus-actions" style="text-align:right;">
-                    <div class="bus-price">KSh {{ bus.fare or 1500 }}</div>
-                    <div class="bus-seats"><i class="fas fa-user"></i> {{ bus.total_seats or 40 }} seats</div>
-                    <a href="/booking/{{ bus.id }}" class="btn-book">
+                <div style="text-align:center;">
+                    <div class="bus-price">KSh {{ "%.0f"|format(item.fare) }}</div>
+                    <div style="color:#94a3b8; font-size:0.75rem;">per passenger</div>
+                </div>
+                <div class="bus-actions">
+                    <a href="/booking/{{ item.bus.id }}" class="btn-book">
                         <i class="fas fa-calendar-check"></i> Book Now
                     </a>
                 </div>
@@ -129,9 +161,22 @@
         {% endif %}
     </section>
 
-    <!-- ===== FOOTER ===== -->
     <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9;">
-        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 BusCar. All rights reserved.</p>
+        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 Don Travels. All rights reserved.</p>
     </footer>
+
+    <style>
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
+    </style>
 </body>
 </html>
