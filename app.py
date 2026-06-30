@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'don-travels-secret-key-2026'
 app.permanent_session_lifetime = timedelta(days=7)
 
-# ===== YOUR SUPABASE CREDENTIALS (HARDCODED FOR RELIABILITY) =====
+# ===== YOUR SUPABASE CREDENTIALS =====
 SUPABASE_URL = "https://hzqrdwerkgfmfaufabjr.supabase.co"
 SUPABASE_KEY = "sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld"
 
@@ -20,12 +20,11 @@ SUPABASE_HEADERS = {
     "Content-Type": "application/json"
 }
 
-# ===== DATABASE CONNECTION WITH RETRY LOGIC =====
+# ===== DATABASE CONNECTION =====
 DB_CONNECTED = False
 DB_TYPE = 'json'
 
 def test_supabase_connection():
-    """Test Supabase connection with retry"""
     try:
         response = requests.get(
             f"{SUPABASE_URL}/rest/v1/bookings?select=count",
@@ -36,21 +35,17 @@ def test_supabase_connection():
     except:
         return False
 
-# Try to connect
 try:
     if test_supabase_connection():
         DB_CONNECTED = True
         DB_TYPE = 'supabase'
-        print("✅ Supabase connected successfully!")
-    else:
-        print("❌ Supabase connection failed")
-        print("📁 Using JSON storage")
-except Exception as e:
-    print(f"❌ Supabase error: {e}")
+        print("✅ Supabase connected!")
+except:
     print("📁 Using JSON storage")
 
 # ===== JSON BACKUP =====
 ORDERS_FILE = 'bookings.json'
+PAYMENTS_FILE = 'payments.json'
 
 def load_json(file_path):
     try:
@@ -69,18 +64,8 @@ def save_json(file_path, data):
     except:
         return False
 
-# ===== DATABASE FUNCTIONS WITH AUTO-RETRY =====
-def ensure_connection():
-    """Check and reconnect if needed"""
-    global DB_CONNECTED
-    if not DB_CONNECTED:
-        DB_CONNECTED = test_supabase_connection()
-    return DB_CONNECTED
-
+# ===== DATABASE FUNCTIONS =====
 def load_bookings():
-    # Try to reconnect if needed
-    ensure_connection()
-    
     if DB_CONNECTED:
         try:
             response = requests.get(
@@ -95,9 +80,6 @@ def load_bookings():
     return load_json(ORDERS_FILE)
 
 def save_booking(booking_data):
-    # Try to reconnect if needed
-    ensure_connection()
-    
     if DB_CONNECTED:
         try:
             response = requests.post(
@@ -108,23 +90,16 @@ def save_booking(booking_data):
             )
             if response.status_code == 201:
                 data = response.json()
-                print(f"✅ Booking saved to Supabase: {booking_data['booking_id']}")
                 return data[0]['id'] if data else None
-        except Exception as e:
-            print(f"⚠️ Supabase save error: {e}")
-    
-    # Fallback to JSON
+        except:
+            pass
     bookings = load_json(ORDERS_FILE)
     booking_data['id'] = len(bookings) + 1
     bookings.append(booking_data)
     save_json(ORDERS_FILE, bookings)
-    print(f"📁 Booking saved to JSON: {booking_data['booking_id']}")
     return booking_data['id']
 
 def update_booking(booking_id, updates):
-    # Try to reconnect if needed
-    ensure_connection()
-    
     if DB_CONNECTED:
         try:
             response = requests.patch(
@@ -137,8 +112,6 @@ def update_booking(booking_id, updates):
                 return True
         except:
             pass
-    
-    # Fallback to JSON
     bookings = load_json(ORDERS_FILE)
     for booking in bookings:
         if booking.get('id') == booking_id:
@@ -148,9 +121,6 @@ def update_booking(booking_id, updates):
     return False
 
 def get_booking(booking_id):
-    # Try to reconnect if needed
-    ensure_connection()
-    
     if DB_CONNECTED:
         try:
             response = requests.get(
@@ -163,7 +133,6 @@ def get_booking(booking_id):
                 return data[0] if data else None
         except:
             pass
-    
     bookings = load_json(ORDERS_FILE)
     for booking in bookings:
         if booking.get('id') == booking_id:
@@ -171,9 +140,6 @@ def get_booking(booking_id):
     return None
 
 def delete_booking(booking_id):
-    # Try to reconnect if needed
-    ensure_connection()
-    
     if DB_CONNECTED:
         try:
             response = requests.delete(
@@ -185,21 +151,75 @@ def delete_booking(booking_id):
                 return True
         except:
             pass
-    
     bookings = load_json(ORDERS_FILE)
     bookings = [b for b in bookings if b.get('id') != booking_id]
     save_json(ORDERS_FILE, bookings)
     return True
 
+# ===== PAYMENT FUNCTIONS =====
+def load_payments():
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/payments?select=*&order=created_at.desc",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json()
+        except:
+            pass
+    return load_json(PAYMENTS_FILE)
+
+def save_payment(payment_data):
+    if DB_CONNECTED:
+        try:
+            response = requests.post(
+                f"{SUPABASE_URL}/rest/v1/payments",
+                headers=SUPABASE_HEADERS,
+                json=payment_data,
+                timeout=10
+            )
+            if response.status_code == 201:
+                data = response.json()
+                return data[0]['id'] if data else None
+        except:
+            pass
+    payments = load_json(PAYMENTS_FILE)
+    payment_data['id'] = len(payments) + 1
+    payments.append(payment_data)
+    save_json(PAYMENTS_FILE, payments)
+    return payment_data['id']
+
+def update_payment(payment_id, updates):
+    if DB_CONNECTED:
+        try:
+            response = requests.patch(
+                f"{SUPABASE_URL}/rest/v1/payments?id=eq.{payment_id}",
+                headers=SUPABASE_HEADERS,
+                json=updates,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return True
+        except:
+            pass
+    payments = load_json(PAYMENTS_FILE)
+    for payment in payments:
+        if payment.get('id') == payment_id:
+            payment.update(updates)
+            save_json(PAYMENTS_FILE, payments)
+            return True
+    return False
+
 # ===== HELPERS =====
 def generate_booking_id():
     return 'DON-' + str(uuid.uuid4().hex[:8]).upper()
 
-def generate_user_id():
-    return 'USR-' + str(uuid.uuid4().hex[:8]).upper()
+def generate_payment_id():
+    return 'PAY-' + str(uuid.uuid4().hex[:8]).upper()
 
 def calculate_price(vehicle_type, distance_km=10):
-    """Calculate price based on vehicle type"""
     prices = {
         'Standard Sedan': 1500,
         'Premium Sedan': 2500,
@@ -211,6 +231,7 @@ def calculate_price(vehicle_type, distance_km=10):
     return prices.get(vehicle_type, 2000)
 
 # ===== ROUTES =====
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -218,23 +239,23 @@ def index():
 @app.route('/admin')
 def admin():
     bookings = load_bookings()
+    payments = load_payments()
+    
     stats = {
         'total': len(bookings),
         'pending': len([b for b in bookings if b.get('status') == 'pending']),
         'confirmed': len([b for b in bookings if b.get('status') == 'confirmed']),
         'completed': len([b for b in bookings if b.get('status') == 'completed']),
         'cancelled': len([b for b in bookings if b.get('status') == 'cancelled']),
-        'revenue': sum([float(b.get('amount', 0)) for b in bookings if b.get('status') == 'completed'])
+        'revenue': sum([float(b.get('amount', 0)) for b in bookings if b.get('status') == 'completed']),
+        'payments': len(payments),
+        'today': len([b for b in bookings if b.get('created_at', '').startswith(datetime.now().strftime('%Y-%m-%d'))])
     }
-    return render_template('admin.html', bookings=bookings, stats=stats, db_type=DB_TYPE, db_connected=DB_CONNECTED)
+    return render_template('admin.html', bookings=bookings, payments=payments, stats=stats, db_type=DB_TYPE, db_connected=DB_CONNECTED)
 
 @app.route('/api/status')
 def api_status():
-    # Force recheck connection
-    global DB_CONNECTED
-    DB_CONNECTED = test_supabase_connection()
     bookings = load_bookings()
-    
     return jsonify({
         'database': DB_TYPE,
         'connected': DB_CONNECTED,
@@ -242,29 +263,11 @@ def api_status():
         'timestamp': datetime.utcnow().isoformat()
     })
 
-@app.route('/api/test-db')
-def test_db():
-    # Force recheck connection
-    global DB_CONNECTED
-    DB_CONNECTED = test_supabase_connection()
-    bookings = load_bookings()
-    
-    return jsonify({
-        'connected': DB_CONNECTED,
-        'type': DB_TYPE,
-        'bookings_count': len(bookings),
-        'message': '✅ Connected to Supabase!' if DB_CONNECTED else '📁 Using JSON storage'
-    })
-
 @app.route('/api/reconnect')
 def reconnect_db():
-    """Force reconnection to Supabase"""
     global DB_CONNECTED
     DB_CONNECTED = test_supabase_connection()
-    return jsonify({
-        'connected': DB_CONNECTED,
-        'message': '✅ Reconnected to Supabase!' if DB_CONNECTED else '❌ Still disconnected'
-    })
+    return jsonify({'connected': DB_CONNECTED})
 
 @app.route('/api/book', methods=['POST'])
 def create_booking():
@@ -316,10 +319,55 @@ def create_booking():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/bookings', methods=['GET'])
-def get_bookings():
-    bookings = load_bookings()
-    return jsonify({'bookings': bookings}), 200
+@app.route('/api/payment', methods=['POST'])
+def process_payment():
+    try:
+        data = request.get_json()
+        booking_id = data.get('booking_id')
+        payment_method = data.get('payment_method', 'mpesa')
+        phone_number = data.get('phone_number', '')
+        
+        booking = get_booking(int(booking_id)) if booking_id else None
+        if not booking:
+            return jsonify({'success': False, 'error': 'Booking not found'}), 404
+        
+        payment_id = generate_payment_id()
+        
+        payment_data = {
+            'payment_id': payment_id,
+            'booking_id': booking_id,
+            'customer_name': booking.get('customer_name'),
+            'customer_email': booking.get('customer_email'),
+            'customer_phone': booking.get('customer_phone'),
+            'amount': booking.get('amount'),
+            'payment_method': payment_method,
+            'payment_status': 'processing',
+            'created_at': datetime.utcnow().isoformat()
+        }
+        
+        save_payment(payment_data)
+        
+        # Simulate payment processing
+        # In production, this would call M-Pesa API
+        
+        # Update booking status
+        update_booking(int(booking_id), {'payment_status': 'paid', 'status': 'confirmed'})
+        
+        return jsonify({
+            'success': True,
+            'message': 'Payment processed successfully!',
+            'payment_id': payment_id,
+            'receipt': {
+                'booking_id': booking_id,
+                'amount': booking.get('amount'),
+                'payment_method': payment_method,
+                'status': 'completed',
+                'paid_at': datetime.utcnow().isoformat()
+            }
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/bookings/<int:booking_id>/status', methods=['PUT'])
 def update_booking_status(booking_id):
