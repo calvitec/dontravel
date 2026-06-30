@@ -33,7 +33,13 @@
         .seat.available { background: white; color: #0f172a; }
         .seat.available:hover { background: #fffbeb; }
         .seat.selected { background: #f59e0b; border-color: #f59e0b; color: white; }
-        .seat.booked { background: #f1f5f9; border-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+        .seat.booked { 
+            background: #e5e7eb; 
+            border-color: #d1d5db; 
+            color: #9ca3af; 
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
         
         .btn-primary {
             background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -94,7 +100,17 @@
         }
         .seat-legend .legend-item .dot.available { background: white; }
         .seat-legend .legend-item .dot.selected { background: #f59e0b; border-color: #f59e0b; }
-        .seat-legend .legend-item .dot.booked { background: #f1f5f9; }
+        .seat-legend .legend-item .dot.booked { background: #e5e7eb; border-color: #d1d5db; }
+        
+        /* Seat status indicator */
+        .seat-status {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 8px;
+        }
+        .seat-status .booked-count { color: #ef4444; font-weight: 600; }
+        .seat-status .available-count { color: #10b981; font-weight: 600; }
         
         @media (max-width: 768px) {
             .booking-grid { grid-template-columns: 1fr !important; }
@@ -126,6 +142,15 @@
                         <div><span class="label">Route:</span> <span class="value">{{ route.origin }} → {{ route.destination }}</span></div>
                         <div><span class="label">Fare:</span> <span class="value" style="color:#f59e0b;">KSh {{ bus.fare or 1500 }}</span></div>
                     </div>
+                </div>
+                
+                <!-- Seat Status -->
+                {% set total_seats = bus.total_seats or 40 %}
+                {% set booked_count = bus.booked_seats or 0 %}
+                {% set available_count = total_seats - booked_count %}
+                <div class="seat-status">
+                    <span class="available-count">{{ available_count }}</span> seats available · 
+                    <span class="booked-count">{{ booked_count }}</span> seats booked
                 </div>
                 
                 <div class="seat-legend">
@@ -290,6 +315,9 @@
 
         // Update summary on page load
         document.addEventListener('DOMContentLoaded', updateSummary);
+        
+        // Log booked seats for debugging
+        console.log('Booked seats:', {{ bus.booked_seats_list|tojson }});
     </script>
 </body>
 </html>
