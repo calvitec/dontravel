@@ -5,441 +5,272 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>Don Travels · Premium Bus & Taxi Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
     <style>
         :root {
-            --ink: #211f1a;
-            --forest: #1f3a2e;
-            --forest-dim: #2a4a3a;
-            --clay: #bd5b38;
-            --clay-deep: #9c4629;
-            --paper: #f6f1e4;
-            --paper-dim: #ece4d0;
-            --sage: #7c9a82;
-            --ochre: #c99a3f;
-            --line: rgba(33, 31, 26, 0.14);
+            --blue: #155eef;
+            --blue-deep: #0b3fc4;
+            --violet: #7c4dff;
+            --sky: #3ec9ff;
+            --navy: #0a1130;
+            --navy-soft: #121b45;
+            --amber: #ffb020;
+            --amber-deep: #f2920a;
+            --ink: #0b1230;
+            --mist: #f4f6ff;
+            --line: rgba(11,18,48,0.09);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--paper);
-            color: var(--ink);
-            -webkit-font-smoothing: antialiased;
-        }
-        .serif { font-family: 'Fraunces', serif; }
+        body { font-family: 'Inter', sans-serif; background: var(--mist); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        .display { font-family: 'Manrope', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        a { color: inherit; }
         img { display: block; max-width: 100%; }
+        a { color: inherit; }
 
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+        @keyframes floatSlow { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(0deg); } }
+        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(24px);} to { opacity:1; transform:translateY(0);} }
+        @keyframes blob { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-20px) scale(1.05); } 66% { transform: translate(-20px,20px) scale(0.96); } }
+        @keyframes shine { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         .reveal { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both; }
 
         /* ===== HEADER ===== */
         .app-header {
-            background: rgba(246,241,228,0.9);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            padding: 18px 32px;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            padding: 16px 32px;
+            position: fixed; top:0; left:0; right:0; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between;
             border-bottom: 1px solid var(--line);
             transition: all 0.3s;
         }
-        .app-header.scrolled { background: rgba(246,241,228,0.98); box-shadow: 0 6px 24px rgba(33,31,26,0.05); }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .app-header.scrolled { background: rgba(255,255,255,0.97); box-shadow: 0 8px 30px rgba(11,18,48,0.06); }
+        .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
         .brand-icon {
-            width: 42px; height: 42px;
-            border-radius: 10px;
-            background: var(--forest);
+            width: 40px; height: 40px; border-radius: 11px;
+            background: linear-gradient(135deg, var(--blue), var(--violet));
             display: flex; align-items: center; justify-content: center;
-            color: var(--paper);
-            font-size: 1.15rem;
-            transform: rotate(-2deg);
+            color: #fff; font-size: 1.1rem;
+            box-shadow: 0 8px 18px rgba(21,94,239,0.35);
         }
-        .brand-text { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.4rem; letter-spacing: -0.5px; color: var(--ink); }
-        .brand-text em { color: var(--clay); font-style: normal; }
-
+        .brand-text { font-family:'Manrope',sans-serif; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
+        .brand-text span { color: var(--blue); }
         .nav-links { display: flex; align-items: center; gap: 2px; }
-        .nav-link {
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: var(--ink);
-            opacity: 0.62;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: all 0.25s;
-        }
-        .nav-link:hover, .nav-link.active { opacity: 1; background: rgba(33,31,26,0.05); }
-
+        .nav-link { text-decoration:none; font-weight:600; font-size:0.85rem; color:var(--ink); opacity:0.55; padding:9px 15px; border-radius: 999px; transition: all 0.25s; }
+        .nav-link:hover, .nav-link.active { opacity:1; background: rgba(21,94,239,0.08); color: var(--blue); }
         .header-btn {
-            background: var(--clay);
-            color: var(--paper);
-            padding: 10px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.82rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s;
+            background: linear-gradient(135deg, var(--blue), var(--violet));
+            color: #fff; padding: 11px 24px; border-radius: 999px;
+            font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer;
             display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 10px 24px rgba(21,94,239,0.3);
+            transition: all 0.25s;
         }
-        .header-btn:hover { background: var(--clay-deep); transform: translateY(-2px); }
-
-        /* ===== ROUTE STRIP (signature element) ===== */
-        .route-strip {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            letter-spacing: 0.04em;
-            color: var(--forest);
-            opacity: 0.85;
-        }
-        .route-strip .stop { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-        .route-strip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--clay); flex-shrink: 0; }
-        .route-strip .seg { flex: 1; height: 0; border-top: 1.5px dashed rgba(31,58,46,0.35); min-width: 24px; }
+        .header-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(21,94,239,0.42); }
 
         /* ===== HERO ===== */
         .hero-section {
-            padding: 128px 32px 0;
-            max-width: 1280px;
-            margin: 0 auto;
+            position: relative;
+            background: var(--navy);
+            padding: 128px 32px 90px;
+            overflow: hidden;
         }
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            gap: 56px;
-            align-items: center;
-            padding-bottom: 56px;
+        .hero-blob { position:absolute; border-radius:50%; filter: blur(70px); pointer-events:none; }
+        .hero-blob.b1 { width:520px; height:520px; background: radial-gradient(circle, rgba(21,94,239,0.55), transparent 70%); top:-160px; right:-120px; animation: blob 14s ease-in-out infinite; }
+        .hero-blob.b2 { width:380px; height:380px; background: radial-gradient(circle, rgba(124,77,255,0.45), transparent 70%); bottom:-140px; left:-100px; animation: blob 16s ease-in-out infinite reverse; }
+        .hero-blob.b3 { width:280px; height:280px; background: radial-gradient(circle, rgba(62,201,255,0.35), transparent 70%); top:30%; left:38%; animation: blob 12s ease-in-out infinite 2s; }
+        .hero-grid { position:relative; z-index:2; max-width:1280px; margin:0 auto; display:grid; grid-template-columns: 1fr 0.9fr; gap: 56px; align-items:center; }
+
+        .chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+        .chip {
+            display:flex; align-items:center; gap:6px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: rgba(255,255,255,0.85);
+            padding: 7px 14px; border-radius: 999px;
+            font-size: 0.75rem; font-weight: 600;
         }
-        .hero-eyebrow {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--clay-deep);
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 22px;
-        }
-        .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--clay); }
+        .chip i { color: var(--sky); }
+
         .hero-title {
-            font-family: 'Fraunces', serif;
-            font-weight: 600;
-            font-size: 3.6rem;
-            line-height: 1.04;
-            letter-spacing: -1.5px;
-            color: var(--forest);
-            margin-bottom: 22px;
+            font-family:'Manrope',sans-serif; font-weight: 800;
+            font-size: 3.4rem; line-height: 1.06; letter-spacing: -1.5px;
+            color: #fff; margin-bottom: 20px;
         }
-        .hero-title em { font-style: italic; color: var(--clay); font-weight: 500; }
-        .hero-subtitle {
-            font-size: 1.05rem;
-            line-height: 1.75;
-            color: rgba(33,31,26,0.68);
-            max-width: 460px;
-            margin-bottom: 34px;
+        .hero-title .grad {
+            background: linear-gradient(90deg, var(--sky), var(--blue) 40%, var(--violet) 80%, var(--sky));
+            background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            animation: shine 6s linear infinite;
         }
+        .hero-subtitle { color: rgba(255,255,255,0.62); font-size: 1.05rem; line-height: 1.7; max-width: 460px; margin-bottom: 30px; }
 
-        .hero-photo {
-            position: relative;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 30px 60px -20px rgba(31,58,46,0.35);
-        }
-        .hero-photo img { width: 100%; height: 460px; object-fit: cover; }
-        .hero-photo-caption {
-            position: absolute;
-            left: 0; right: 0; bottom: 0;
+        .hero-stats-row { display:flex; gap:32px; margin-top: 30px; }
+        .hero-stats-row .stat b { display:block; font-family:'Manrope',sans-serif; font-size:1.5rem; font-weight:800; color:#fff; }
+        .hero-stats-row .stat span { font-size:0.72rem; color: rgba(255,255,255,0.45); }
+
+        /* hero visual: photo + floating ticket card */
+        .hero-visual { position: relative; }
+        .hero-photo-card { border-radius: 22px; overflow: hidden; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5); position: relative; }
+        .hero-photo-card img { width:100%; height:420px; object-fit:cover; }
+        .hero-photo-card::after { content:''; position:absolute; inset:0; background: linear-gradient(160deg, rgba(21,94,239,0.25), transparent 55%); }
+
+        .float-ticket {
+            position: absolute; left: -34px; bottom: -30px;
+            width: 250px;
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px;
             padding: 18px 20px;
-            background: linear-gradient(transparent, rgba(20,20,15,0.75));
-            color: var(--paper);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            letter-spacing: 0.04em;
-            display: flex;
-            justify-content: space-between;
+            box-shadow: 0 24px 50px -12px rgba(11,18,48,0.35);
+            animation: floatSlow 5s ease-in-out infinite;
         }
-        .hero-photo::before {
-            content: '';
-            position: absolute; inset: 0;
-            border: 1px solid rgba(255,255,255,0.15);
-            pointer-events: none;
-        }
+        .float-ticket .row1 { display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; }
+        .float-ticket .live { display:flex; align-items:center; gap:6px; font-size:0.65rem; font-weight:700; color:#16a34a; letter-spacing:0.04em; }
+        .float-ticket .live .d { width:6px; height:6px; border-radius:50%; background:#16a34a; animation: pulse 1.6s infinite; }
+        .float-ticket .route { font-family:'Manrope',sans-serif; font-weight:800; font-size:0.95rem; color: var(--ink); }
+        .float-ticket .meta { display:flex; justify-content:space-between; font-size:0.7rem; color: rgba(11,18,48,0.5); margin-top:4px; }
+        .float-ticket .price-tag { margin-top:12px; background: linear-gradient(135deg, var(--blue), var(--violet)); color:#fff; text-align:center; padding:8px; border-radius:9px; font-weight:700; font-size:0.82rem; }
 
-        /* ===== TICKET SEARCH CARD ===== */
-        .ticket-card {
-            background: var(--forest);
-            border-radius: 6px;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            box-shadow: 0 24px 50px -18px rgba(31,58,46,0.5);
-            overflow: visible;
+        /* ===== SEARCH CARD (glass, overlapping hero/next section) ===== */
+        .search-wrap { max-width: 1120px; margin: -56px auto 0; padding: 0 32px; position: relative; z-index: 5; }
+        .search-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 30px 70px -20px rgba(11,18,48,0.28);
+            border: 1px solid rgba(11,18,48,0.05);
         }
-        .ticket-main { padding: 26px 30px; }
-        .ticket-stub {
-            width: 132px;
-            border-left: 1.5px dashed rgba(246,241,228,0.28);
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
+        .search-card form { display:grid; grid-template-columns: 1fr 1fr 1fr 0.7fr auto; gap: 8px; align-items: stretch; }
+        .search-field { padding: 10px 16px; border-radius: 14px; transition: background 0.2s; }
+        .search-field:hover { background: var(--mist); }
+        .search-field label { display:block; font-size:0.66rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color: var(--blue); margin-bottom:4px; }
+        .search-field input {
+            border: none; outline:none; width:100%; font-size:0.92rem; font-family:'Inter',sans-serif; color: var(--ink); background: transparent;
         }
-        .ticket-stub::before, .ticket-stub::after {
-            content: '';
-            position: absolute;
-            width: 22px; height: 22px;
-            background: var(--paper);
-            border-radius: 50%;
-            left: -11px;
-        }
-        .ticket-stub::before { top: -11px; }
-        .ticket-stub::after { bottom: -11px; }
-        .ticket-stub-inner {
-            transform: rotate(-90deg);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.68rem;
-            letter-spacing: 0.18em;
-            color: rgba(246,241,228,0.55);
-            white-space: nowrap;
-        }
-        .ticket-fields {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 0.7fr;
-            gap: 18px;
-            margin-bottom: 18px;
-        }
-        .field-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: rgba(246,241,228,0.5);
-            display: block;
-            margin-bottom: 6px;
-        }
-        .field-label i { color: var(--clay); margin-right: 4px; }
-        .field-input {
-            background: rgba(246,241,228,0.06);
-            border: 1px solid rgba(246,241,228,0.14);
-            border-radius: 5px;
-            padding: 11px 12px;
-            width: 100%;
-            font-size: 0.9rem;
-            color: var(--paper);
-            font-family: 'Inter', sans-serif;
-        }
-        .field-input::placeholder { color: rgba(246,241,228,0.35); }
-        .field-input:focus { outline: none; border-color: var(--clay); background: rgba(246,241,228,0.1); }
-        .field-input option { background: var(--forest); }
-        .ticket-submit {
-            background: var(--clay);
-            color: var(--paper);
-            border: none;
-            border-radius: 5px;
-            padding: 11px 20px;
-            font-weight: 700;
-            font-size: 0.88rem;
-            cursor: pointer;
-            width: 100%;
+        .search-submit {
+            background: linear-gradient(135deg, var(--blue), var(--violet));
+            color:#fff; border:none; border-radius:14px; padding: 0 26px;
+            font-weight:700; font-size:0.9rem; cursor:pointer;
+            display:flex; align-items:center; gap:8px; white-space:nowrap;
             transition: all 0.25s;
         }
-        .ticket-submit:hover { background: #d16a44; }
+        .search-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(21,94,239,0.35); }
 
-        .hero-stats {
-            display: flex;
-            gap: 40px;
-            margin-top: 34px;
-            padding-top: 26px;
-            border-top: 1px solid var(--line);
-        }
-        .hero-stats .stat-item .number {
-            font-family: 'Fraunces', serif;
-            font-size: 1.7rem;
-            font-weight: 600;
-            color: var(--forest);
-            display: block;
-        }
-        .hero-stats .stat-item .label { font-size: 0.72rem; color: rgba(33,31,26,0.5); letter-spacing: 0.02em; }
+        /* ===== SECTIONS ===== */
+        .section-wrap { max-width: 1280px; margin:0 auto; padding: 96px 32px; }
+        .section-head { margin-bottom: 44px; text-align:center; }
+        .section-eyebrow { display:inline-flex; align-items:center; gap:6px; background: rgba(21,94,239,0.08); color: var(--blue); font-weight:700; font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase; padding:6px 14px; border-radius:999px; }
+        .section-title { font-family:'Manrope',sans-serif; font-weight:800; font-size:2.5rem; letter-spacing:-1px; margin-top:14px; }
+        .section-title .accent { color: var(--blue); }
+        .section-desc { color: rgba(11,18,48,0.55); max-width:520px; margin: 12px auto 0; font-size:0.98rem; line-height:1.6; }
 
-        /* ===== SECTION HEADERS ===== */
-        .section-wrap { max-width: 1280px; margin: 0 auto; padding: 88px 32px; }
-        .section-head { margin-bottom: 44px; }
-        .section-eyebrow {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--clay-deep);
-        }
-        .section-title {
-            font-family: 'Fraunces', serif;
-            font-weight: 600;
-            font-size: 2.4rem;
-            letter-spacing: -1px;
-            color: var(--forest);
-            margin-top: 6px;
-        }
-        .section-title em { font-style: italic; color: var(--clay); font-weight: 500; }
-        .section-desc { color: rgba(33,31,26,0.6); max-width: 480px; margin-top: 10px; font-size: 0.95rem; line-height: 1.6; }
-
-        /* ===== FLEET SHOWCASE (working carousel) ===== */
-        .fleet-showcase {
-            position: relative;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 24px 50px -20px rgba(31,58,46,0.3);
-            margin-bottom: 40px;
-        }
-        .fleet-slides { display: flex; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-        .fleet-slide { min-width: 100%; position: relative; }
-        .fleet-slide img { width: 100%; height: 380px; object-fit: cover; }
-        .fleet-slide-overlay {
-            position: absolute; left: 0; right: 0; bottom: 0;
-            padding: 28px 32px;
-            background: linear-gradient(transparent, rgba(20,18,14,0.82) 75%);
-            display: flex; justify-content: space-between; align-items: flex-end;
-        }
-        .fleet-slide-overlay .title { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--paper); font-weight: 600; }
-        .fleet-slide-overlay .desc { color: rgba(246,241,228,0.72); font-size: 0.85rem; margin-top: 4px; }
-        .fleet-slide-overlay .price {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--paper);
-            background: var(--clay);
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .fleet-btn {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(246,241,228,0.14);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(246,241,228,0.2);
-            color: var(--paper);
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.25s;
-        }
-        .fleet-btn:hover { background: var(--clay); }
-        .fleet-btn.prev { left: 16px; }
-        .fleet-btn.next { right: 16px; }
-        .fleet-dots { position: absolute; bottom: 16px; left: 32px; display: flex; gap: 6px; z-index: 2; }
-        .fleet-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(246,241,228,0.4); border: none; cursor: pointer; transition: all 0.3s; }
-        .fleet-dot.active { background: var(--paper); width: 22px; border-radius: 4px; }
+        /* ===== FLEET CAROUSEL ===== */
+        .fleet-showcase { position:relative; border-radius: 22px; overflow:hidden; box-shadow: 0 30px 60px -20px rgba(11,18,48,0.2); margin-bottom: 36px; }
+        .fleet-slides { display:flex; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+        .fleet-slide { min-width:100%; position:relative; }
+        .fleet-slide img { width:100%; height:420px; object-fit:cover; }
+        .fleet-slide-overlay { position:absolute; inset:0; background: linear-gradient(0deg, rgba(10,17,48,0.85), rgba(10,17,48,0.05) 55%); display:flex; flex-direction:column; justify-content:flex-end; padding: 32px; }
+        .fleet-badge { align-self:flex-start; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.25); color:#fff; padding:6px 14px; border-radius:999px; font-size:0.72rem; font-weight:700; margin-bottom: auto; }
+        .fleet-slide-bottom { display:flex; justify-content:space-between; align-items:flex-end; }
+        .fleet-slide-bottom .title { font-family:'Manrope',sans-serif; font-size:1.7rem; font-weight:800; color:#fff; }
+        .fleet-slide-bottom .desc { color: rgba(255,255,255,0.7); font-size:0.88rem; margin-top:4px; }
+        .fleet-slide-bottom .price { background: linear-gradient(135deg, var(--amber), var(--amber-deep)); color:#1a1200; padding:10px 18px; border-radius:12px; font-weight:800; font-size:0.88rem; white-space:nowrap; }
+        .fleet-btn { position:absolute; top:50%; transform:translateY(-50%); background: rgba(255,255,255,0.16); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.25); color:#fff; width:44px; height:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all 0.25s; z-index:3; }
+        .fleet-btn:hover { background: var(--blue); }
+        .fleet-btn.prev { left:18px; } .fleet-btn.next { right:18px; }
+        .fleet-dots { position:absolute; top:28px; right:32px; display:flex; gap:6px; z-index:3; }
+        .fleet-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.4); border:none; cursor:pointer; transition:all 0.3s; }
+        .fleet-dot.active { background:#fff; width:22px; border-radius:4px; }
 
         /* ===== FARE GRID ===== */
-        .fare-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--line);
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .fare-card {
-            background: var(--paper);
-            padding: 20px 18px;
-            transition: background 0.25s;
-        }
-        .fare-card:hover { background: var(--paper-dim); }
-        .fare-card .name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.05rem; color: var(--forest); }
-        .fare-card .seats { font-size: 0.76rem; color: rgba(33,31,26,0.5); margin: 4px 0 10px; }
-        .fare-card .price { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--clay-deep); font-size: 0.92rem; }
+        .fare-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:14px; }
+        .fare-card { background:#fff; border-radius:16px; padding:20px 18px; border:1px solid var(--line); transition: all 0.25s; }
+        .fare-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(11,18,48,0.08); border-color: rgba(21,94,239,0.25); }
+        .fare-card .name { font-family:'Manrope',sans-serif; font-weight:800; font-size:1.05rem; }
+        .fare-card .seats { font-size:0.76rem; color: rgba(11,18,48,0.45); margin:4px 0 12px; }
+        .fare-card .price { font-family:'JetBrains Mono',monospace; font-weight:700; color: var(--blue); font-size:0.95rem; }
+        .fare-cta { background: linear-gradient(135deg, var(--blue), var(--violet)); border-radius:16px; display:flex; align-items:center; justify-content:center; }
+        .fare-cta a { color:#fff; text-decoration:none; font-weight:700; font-size:0.88rem; display:flex; align-items:center; gap:8px; }
 
         /* ===== FEATURES ===== */
-        .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-        .feature-card { background: var(--paper); padding: 32px 26px; transition: background 0.25s; }
-        .feature-card:hover { background: var(--paper-dim); }
-        .feature-card .icon-wrap {
-            width: 46px; height: 46px;
-            border-radius: 8px;
-            background: var(--forest);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--paper);
-            font-size: 1.1rem;
-            margin-bottom: 18px;
+        .feature-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:18px; }
+        .feature-card { background:#fff; border-radius:18px; padding:28px 22px; border:1px solid var(--line); transition: all 0.3s; }
+        .feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(11,18,48,0.08); }
+        .feature-card .icon-wrap { width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.1rem; margin-bottom:18px; }
+        .feature-card:nth-child(1) .icon-wrap { background: linear-gradient(135deg, var(--blue), var(--sky)); }
+        .feature-card:nth-child(2) .icon-wrap { background: linear-gradient(135deg, var(--violet), #b18bff); }
+        .feature-card:nth-child(3) .icon-wrap { background: linear-gradient(135deg, var(--amber), var(--amber-deep)); }
+        .feature-card:nth-child(4) .icon-wrap { background: linear-gradient(135deg, #16a34a, #4ade80); }
+        .feature-card h4 { font-family:'Manrope',sans-serif; font-weight:800; font-size:1.05rem; }
+        .feature-card p { color: rgba(11,18,48,0.55); font-size:0.85rem; margin-top:8px; line-height:1.6; }
+
+        /* ===== CTA BANNER ===== */
+        .cta-banner {
+            max-width: 1280px; margin: 0 auto 96px; padding: 0 32px;
         }
-        .feature-card h4 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.08rem; color: var(--ink); }
-        .feature-card p { color: rgba(33,31,26,0.58); font-size: 0.85rem; margin-top: 8px; line-height: 1.6; }
+        .cta-inner {
+            position: relative; overflow:hidden;
+            background: linear-gradient(120deg, var(--blue), var(--violet) 70%);
+            border-radius: 26px; padding: 56px 48px;
+            display:flex; align-items:center; justify-content:space-between; gap: 24px; flex-wrap:wrap;
+        }
+        .cta-inner::before { content:''; position:absolute; width:300px; height:300px; background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%); top:-100px; right:-60px; border-radius:50%; }
+        .cta-inner h3 { font-family:'Manrope',sans-serif; font-weight:800; font-size:2rem; color:#fff; letter-spacing:-0.5px; max-width:420px; }
+        .cta-inner p { color: rgba(255,255,255,0.75); margin-top:8px; font-size:0.92rem; }
+        .cta-btn { background:#fff; color: var(--blue); border:none; padding:15px 30px; border-radius:999px; font-weight:800; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; transition: all 0.25s; position:relative; z-index:2; }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(0,0,0,0.2); }
 
         /* ===== TESTIMONIALS ===== */
-        .testimonial-section { background: var(--forest); }
-        .testimonial-section .section-eyebrow { color: var(--sage); }
-        .testimonial-section .section-title { color: var(--paper); }
-        .testimonial-section .section-desc { color: rgba(246,241,228,0.55); }
-        .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .testimonial-card {
-            background: rgba(246,241,228,0.05);
-            border: 1px solid rgba(246,241,228,0.1);
-            border-radius: 6px;
-            padding: 28px 24px;
-        }
-        .testimonial-card .stars { color: var(--ochre); font-size: 0.85rem; margin-bottom: 14px; }
-        .testimonial-card .quote { color: rgba(246,241,228,0.88); line-height: 1.75; font-size: 0.95rem; font-family: 'Fraunces', serif; }
-        .testimonial-card .author { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(246,241,228,0.1); }
-        .testimonial-card .avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: var(--clay);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--paper); font-weight: 700; font-size: 0.85rem;
-        }
-        .testimonial-card .name { font-weight: 600; color: var(--paper); font-size: 0.85rem; }
-        .testimonial-card .route { font-size: 0.72rem; color: rgba(246,241,228,0.45); font-family: 'JetBrains Mono', monospace; }
+        .testimonial-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+        .testimonial-card { background:#fff; border-radius:18px; padding:26px 22px; border:1px solid var(--line); transition: all 0.25s; }
+        .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(11,18,48,0.07); }
+        .testimonial-card .stars { color: var(--amber); font-size:0.85rem; margin-bottom:12px; }
+        .testimonial-card .quote { color: rgba(11,18,48,0.75); line-height:1.7; font-size:0.92rem; }
+        .testimonial-card .author { display:flex; align-items:center; gap:12px; margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
+        .testimonial-card .avatar { width:38px; height:38px; border-radius:50%; background: linear-gradient(135deg, var(--blue), var(--violet)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:0.8rem; }
+        .testimonial-card .name { font-weight:700; font-size:0.85rem; }
+        .testimonial-card .route { font-size:0.7rem; color: rgba(11,18,48,0.4); font-family:'JetBrains Mono',monospace; }
 
         /* ===== FOOTER ===== */
-        .app-footer { background: #16261e; padding: 44px 32px 26px; }
-        .footer-inner { max-width: 1280px; margin: 0 auto; text-align: center; }
-        .footer-links { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 18px; }
-        .footer-links a { color: rgba(246,241,228,0.5); text-decoration: none; font-size: 0.83rem; transition: color 0.25s; }
-        .footer-links a:hover { color: var(--clay); }
-        .social-icons { display: flex; justify-content: center; gap: 14px; margin: 18px 0; }
-        .social-icons a {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: rgba(246,241,228,0.06);
-            border: 1px solid rgba(246,241,228,0.1);
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(246,241,228,0.5);
-            text-decoration: none;
-            transition: all 0.25s;
-        }
-        .social-icons a:hover { background: var(--clay); color: var(--paper); border-color: var(--clay); }
-        .app-footer p { color: rgba(246,241,228,0.35); font-size: 0.78rem; }
-        .app-footer p + p { margin-top: 6px; }
+        .app-footer { background: var(--navy); padding: 48px 32px 26px; }
+        .footer-inner { max-width:1280px; margin:0 auto; text-align:center; }
+        .footer-links { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin-bottom:20px; }
+        .footer-links a { color: rgba(255,255,255,0.55); text-decoration:none; font-size:0.83rem; transition: color 0.25s; }
+        .footer-links a:hover { color: var(--sky); }
+        .social-icons { display:flex; justify-content:center; gap:12px; margin:18px 0; }
+        .social-icons a { width:38px; height:38px; border-radius:50%; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,0.55); text-decoration:none; transition:all 0.25s; }
+        .social-icons a:hover { background: linear-gradient(135deg, var(--blue), var(--violet)); color:#fff; }
+        .app-footer p { color: rgba(255,255,255,0.32); font-size:0.78rem; }
+        .app-footer p + p { margin-top:6px; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 980px) {
-            .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-            .hero-photo img { height: 320px; }
-            .hero-title { font-size: 2.7rem; }
-            .fare-grid { grid-template-columns: repeat(2, 1fr); }
-            .feature-grid { grid-template-columns: repeat(2, 1fr); }
-            .testimonial-grid { grid-template-columns: 1fr; }
-            .ticket-fields { grid-template-columns: 1fr 1fr; }
-            .nav-links { display: none; }
+            .hero-grid { grid-template-columns:1fr; }
+            .hero-visual { order:-1; }
+            .float-ticket { position:static; width:100%; margin-top:16px; animation:none; }
+            .search-card form { grid-template-columns:1fr 1fr; }
+            .fare-grid { grid-template-columns:repeat(2,1fr); }
+            .feature-grid { grid-template-columns:repeat(2,1fr); }
+            .testimonial-grid { grid-template-columns:1fr; }
+            .nav-links { display:none; }
+            .hero-title { font-size:2.6rem; }
         }
-        @media (max-width: 560px) {
-            .hero-section { padding: 108px 18px 0; }
-            .section-wrap { padding: 56px 18px; }
-            .hero-title { font-size: 2.1rem; letter-spacing: -1px; }
-            .hero-subtitle { font-size: 0.95rem; }
-            .ticket-card { grid-template-columns: 1fr; }
-            .ticket-stub { display: none; }
-            .ticket-fields { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .hero-stats { gap: 22px; flex-wrap: wrap; }
-            .fare-grid { grid-template-columns: 1fr 1fr; }
-            .feature-grid { grid-template-columns: 1fr 1fr; }
-            .fleet-slide img { height: 240px; }
-            .fleet-slide-overlay { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .app-header { padding: 14px 18px; }
-            .brand-text { font-size: 1.15rem; }
+        @media (max-width:560px) {
+            .hero-section { padding:104px 18px 70px; }
+            .section-wrap { padding:56px 18px; }
+            .hero-title { font-size:2.1rem; letter-spacing:-1px; }
+            .search-wrap { padding:0 18px; margin-top:-40px; }
+            .search-card form { grid-template-columns:1fr 1fr; }
+            .search-submit { grid-column: span 2; justify-content:center; padding:13px; }
+            .hero-stats-row { gap:20px; flex-wrap:wrap; }
+            .fare-grid { grid-template-columns:1fr 1fr; }
+            .feature-grid { grid-template-columns:1fr 1fr; }
+            .fleet-slide img { height:280px; }
+            .fleet-slide-bottom { flex-direction:column; align-items:flex-start; gap:10px; }
+            .cta-inner { flex-direction:column; text-align:center; padding:40px 26px; }
+            .cta-inner h3 { max-width:none; }
+            .app-header { padding:14px 18px; }
         }
     </style>
 </head>
@@ -448,8 +279,8 @@
     <!-- ===== HEADER ===== -->
     <header class="app-header" id="mainHeader">
         <a href="/" class="brand">
-            <div class="brand-icon"><i class="fas fa-route"></i></div>
-            <div class="brand-text">Don <em>Travels</em></div>
+            <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+            <div class="brand-text">Don<span>Travels</span></div>
         </a>
         <div style="display:flex; align-items:center; gap:14px;">
             <nav class="nav-links">
@@ -466,102 +297,108 @@
 
     <!-- ===== HERO ===== -->
     <section class="hero-section">
+        <div class="hero-blob b1"></div>
+        <div class="hero-blob b2"></div>
+        <div class="hero-blob b3"></div>
         <div class="hero-grid">
             <div class="reveal">
-                <div class="hero-eyebrow"><span class="dot"></span> Gilgil &middot; Nakuru &middot; Nairobi corridor</div>
-                <h1 class="hero-title">Book the road<br>like a <em>boarding pass.</em></h1>
-                <p class="hero-subtitle">Executive taxis and premium buses on the Rift Valley highland route. Pick your vehicle, compare fares, and travel Kenya's escarpment roads in comfort.</p>
+                <div class="chip-row">
+                    <div class="chip"><i class="fas fa-bolt"></i> Instant booking</div>
+                    <div class="chip"><i class="fas fa-mobile-screen-button"></i> M-Pesa &amp; card</div>
+                    <div class="chip"><i class="fas fa-headset"></i> 24/7 support</div>
+                </div>
+                <h1 class="hero-title">Your ride,<br><span class="grad">booked in seconds.</span></h1>
+                <p class="hero-subtitle">Executive taxis and premium buses on the Gilgil–Nakuru–Nairobi corridor. Compare fares, pick your vehicle, and pay however you like.</p>
+                <div class="hero-stats-row">
+                    <div class="stat"><b>500+</b><span>Happy travelers</span></div>
+                    <div class="stat"><b>4.9★</b><span>Average rating</span></div>
+                    <div class="stat"><b>24/7</b><span>On the road</span></div>
+                </div>
             </div>
-            <div class="hero-photo reveal" style="animation-delay:0.1s;">
-                <img src="https://images.unsplash.com/photo-1689085383734-32c6d88221a7?auto=format&fit=crop&w=1200&q=80" alt="Winding highland road" />
-                <div class="hero-photo-caption">
-                    <span>ESCARPMENT ROAD</span>
-                    <span>ALT. 2,100M</span>
+            <div class="hero-visual reveal" style="animation-delay:0.15s;">
+                <div class="hero-photo-card">
+                    <img src="https://images.unsplash.com/photo-1689085383734-32c6d88221a7?auto=format&fit=crop&w=1200&q=80" alt="Winding highland road" />
+                </div>
+                <div class="float-ticket">
+                    <div class="row1">
+                        <span class="live"><span class="d"></span>LIVE</span>
+                        <i class="fas fa-ticket" style="color:var(--blue);"></i>
+                    </div>
+                    <div class="route">Gilgil → Nairobi</div>
+                    <div class="meta"><span>Today · 1 seat</span><span>Bus #12</span></div>
+                    <div class="price-tag">KSh 500 · Confirmed</div>
                 </div>
             </div>
         </div>
-
-        <!-- Ticket search card -->
-        <div class="ticket-card reveal" style="animation-delay:0.2s;" id="search-section">
-            <div class="ticket-main">
-                <form action="/search" method="GET">
-                    <div class="ticket-fields">
-                        <div>
-                            <label class="field-label"><i class="fas fa-map-marker-alt"></i>From</label>
-                            <input type="text" name="origin" class="field-input" placeholder="Gilgil" required />
-                        </div>
-                        <div>
-                            <label class="field-label"><i class="fas fa-flag-checkered"></i>To</label>
-                            <input type="text" name="destination" class="field-input" placeholder="Nairobi" required />
-                        </div>
-                        <div>
-                            <label class="field-label"><i class="fas fa-calendar"></i>Date</label>
-                            <input type="date" name="date" class="field-input"
-                                   min="{{ today }}"
-                                   max="{{ max_date }}"
-                                   value="{{ today }}"
-                                   required />
-                        </div>
-                        <div>
-                            <label class="field-label"><i class="fas fa-users"></i>Pax</label>
-                            <input type="number" name="passengers" class="field-input" min="1" max="40" value="1" required />
-                        </div>
-                    </div>
-                    <button type="submit" class="ticket-submit"><i class="fas fa-search"></i> Search available rides</button>
-                </form>
-            </div>
-            <div class="ticket-stub">
-                <div class="ticket-stub-inner">DON TRAVELS &middot; PASSENGER COPY</div>
-            </div>
-        </div>
-
-        <div class="hero-stats reveal" style="animation-delay:0.3s;">
-            <div class="stat-item"><span class="number">500+</span><span class="label">Happy travelers</span></div>
-            <div class="stat-item"><span class="number">4.9</span><span class="label">Average rating</span></div>
-            <div class="stat-item"><span class="number">24/7</span><span class="label">Service</span></div>
-            <div class="stat-item"><span class="number">100%</span><span class="label">Satisfaction</span></div>
-        </div>
     </section>
+
+    <!-- ===== SEARCH CARD ===== -->
+    <div class="search-wrap" id="search-section">
+        <div class="search-card">
+            <form action="/search" method="GET">
+                <div class="search-field">
+                    <label><i class="fas fa-map-marker-alt"></i> From</label>
+                    <input type="text" name="origin" placeholder="Gilgil" required />
+                </div>
+                <div class="search-field">
+                    <label><i class="fas fa-flag-checkered"></i> To</label>
+                    <input type="text" name="destination" placeholder="Nairobi" required />
+                </div>
+                <div class="search-field">
+                    <label><i class="fas fa-calendar"></i> Date</label>
+                    <input type="date" name="date"
+                           min="{{ today }}"
+                           max="{{ max_date }}"
+                           value="{{ today }}"
+                           required />
+                </div>
+                <div class="search-field">
+                    <label><i class="fas fa-users"></i> Pax</label>
+                    <input type="number" name="passengers" min="1" max="40" value="1" required />
+                </div>
+                <button type="submit" class="search-submit"><i class="fas fa-search"></i> Search</button>
+            </form>
+        </div>
+    </div>
 
     <!-- ===== FLEET ===== -->
     <section id="fleet" class="section-wrap">
         <div class="section-head">
-            <span class="section-eyebrow">Our Fleet</span>
-            <h2 class="section-title">Built for the <em>highland run</em></h2>
-            <p class="section-desc">From compact sedans to a full 40-seat coach — every vehicle on the Gilgil–Nairobi route, with real fares, no surprises.</p>
+            <span class="section-eyebrow"><i class="fas fa-van-shuttle"></i> Our Fleet</span>
+            <h2 class="section-title">Pick your ride, <span class="accent">every route.</span></h2>
+            <p class="section-desc">From compact sedans to a full 40-seat coach — every vehicle on the road, with real fares and no surprises.</p>
         </div>
 
-        <!-- Working fleet showcase carousel -->
         <div class="fleet-showcase" id="fleetShowcase">
             <div class="fleet-slides" id="fleetSlides">
                 <div class="fleet-slide">
                     <img src="https://images.unsplash.com/photo-1752563247435-8b1ee6107121?auto=format&fit=crop&w=1400&q=80" alt="Executive bus on highland road" />
                     <div class="fleet-slide-overlay">
-                        <div>
-                            <div class="title">40-Seat Coach</div>
-                            <div class="desc">Full-size bus for group and long-haul travel</div>
+                        <span class="fleet-badge"><i class="fas fa-bus"></i> 40 seats</span>
+                        <div class="fleet-slide-bottom">
+                            <div><div class="title">Executive Coach</div><div class="desc">Full-size bus for group and long-haul travel</div></div>
+                            <div class="price">from KSh 500</div>
                         </div>
-                        <div class="price">from KSh 500</div>
                     </div>
                 </div>
                 <div class="fleet-slide">
                     <img src="https://images.unsplash.com/photo-1608723451450-6fe11e0aa857?auto=format&fit=crop&w=1400&q=80" alt="Shuttle van on mountain road" />
                     <div class="fleet-slide-overlay">
-                        <div>
-                            <div class="title">Noah Shuttle Van</div>
-                            <div class="desc">7-seat van, best for small groups</div>
+                        <span class="fleet-badge"><i class="fas fa-shuttle-van"></i> 7 seats</span>
+                        <div class="fleet-slide-bottom">
+                            <div><div class="title">Noah Shuttle Van</div><div class="desc">Best for small groups traveling together</div></div>
+                            <div class="price">from KSh 1,500</div>
                         </div>
-                        <div class="price">from KSh 1,500</div>
                     </div>
                 </div>
                 <div class="fleet-slide">
                     <img src="https://images.unsplash.com/photo-1605806678127-c5b0769d499f?auto=format&fit=crop&w=1400&q=80" alt="Executive sedan on forest road" />
                     <div class="fleet-slide-overlay">
-                        <div>
-                            <div class="title">Executive Sedans</div>
-                            <div class="desc">Axio, Spacio, Fielder, Probox &amp; Ractis</div>
+                        <span class="fleet-badge"><i class="fas fa-car"></i> 4–5 seats</span>
+                        <div class="fleet-slide-bottom">
+                            <div><div class="title">Executive Sedans</div><div class="desc">Axio, Spacio, Fielder, Probox &amp; Ractis</div></div>
+                            <div class="price">from KSh 2,000</div>
                         </div>
-                        <div class="price">from KSh 2,000</div>
                     </div>
                 </div>
             </div>
@@ -570,7 +407,6 @@
             <div class="fleet-dots" id="fleetDots"></div>
         </div>
 
-        <!-- Fare grid -->
         <div class="fare-grid">
             <div class="fare-card"><div class="name">Axio</div><div class="seats">4 seats</div><div class="price">KSh 2,000</div></div>
             <div class="fare-card"><div class="name">Spacio</div><div class="seats">5 seats</div><div class="price">KSh 2,000</div></div>
@@ -579,31 +415,17 @@
             <div class="fare-card"><div class="name">Probox</div><div class="seats">4 seats</div><div class="price">KSh 2,000</div></div>
             <div class="fare-card"><div class="name">Ractis</div><div class="seats">4 seats</div><div class="price">KSh 2,000</div></div>
             <div class="fare-card"><div class="name">Bus</div><div class="seats">40 seats</div><div class="price">KSh 500</div></div>
-            <div class="fare-card" style="display:flex; align-items:center; justify-content:center;">
-                <a href="#search-section" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'});" style="text-decoration:none; color:var(--clay-deep); font-weight:600; font-size:0.85rem; display:flex; align-items:center; gap:6px;">
-                    Book a ride <i class="fas fa-arrow-right"></i>
-                </a>
+            <div class="fare-card fare-cta">
+                <a href="#search-section" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'});">Book a ride <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
 
-    <!-- ===== ROUTE STRIP DIVIDER ===== -->
-    <div style="max-width:1280px; margin:0 auto; padding:0 32px;">
-        <div class="route-strip">
-            <span class="stop"><span class="dot"></span>GILGIL</span>
-            <span class="seg"></span>
-            <span class="stop"><span class="dot"></span>NAKURU</span>
-            <span class="seg"></span>
-            <span class="stop"><span class="dot"></span>NAIROBI</span>
-        </div>
-    </div>
-
     <!-- ===== FEATURES ===== -->
-    <section class="section-wrap">
+    <section class="section-wrap" style="padding-top:0;">
         <div class="section-head">
-            <span class="section-eyebrow">Why Choose Us</span>
-            <h2 class="section-title">Premium <em>service</em>, every trip</h2>
-            <p class="section-desc">Executive transport built for the daily commute and the long haul alike.</p>
+            <span class="section-eyebrow"><i class="fas fa-star"></i> Why Choose Us</span>
+            <h2 class="section-title">Premium service, <span class="accent">every trip.</span></h2>
         </div>
         <div class="feature-grid">
             <div class="feature-card">
@@ -629,38 +451,48 @@
         </div>
     </section>
 
-    <!-- ===== TESTIMONIALS ===== -->
-    <section class="testimonial-section">
-        <div class="section-wrap">
-            <div class="section-head">
-                <span class="section-eyebrow">Testimonials</span>
-                <h2 class="section-title">What <em>passengers</em> say</h2>
-                <p class="section-desc">Real reviews from travelers on the route.</p>
+    <!-- ===== CTA BANNER ===== -->
+    <div class="cta-banner">
+        <div class="cta-inner">
+            <div>
+                <h3>Ready when you are.</h3>
+                <p>Search fares and book your seat in under a minute.</p>
             </div>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"Don Travels made our group trip amazing! The Noah was spacious and comfortable, and the driver was very professional."</div>
-                    <div class="author">
-                        <div class="avatar">JM</div>
-                        <div><div class="name">James Mwangi</div><div class="route">GILGIL &rarr; NAIROBI &middot; 2 DAYS AGO</div></div>
-                    </div>
+            <button class="cta-btn" onclick="document.getElementById('search-section').scrollIntoView({behavior:'smooth'})">
+                <i class="fas fa-ticket"></i> Book your ride
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="section-wrap" style="padding-top:0;">
+        <div class="section-head">
+            <span class="section-eyebrow"><i class="fas fa-comment"></i> Testimonials</span>
+            <h2 class="section-title">What <span class="accent">passengers</span> say</h2>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"Don Travels made our group trip amazing! The Noah was spacious and comfortable, and the driver was very professional."</div>
+                <div class="author">
+                    <div class="avatar">JM</div>
+                    <div><div class="name">James Mwangi</div><div class="route">GILGIL → NAIROBI · 2 DAYS AGO</div></div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"The sedan was perfect for my business trip. Very professional service and the car was spotless."</div>
-                    <div class="author">
-                        <div class="avatar">SO</div>
-                        <div><div class="name">Sarah Ochieng</div><div class="route">GILGIL &rarr; NAKURU &middot; 5 DAYS AGO</div></div>
-                    </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"The sedan was perfect for my business trip. Very professional service and the car was spotless."</div>
+                <div class="author">
+                    <div class="avatar">SO</div>
+                    <div><div class="name">Sarah Ochieng</div><div class="route">GILGIL → NAKURU · 5 DAYS AGO</div></div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"Best transport service on this route. The ride was smooth all the way down the escarpment. Highly recommend!"</div>
-                    <div class="author">
-                        <div class="avatar">DK</div>
-                        <div><div class="name">David Kiprop</div><div class="route">GILGIL &rarr; NAIROBI &middot; 1 WEEK AGO</div></div>
-                    </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="quote">"Best transport service on this route. Booked in a minute, smooth ride all the way. Highly recommend!"</div>
+                <div class="author">
+                    <div class="avatar">DK</div>
+                    <div><div class="name">David Kiprop</div><div class="route">GILGIL → NAIROBI · 1 WEEK AGO</div></div>
                 </div>
             </div>
         </div>
@@ -684,12 +516,12 @@
                 <a href="#">Terms</a>
             </div>
             <p>&copy; 2026 Don Travels. Premium Executive Transport Services.</p>
-            <p><i class="fas fa-lock" style="color:var(--clay);"></i> Secure booking &middot; 100% private</p>
+            <p><i class="fas fa-lock" style="color:var(--sky);"></i> Secure booking · 100% private</p>
         </div>
     </footer>
 
     <script>
-        // ===== FLEET SHOWCASE CAROUSEL (working) =====
+        // ===== FLEET CAROUSEL =====
         let fleetIndex = 0;
         const fleetTotal = document.querySelectorAll('.fleet-slide').length;
         const dotsWrap = document.getElementById('fleetDots');
@@ -703,17 +535,14 @@
             document.getElementById('fleetSlides').style.transform = `translateX(-${fleetIndex * 100}%)`;
             document.querySelectorAll('.fleet-dot').forEach((d, i) => d.classList.toggle('active', i === fleetIndex));
         }
-        function moveFleet(dir) {
-            fleetIndex = (fleetIndex + dir + fleetTotal) % fleetTotal;
-            updateFleet();
-        }
+        function moveFleet(dir) { fleetIndex = (fleetIndex + dir + fleetTotal) % fleetTotal; updateFleet(); }
         function goToFleet(i) { fleetIndex = i; updateFleet(); }
         let fleetAuto = setInterval(() => moveFleet(1), 5000);
         const fleetEl = document.getElementById('fleetShowcase');
         fleetEl.addEventListener('mouseenter', () => clearInterval(fleetAuto));
         fleetEl.addEventListener('mouseleave', () => { fleetAuto = setInterval(() => moveFleet(1), 5000); });
 
-        // ===== DATE LIMITS (fallback if template vars aren't rendered) =====
+        // ===== DATE FALLBACK =====
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.querySelector('input[name="date"]');
             if (dateInput && !dateInput.getAttribute('min')) {
