@@ -138,7 +138,6 @@
             padding-top: 80px;
         }
         
-        /* Hero Background Video/Image */
         .hero-background {
             position: absolute;
             inset: 0;
@@ -164,7 +163,6 @@
             z-index: 1;
         }
         
-        /* Animated particles/grid */
         .hero-particles {
             position: absolute;
             inset: 0;
@@ -187,7 +185,6 @@
             100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
         }
         
-        /* Floating accent shapes */
         .hero-accent {
             position: absolute;
             border-radius: 50%;
@@ -221,7 +218,6 @@
             animation: float 12s ease-in-out infinite 2s;
         }
         
-        /* Hero Content */
         .hero-content {
             position: relative;
             z-index: 2;
@@ -353,7 +349,7 @@
             color: rgba(255,255,255,0.4); 
         }
         
-        /* ===== CAROUSEL SECTION ===== */
+        /* ===== CAROUSEL ===== */
         .carousel-section {
             background: white;
             padding: 60px 20px;
@@ -599,6 +595,7 @@
             .hero-stats { gap: 24px; }
             .hero-stats .stat-item .number { font-size: 1.6rem; }
             .carousel-slide img { height: 300px; }
+            .hero-search-grid { grid-template-columns: 1fr 1fr 1fr !important; }
         }
         @media (max-width: 768px) {
             .hero-title { font-size: 2.4rem; letter-spacing: -1.5px; }
@@ -606,7 +603,7 @@
             .hero-content { padding: 20px 16px; }
             .hero-subtitle { font-size: 0.95rem; }
             .hero-search-card { padding: 20px 16px; border-radius: 20px; }
-            .hero-search-grid { grid-template-columns: 1fr !important; }
+            .hero-search-grid { grid-template-columns: 1fr 1fr !important; }
             .hero-stats { gap: 16px; flex-wrap: wrap; }
             .hero-stats .stat-item .number { font-size: 1.4rem; }
             .carousel-slide img { height: 220px; }
@@ -631,6 +628,7 @@
             .feature-card .icon-wrap { width: 44px; height: 44px; font-size: 1.2rem; }
             .hero-search-card { padding: 12px; }
             .hero-search-card .form-input { padding: 10px 14px; font-size: 0.85rem; }
+            .hero-search-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -657,19 +655,15 @@
 
     <!-- ===== CINEMATIC HERO ===== -->
     <section class="hero-section">
-        <!-- Background Image -->
         <div class="hero-background">
-            <img src="<img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80"
-     alt="Executive Bus">" />
+            <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80" alt="Executive Bus" />
         </div>
         <div class="hero-overlay"></div>
         
-        <!-- Hero Accents -->
         <div class="hero-accent gold"></div>
         <div class="hero-accent purple"></div>
         <div class="hero-accent blue"></div>
         
-        <!-- Particles -->
         <div class="hero-particles">
             <div class="particle" style="left:10%; animation-delay:0s; animation-duration:20s;"></div>
             <div class="particle" style="left:30%; animation-delay:3s; animation-duration:18s;"></div>
@@ -681,7 +675,6 @@
             <div class="particle" style="left:80%; animation-delay:1s; animation-duration:23s;"></div>
         </div>
         
-        <!-- Hero Content -->
         <div class="hero-content">
             <div class="animate-slide-down" style="animation-delay:0.1s;">
                 <div class="hero-badge">
@@ -698,10 +691,10 @@
                 Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
             </p>
             
-            <!-- Search Card - In Hero -->
+            <!-- Search Card with Time Filters -->
             <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
                 <form action="/search" method="GET">
-                    <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:14px; align-items:end;">
+                    <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; align-items:end;">
                         <div>
                             <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
                             <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
@@ -719,6 +712,14 @@
                                    required />
                         </div>
                         <div>
+                            <label class="form-label"><i class="fas fa-clock"></i> From</label>
+                            <input type="time" name="time_from" class="form-input" />
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-clock"></i> To</label>
+                            <input type="time" name="time_to" class="form-input" />
+                        </div>
+                        <div>
                             <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
                             <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
                         </div>
@@ -731,7 +732,6 @@
                 </form>
             </div>
             
-            <!-- Stats -->
             <div class="hero-stats animate-fade-in" style="animation-delay:0.6s;">
                 <div class="stat-item">
                     <span class="number">500+</span>
@@ -752,39 +752,6 @@
             </div>
         </div>
     </section>
-    <form action="/search" method="GET">
-    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; align-items:end;">
-        <div>
-            <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
-            <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
-        </div>
-        <div>
-            <label class="form-label"><i class="fas fa-flag-checkered"></i> To</label>
-            <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
-        </div>
-        <div>
-            <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
-            <input type="date" name="date" class="form-input" required />
-        </div>
-        <div>
-            <label class="form-label"><i class="fas fa-clock"></i> From</label>
-            <input type="time" name="time_from" class="form-input" />
-        </div>
-        <div>
-            <label class="form-label"><i class="fas fa-clock"></i> To</label>
-            <input type="time" name="time_to" class="form-input" />
-        </div>
-        <div>
-            <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
-            <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
-        </div>
-        <div>
-            <button type="submit" class="btn-primary">
-                <i class="fas fa-search"></i> Search
-            </button>
-        </div>
-    </div>
-</form>
 
     <!-- ===== VEHICLES CAROUSEL ===== -->
     <section id="vehicles" class="carousel-section">
@@ -805,8 +772,7 @@
                     </div>
                 </div>
                 <div class="carousel-slide">
-                    <img src="<img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80"
-     alt="Executive Bus">" />
+                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1200&h=600&fit=crop" alt="Executive Van" />
                     <span class="slide-badge">👔 Executive</span>
                     <div class="slide-overlay">
                         <div class="slide-title">🚐 Executive Van</div>
@@ -822,8 +788,7 @@
                     </div>
                 </div>
                 <div class="carousel-slide">
-                    <img src="<img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80"
-     alt="Executive Bus">" />
+                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=1200&h=600&fit=crop" alt="Premium Sedan" />
                     <span class="slide-badge">🚗 Premium</span>
                     <div class="slide-overlay">
                         <div class="slide-title">🚗 Premium Sedan</div>
@@ -956,7 +921,6 @@
             });
         }
 
-        // Auto-play
         let autoPlay = setInterval(() => moveCarousel(1), 5000);
         const carouselContainer = document.querySelector('.carousel-container-premium');
         if (carouselContainer) {
@@ -993,7 +957,7 @@
             }
         });
 
-        // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
+        // ===== INTERSECTION OBSERVER =====
         const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
