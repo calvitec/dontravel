@@ -500,6 +500,45 @@ def booking_page(bus_id):
         fare=bus.get('fare')
     )
 
+@app.route('/debug/search')
+def debug_search():
+    """Debug route to see what's in the database"""
+    try:
+        # Check what's in schedules
+        schedules = load_schedules()
+        
+        # Check a specific date
+        date = '2026-07-01'
+        buses = load_buses()
+        routes = load_routes()
+        
+        debug_info = {
+            'total_schedules': len(schedules),
+            'schedules_sample': schedules[:5] if schedules else [],
+            'buses_count': len(buses),
+            'routes_count': len(routes),
+            'date_checked': date,
+            'schedules_for_date': []
+        }
+        
+        # Find schedules for the date
+        for s in schedules:
+            if s.get('departure_date') == date:
+                bus = get_bus_by_id(s.get('bus_id'))
+                if bus:
+                    route = get_route_by_id(bus.get('route_id'))
+                    debug_info['schedules_for_date'].append({
+                        'bus_id': s.get('bus_id'),
+                        'bus_name': bus.get('bus_id'),
+                        'route': f"{route.get('origin')} → {route.get('destination')}" if route else 'Unknown',
+                        'departure_time': bus.get('departure_time'),
+                        'available_seats': s.get('available_seats')
+                    })
+        
+        return jsonify(debug_info)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 @app.route('/api/book', methods=['POST'])
 def create_booking():
     try:
