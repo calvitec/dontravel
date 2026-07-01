@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Select Seats · Dan Travels</title>
+    <title>Select Seats · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: #0a0a1a; 
+            background: #f0f4f8; 
             min-height: 100vh; 
-            color: #ffffff;
+            color: #0f172a;
         }
         
         /* ===== BRAND COLORS ===== */
@@ -20,38 +20,32 @@
             --gold: #f59e0b;
             --gold-dark: #d97706;
             --gold-light: #fbbf24;
-            --dark: #0a0a1a;
-            --dark-card: rgba(255,255,255,0.04);
-            --glass-border: rgba(255,255,255,0.06);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255,255,255,0.6);
-            --text-muted: rgba(255,255,255,0.3);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-light: #f1f5f9;
+            --card-bg: #ffffff;
         }
         
         /* ===== ANIMATIONS ===== */
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        .animate-float { animation: float 6s ease-in-out infinite; }
         
-        /* ===== GLASS HEADER ===== */
+        /* ===== HEADER ===== */
         .app-header {
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: #ffffff;
             padding: 16px 24px;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
             position: sticky;
             top: 0;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid #f1f5f9;
         }
         .app-header .brand {
             display: flex;
@@ -76,7 +70,7 @@
         .app-header .brand .brand-text {
             font-weight: 800;
             font-size: 1.4rem;
-            color: white;
+            color: #0f172a;
             letter-spacing: -0.5px;
         }
         .app-header .brand .brand-text span { 
@@ -98,7 +92,7 @@
         }
         
         .back-link {
-            color: var(--text-secondary);
+            color: #64748b;
             text-decoration: none;
             transition: color 0.3s;
             font-weight: 500;
@@ -112,43 +106,43 @@
             padding: 0 20px;
         }
         
-        /* ===== GLASS CARD ===== */
-        .glass-card {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        /* ===== CARD ===== */
+        .card {
+            background: white;
             border-radius: 24px;
             padding: 28px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid #f1f5f9;
             transition: all 0.4s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
-        .glass-card:hover {
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
             border-color: rgba(245, 158, 11, 0.15);
         }
         
-        .glass-card h3 {
-            color: white;
+        .card h3 {
+            color: #0f172a;
             font-size: 1.2rem;
             font-weight: 800;
             margin-bottom: 4px;
         }
-        .glass-card h3 i { color: var(--gold); margin-right: 8px; }
-        .glass-card .subtitle {
-            color: var(--text-secondary);
+        .card h3 i { color: var(--gold); margin-right: 8px; }
+        .card .subtitle {
+            color: #64748b;
             font-size: 0.85rem;
             margin-bottom: 16px;
         }
         
         /* ===== BUS INFO ===== */
         .bus-info {
-            background: rgba(255,255,255,0.03);
+            background: #f8fafc;
             border-radius: 16px;
             padding: 16px 20px;
             margin-bottom: 16px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid #f1f5f9;
         }
-        .bus-info .label { color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .bus-info .value { font-weight: 600; color: white; font-size: 0.95rem; }
+        .bus-info .label { color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .bus-info .value { font-weight: 600; color: #0f172a; font-size: 0.95rem; }
         .bus-info .value.gold { color: var(--gold); }
         
         /* ===== TRIP INFO ===== */
@@ -158,19 +152,19 @@
             gap: 10px;
             margin: 12px 0 16px;
             padding: 14px 18px;
-            background: rgba(255,255,255,0.02);
+            background: #f8fafc;
             border-radius: 14px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid #f1f5f9;
         }
         .trip-info .info-item {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            color: #64748b;
         }
         .trip-info .info-item i { color: var(--gold); width: 18px; }
-        .trip-info .info-item strong { color: white; }
+        .trip-info .info-item strong { color: #0f172a; }
         
         /* ===== SEATS ===== */
         .seat-grid {
@@ -183,23 +177,23 @@
         .seat {
             padding: 12px 8px;
             border-radius: 10px;
-            border: 2px solid rgba(255,255,255,0.08);
+            border: 2px solid #e2e8f0;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             font-size: 0.8rem;
             font-weight: 600;
-            background: rgba(255,255,255,0.04);
-            color: var(--text-secondary);
+            background: white;
+            color: #64748b;
         }
         .seat:hover:not(.booked):not(.selected) { 
             border-color: var(--gold); 
-            background: rgba(245,158,11,0.05);
+            background: #fffbeb;
             transform: scale(1.05);
         }
         .seat.available { 
-            background: rgba(255,255,255,0.04); 
-            color: var(--text-secondary);
+            background: white; 
+            color: #64748b;
         }
         .seat.selected { 
             background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
@@ -209,11 +203,11 @@
             box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
         }
         .seat.booked { 
-            background: rgba(255,255,255,0.03); 
-            border-color: rgba(255,255,255,0.05); 
-            color: var(--text-muted); 
+            background: #f1f5f9; 
+            border-color: #e2e8f0; 
+            color: #94a3b8; 
             cursor: not-allowed;
-            opacity: 0.4;
+            opacity: 0.6;
         }
         
         /* ===== LEGEND ===== */
@@ -229,23 +223,22 @@
             align-items: center;
             gap: 6px;
             font-size: 0.75rem;
-            color: var(--text-secondary);
+            color: #64748b;
         }
         .seat-legend .legend-item .dot {
             width: 20px;
             height: 20px;
             border-radius: 6px;
-            border: 2px solid rgba(255,255,255,0.1);
+            border: 2px solid #e2e8f0;
             display: inline-block;
-            transition: all 0.3s;
         }
-        .seat-legend .legend-item .dot.available { background: rgba(255,255,255,0.04); }
+        .seat-legend .legend-item .dot.available { background: white; }
         .seat-legend .legend-item .dot.selected { background: var(--gold); border-color: var(--gold); }
-        .seat-legend .legend-item .dot.booked { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); opacity: 0.4; }
+        .seat-legend .legend-item .dot.booked { background: #f1f5f9; border-color: #e2e8f0; }
         
         .seat-status {
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            color: #64748b;
             text-align: center;
             margin-top: 12px;
         }
@@ -256,33 +249,32 @@
             text-align: center;
             margin-top: 10px;
             font-size: 0.7rem;
-            color: var(--text-muted);
+            color: #94a3b8;
         }
         .seat-hint i { color: var(--gold); margin-right: 4px; }
         
         /* ===== FORM ===== */
         .form-input {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--glass-border);
+            border: 1.5px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 16px;
             width: 100%;
             font-size: 0.9rem;
             transition: all 0.3s;
-            color: white;
+            color: #0f172a;
+            background: white;
         }
-        .form-input::placeholder { color: var(--text-muted); }
+        .form-input::placeholder { color: #94a3b8; }
         .form-input:focus {
             outline: none;
             border-color: var(--gold);
-            background: rgba(255,255,255,0.06);
-            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.06);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
         }
         
         .form-label {
             font-size: 0.7rem;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #64748b;
             display: block;
             margin-bottom: 4px;
             text-transform: uppercase;
@@ -300,11 +292,11 @@
             display: flex;
             justify-content: space-between;
             padding: 6px 0;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid #f1f5f9;
         }
         .summary-item:last-child { border-bottom: none; }
-        .summary-item .label { color: var(--text-secondary); font-size: 0.85rem; }
-        .summary-item .value { color: white; font-weight: 600; }
+        .summary-item .label { color: #64748b; font-size: 0.85rem; }
+        .summary-item .value { color: #0f172a; font-weight: 600; }
         .summary-item .value.gold { color: var(--gold); }
         
         .summary-total {
@@ -314,7 +306,7 @@
             margin-top: 8px;
             border-top: 2px solid rgba(245, 158, 11, 0.2);
         }
-        .summary-total .label { font-weight: 700; color: white; font-size: 1rem; }
+        .summary-total .label { font-weight: 700; color: #0f172a; font-size: 1rem; }
         .summary-total .value { font-weight: 800; font-size: 1.3rem; color: var(--gold); }
         
         /* ===== BUTTONS ===== */
@@ -347,7 +339,7 @@
         
         .payment-note {
             text-align: center;
-            color: var(--text-muted);
+            color: #94a3b8;
             font-size: 0.7rem;
             margin-top: 10px;
         }
@@ -360,42 +352,15 @@
             height: fit-content;
         }
         
-        /* ===== FLOATING ACCENTS ===== */
-        .bg-accent {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.4;
-        }
-        .bg-accent.gold {
-            width: 300px;
-            height: 300px;
-            background: rgba(245, 158, 11, 0.05);
-            top: -100px;
-            right: -100px;
-            animation: float 8s ease-in-out infinite;
-        }
-        .bg-accent.purple {
-            width: 250px;
-            height: 250px;
-            background: rgba(124, 58, 237, 0.04);
-            bottom: -50px;
-            left: -50px;
-            animation: float 10s ease-in-out infinite reverse;
-        }
-        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .booking-grid { grid-template-columns: 1fr !important; }
             .sticky-card { position: relative; top: 0; }
-            .seat-grid { max-width: 300px; }
         }
         
         @media (max-width: 768px) {
             .booking-container { padding: 0 12px; margin: 16px auto; }
-            .glass-card { padding: 20px; }
+            .card { padding: 20px; }
             .seat-grid { max-width: 280px; gap: 8px; }
             .seat { padding: 10px 6px; font-size: 0.7rem; }
             .trip-info { grid-template-columns: 1fr; padding: 12px; }
@@ -403,38 +368,10 @@
             .app-header .brand .brand-text { font-size: 1rem; }
             .app-header .brand .brand-icon { width: 36px; height: 36px; font-size: 1rem; }
             .date-badge { font-size: 0.65rem; padding: 4px 12px; }
-            .bus-info { padding: 12px 14px; }
-            .bus-info .value { font-size: 0.85rem; }
-            .summary-total .value { font-size: 1.1rem; }
-            .btn-primary { font-size: 0.9rem; padding: 12px 24px; }
-            .seat-legend { gap: 12px; }
-            .seat-legend .legend-item { font-size: 0.65rem; }
-            .seat-legend .legend-item .dot { width: 16px; height: 16px; }
-            .trip-info .info-item { font-size: 0.75rem; }
-        }
-        
-        @media (max-width: 480px) {
-            .app-header .brand .brand-text { font-size: 0.85rem; }
-            .app-header .brand .brand-icon { width: 32px; height: 32px; font-size: 0.8rem; }
-            .date-badge { font-size: 0.55rem; padding: 3px 8px; }
-            .glass-card { padding: 16px; }
-            .seat-grid { max-width: 240px; gap: 6px; }
-            .seat { padding: 8px 4px; font-size: 0.65rem; border-radius: 6px; }
-            .trip-info { padding: 10px; }
-            .trip-info .info-item { font-size: 0.7rem; gap: 6px; }
-            .form-input { padding: 10px 12px; font-size: 0.8rem; }
-            .btn-primary { font-size: 0.8rem; padding: 10px 16px; }
-            .summary-total .value { font-size: 1rem; }
-            .bus-info .value { font-size: 0.75rem; }
-            .bus-info .label { font-size: 0.6rem; }
         }
     </style>
 </head>
 <body>
-
-    <!-- ===== FLOATING ACCENTS ===== -->
-    <div class="bg-accent gold"></div>
-    <div class="bg-accent purple"></div>
 
     <!-- ===== HEADER ===== -->
     <header class="app-header">
@@ -453,7 +390,7 @@
         <div class="booking-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:28px;">
             
             <!-- ===== LEFT: SEAT SELECTION ===== -->
-            <div class="glass-card animate-slide-up">
+            <div class="card animate-slide-up">
                 <h3><i class="fas fa-chair"></i> Select Your Seats</h3>
                 <p class="subtitle">Choose your preferred seats for the journey</p>
                 
@@ -507,12 +444,12 @@
             </div>
             
             <!-- ===== RIGHT: BOOKING SUMMARY ===== -->
-            <div class="glass-card animate-slide-up sticky-card" style="animation-delay:0.15s;">
+            <div class="card animate-slide-up sticky-card" style="animation-delay:0.15s;">
                 <h3><i class="fas fa-receipt"></i> Booking Summary</h3>
                 <p class="subtitle">Review your selection before confirming</p>
                 
                 <!-- Summary Details -->
-                <div style="background:rgba(255,255,255,0.02); border-radius:14px; padding:16px; margin-bottom:16px; border:1px solid var(--glass-border);">
+                <div style="background:#f8fafc; border-radius:14px; padding:16px; margin-bottom:16px; border:1px solid #f1f5f9;">
                     <div class="summary-item">
                         <span class="label">Vehicle</span>
                         <span class="value">{{ vehicle.vehicle_type or vehicle.vehicle_model or 'Vehicle' }}</span>
@@ -558,7 +495,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label"><i class="fas fa-envelope"></i> Email <span style="color:var(--text-muted); font-weight:400;">(Optional)</span></label>
+                        <label class="form-label"><i class="fas fa-envelope"></i> Email <span style="color:#94a3b8; font-weight:400;">(Optional)</span></label>
                         <input type="email" id="passengerEmail" class="form-input" placeholder="you@example.com" />
                     </div>
                 </div>
