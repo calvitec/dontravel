@@ -131,7 +131,7 @@
         .nav-link.active { color: #f59e0b; }
         .nav-link.active::after { width: 60%; }
         
-        /* ===== CINEMATIC HERO WITH TEXT OVERLAY ===== */
+        /* ===== HERO WITH TRANSPARENT TEXT OVERLAY ===== */
         .hero-section {
             position: relative;
             min-height: 100vh;
@@ -143,7 +143,7 @@
             background: #0a0a1a;
         }
         
-        /* Hero Background Image */
+        /* Background Image - Full screen */
         .hero-background {
             position: absolute;
             inset: 0;
@@ -157,15 +157,15 @@
             object-fit: cover;
         }
         
-        /* Dark Overlay - Makes text readable */
+        /* Light Overlay - Makes text readable but keeps image visible */
         .hero-overlay {
             position: absolute;
             inset: 0;
             background: linear-gradient(135deg, 
-                rgba(10,10,26,0.75) 0%,
-                rgba(10,10,26,0.3) 40%,
-                rgba(10,10,26,0.15) 70%,
-                rgba(10,10,26,0.05) 100%
+                rgba(0,0,0,0.5) 0%,
+                rgba(0,0,0,0.25) 40%,
+                rgba(0,0,0,0.1) 70%,
+                rgba(0,0,0,0.05) 100%
             );
             z-index: 1;
         }
@@ -204,7 +204,7 @@
             animation: float 12s ease-in-out infinite 2s;
         }
         
-        /* ===== TRANSPARENT TEXT OVERLAY ===== */
+        /* Hero Content - Sits on top of image */
         .hero-content {
             position: relative;
             z-index: 2;
@@ -214,41 +214,7 @@
             padding: 40px 24px;
         }
         
-        /* Transparent Text Effect */
-        .hero-title {
-            font-size: 5rem;
-            font-weight: 900;
-            color: white;
-            letter-spacing: -3px;
-            line-height: 1.05;
-            margin-bottom: 16px;
-            max-width: 700px;
-            text-shadow: 0 2px 40px rgba(0,0,0,0.3);
-        }
-        .hero-title .highlight { 
-            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s ease-in-out infinite;
-            text-shadow: none;
-        }
-        
-        .hero-subtitle {
-            color: rgba(255,255,255,0.85);
-            max-width: 550px;
-            font-size: 1.2rem;
-            line-height: 1.8;
-            margin-bottom: 32px;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
-            font-weight: 400;
-        }
-        .hero-subtitle strong {
-            color: #fbbf24;
-            font-weight: 600;
-        }
-        
+        /* Badge */
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -275,6 +241,42 @@
             padding: 2px 12px;
             border-radius: 9999px;
             font-size: 0.65rem;
+        }
+        
+        /* Transparent Title Text */
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.95);
+            letter-spacing: -3px;
+            line-height: 1.05;
+            margin-bottom: 16px;
+            max-width: 700px;
+            text-shadow: 0 2px 40px rgba(0,0,0,0.3);
+        }
+        .hero-title .highlight { 
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+            text-shadow: none;
+        }
+        
+        /* Transparent Subtitle */
+        .hero-subtitle {
+            color: rgba(255,255,255,0.85);
+            max-width: 550px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 32px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            font-weight: 400;
+        }
+        .hero-subtitle strong {
+            color: #fbbf24;
+            font-weight: 600;
         }
         
         /* Search Card - Glass Effect */
@@ -762,7 +764,7 @@
         </div>
     </header>
 
-    <!-- ===== CINEMATIC HERO ===== -->
+    <!-- ===== HERO WITH TRANSPARENT TEXT OVERLAY ===== -->
     <section class="hero-section">
         <!-- Background Image -->
         <div class="hero-background">
