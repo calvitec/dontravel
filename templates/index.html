@@ -19,6 +19,7 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes cardPop { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
         
         .animate-float { animation: float 6s ease-in-out infinite; }
         .animate-slide-up { animation: slideUp 0.8s ease-out forwards; }
@@ -129,7 +130,7 @@
         .nav-link.active { color: #f59e0b; }
         .nav-link.active::after { width: 60%; }
         
-        /* ===== HERO WITH CAROUSEL - FIXED HEIGHT ===== */
+        /* ===== HERO WITH CAROUSEL ===== */
         .hero-section {
             position: relative;
             min-height: 80vh;
@@ -438,7 +439,7 @@
             font-weight: 400;
         }
         
-        /* ===== SEARCH RESULTS - MOVED OUTSIDE HERO ===== */
+        /* ===== SEARCH RESULTS - ENHANCED ===== */
         .results-section {
             background: #0a0a1a;
             padding: 20px 20px 40px;
@@ -455,17 +456,180 @@
             display: block;
             animation: slideUp 0.5s ease-out;
         }
-        .result-card {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(34,197,94,0.2);
-            border-radius: 12px;
-            padding: 14px;
+        
+        .result-card-enhanced {
+            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 16px;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: cardPop 0.5s ease-out forwards;
+            position: relative;
+            overflow: hidden;
         }
-        .result-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255,255,255,0.1);
+        .result-card-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .result-card-enhanced:hover::before {
+            opacity: 1;
+        }
+        .result-card-enhanced:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(245, 158, 11, 0.2);
+            background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .result-card-enhanced .vehicle-icon {
+            font-size: 2rem;
+            color: #f59e0b;
+            background: rgba(245,158,11,0.1);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            transition: all 0.4s;
+        }
+        .result-card-enhanced:hover .vehicle-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            transform: rotate(-10deg) scale(1.05);
+        }
+        .result-card-enhanced .vehicle-name {
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .result-card-enhanced .vehicle-capacity {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+        }
+        .result-card-enhanced .vehicle-price {
+            color: #f59e0b;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 4px 0;
+        }
+        .result-card-enhanced .vehicle-price span {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.4);
+        }
+        .result-card-enhanced .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .result-card-enhanced .badge-available {
+            display: inline-block;
+            background: rgba(34,197,94,0.15);
+            color: #22c55e;
+            padding: 2px 12px;
+            border-radius: 9999px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        .result-card-enhanced .badge-type {
+            display: inline-block;
+            background: rgba(245,158,11,0.1);
+            color: #f59e0b;
+            padding: 2px 12px;
+            border-radius: 9999px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        .result-card-enhanced .btn-book-now {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            cursor: pointer;
+        }
+        .result-card-enhanced .btn-book-now:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245,158,11,0.3);
+        }
+        .result-card-enhanced .btn-book-now i {
+            margin-right: 6px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .results-header .count {
+            color: #fbbf24;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .results-header .count i {
+            margin-right: 6px;
+        }
+        .results-header .route-info {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.75rem;
+        }
+        .results-header .route-info i {
+            color: #f59e0b;
+            margin-right: 4px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        
+        .no-results {
+            padding: 30px 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+        }
+        .no-results .icon {
+            font-size: 3rem;
+            color: rgba(255,255,255,0.1);
+            margin-bottom: 12px;
+        }
+        .no-results h3 {
+            color: white;
+            font-size: 1rem;
+            margin: 0;
+        }
+        .no-results p {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+            margin-top: 4px;
         }
         
         /* ===== TOAST ===== */
@@ -876,6 +1040,13 @@
             .carousel-controls button { font-size: 0.8rem; padding: 2px 6px; }
             .carousel-controls .dot-indicator { width: 5px; height: 5px; }
             .carousel-controls .dot-indicator.active { width: 12px; }
+            
+            .results-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            .results-header .count { font-size: 0.85rem; }
+            .results-header .route-info { font-size: 0.7rem; }
         }
         
         @media (max-width: 480px) {
@@ -909,6 +1080,18 @@
             .app-footer .footer-bottom { flex-direction: column; text-align: center; }
             .hero-stats .stat-item .number { font-size: 0.9rem; }
             .hero-stats .stat-item .label { font-size: 0.6rem; }
+            
+            .results-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .result-card-enhanced { padding: 12px; }
+            .result-card-enhanced .vehicle-icon { width: 44px; height: 44px; font-size: 1.5rem; }
+            .result-card-enhanced .vehicle-name { font-size: 0.85rem; }
+            .result-card-enhanced .vehicle-price { font-size: 0.95rem; }
+            .result-card-enhanced .btn-book-now { font-size: 0.7rem; padding: 6px 12px; }
+            .results-header { padding: 10px 12px; }
+            .results-header .count { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -1043,7 +1226,7 @@
         </div>
     </section>
 
-    <!-- ===== SEARCH RESULTS - MOVED OUTSIDE HERO ===== -->
+    <!-- ===== SEARCH RESULTS - ENHANCED ===== -->
     <section class="results-section" id="resultsSection">
         <div class="results-container">
             <div id="searchResults"></div>
@@ -1281,7 +1464,7 @@
 
         resetInterval();
 
-        // ===== INSTANT AJAX SEARCH =====
+        // ===== INSTANT AJAX SEARCH - ENHANCED RESULTS =====
         const searchForm = document.getElementById('searchForm');
         const searchBtn = document.getElementById('searchBtn');
         const resultsContainer = document.getElementById('searchResults');
@@ -1316,11 +1499,11 @@
                     console.error('Search error:', error);
                     showToast('❌ Error searching. Please try again.');
                     resultsContainer.innerHTML = `
-                        <div style="padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center;">
-                            <div style="font-size:2rem; margin-bottom:8px;">❌</div>
-                            <h3 style="color:white; font-size:1rem; margin:0;">Search Error</h3>
-                            <p style="color:rgba(255,255,255,0.6); font-size:0.85rem; margin-top:4px;">${error.message}</p>
-                            <p style="color:rgba(255,255,255,0.4); font-size:0.75rem; margin-top:4px;">Please try again or check your connection</p>
+                        <div style="padding:24px; background:rgba(255,255,255,0.03); border-radius:16px; border:1px solid rgba(255,255,255,0.06); text-align:center;">
+                            <div style="font-size:2.5rem; margin-bottom:12px; opacity:0.5;">❌</div>
+                            <h3 style="color:white; font-size:1.1rem; margin:0;">Search Error</h3>
+                            <p style="color:rgba(255,255,255,0.5); font-size:0.9rem; margin-top:6px;">${error.message}</p>
+                            <p style="color:rgba(255,255,255,0.3); font-size:0.8rem; margin-top:4px;">Please try again or check your connection</p>
                         </div>
                     `;
                     resultsContainer.className = 'visible';
@@ -1336,19 +1519,19 @@
             
             if (results && results.length > 0) {
                 let html = `
-                    <div style="padding:16px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); animation:slideUp 0.5s ease-out;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:6px;">
-                            <h3 style="color:#fbbf24; font-size:0.95rem; margin:0;">
-                                ✅ Found ${results.length} vehicles for ${passengers} passengers
-                            </h3>
-                            <span style="color:rgba(255,255,255,0.5); font-size:0.7rem;">
-                                ${origin} → ${destination} · ${new Date(date).toLocaleDateString()}
-                            </span>
+                    <div style="animation:slideUp 0.5s ease-out;">
+                        <div class="results-header">
+                            <div class="count">
+                                <i class="fas fa-check-circle"></i> Found ${results.length} vehicles for ${passengers} passengers
+                            </div>
+                            <div class="route-info">
+                                <i class="fas fa-route"></i> ${origin} → ${destination} · ${new Date(date).toLocaleDateString()}
+                            </div>
                         </div>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">
+                        <div class="results-grid">
                 `;
                 
-                results.forEach(vehicle => {
+                results.forEach((vehicle, index) => {
                     const name = vehicle.vehicle_model || vehicle.name || 'Vehicle';
                     const capacity = vehicle.capacity || vehicle.seats || 0;
                     const price = vehicle.base_price || vehicle.price || 500;
@@ -1361,22 +1544,22 @@
                     else if (lowerName.includes('noah') || lowerName.includes('van')) icon = 'fa-shuttle-van';
                     else if (lowerName.includes('truck') || lowerName.includes('probox')) icon = 'fa-truck';
                     
+                    // Stagger animation delay
+                    const delay = index * 0.05;
+                    
                     html += `
-                        <div class="result-card" style="background:rgba(255,255,255,0.06); border:1px solid rgba(34,197,94,0.2); border-radius:10px; padding:12px; text-align:center;">
-                            <div style="font-size:1.5rem; margin-bottom:4px;">
+                        <div class="result-card-enhanced" style="animation-delay: ${delay}s;">
+                            <div class="vehicle-icon">
                                 <i class="fas ${icon}"></i>
                             </div>
-                            <h4 style="color:white; font-weight:700; font-size:0.85rem; margin:0;">${name}</h4>
-                            <div style="color:rgba(255,255,255,0.5); font-size:0.7rem;">${capacity} Seats</div>
-                            <div style="color:#f59e0b; font-weight:700; font-size:0.95rem; margin:2px 0;">KSh ${Number(price).toLocaleString()}</div>
-                            <div style="display:flex; justify-content:center; gap:3px; flex-wrap:wrap; margin-bottom:8px;">
-                                <span style="display:inline-block; background:rgba(34,197,94,0.15); color:#22c55e; padding:1px 10px; border-radius:9999px; font-size:0.55rem; font-weight:600;">Available</span>
-                                <span style="display:inline-block; background:rgba(245,158,11,0.1); color:#f59e0b; padding:1px 10px; border-radius:9999px; font-size:0.55rem; font-weight:600;">${type}</span>
+                            <div class="vehicle-name">${name}</div>
+                            <div class="vehicle-capacity"><i class="fas fa-chair"></i> ${capacity} Seats</div>
+                            <div class="vehicle-price">KSh ${Number(price).toLocaleString()} <span>per trip</span></div>
+                            <div class="badge-group">
+                                <span class="badge-available"><i class="fas fa-check-circle"></i> Available</span>
+                                <span class="badge-type">${type}</span>
                             </div>
-                            <a href="/booking/${vehicleId}?date=${date}" 
-                               style="display:inline-block; background:linear-gradient(135deg, #f59e0b, #d97706); color:white; padding:6px 16px; border-radius:9999px; font-weight:600; font-size:0.75rem; text-decoration:none; transition:all 0.3s; width:100%; box-sizing:border-box;"
-                               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(245,158,11,0.3)';"
-                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                            <a href="/booking/${vehicleId}?date=${date}" class="btn-book-now">
                                 <i class="fas fa-calendar-check"></i> Book Now
                             </a>
                         </div>
@@ -1393,15 +1576,11 @@
                 highlightVehicles(results);
             } else {
                 resultsContainer.innerHTML = `
-                    <div style="padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center; animation:slideUp 0.5s ease-out;">
-                        <div style="font-size:2rem; margin-bottom:8px;">🚌</div>
-                        <h3 style="color:white; font-size:0.95rem; margin:0;">No vehicles available</h3>
-                        <p style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-top:4px;">
-                            No vehicles found for ${passengers} passengers on ${origin} → ${destination}
-                        </p>
-                        <p style="color:rgba(255,255,255,0.3); font-size:0.7rem; margin-top:2px;">
-                            Try adjusting your search criteria
-                        </p>
+                    <div class="no-results">
+                        <div class="icon">🚌</div>
+                        <h3>No vehicles available</h3>
+                        <p>No vehicles found for ${passengers} passengers on ${origin} → ${destination}</p>
+                        <p style="color:rgba(255,255,255,0.25); font-size:0.75rem; margin-top:8px;">Try adjusting your search criteria</p>
                     </div>
                 `;
                 resultsContainer.className = 'visible';
@@ -1418,7 +1597,7 @@
                 if (resultsSection) {
                     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-            }, 200);
+            }, 300);
         }
 
         function highlightVehicles(results) {
