@@ -753,59 +753,34 @@
         </div>
     </section>
 
-    <!-- ===== VEHICLES CAROUSEL ===== -->
-    <section id="vehicles" class="carousel-section">
-        <div style="max-width:1200px; margin:0 auto 32px; text-align:center;">
-            <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Our Fleet</span>
-            <h2 style="font-size:2.5rem; font-weight:800; color:#0f172a; margin-top:4px;">Premium <span style="color:#f59e0b;">Vehicles</span></h2>
-            <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Choose from our range of luxury and executive vehicles</p>
-        </div>
-        
-        <div class="carousel-container-premium">
-            <div class="carousel-slides" id="carouselSlides">
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=1200&h=600&fit=crop" alt="Executive Bus" />
-                    <span class="slide-badge">⭐ Popular</span>
-                    <div class="slide-overlay">
-                        <div class="slide-title">🚌 Executive Bus Service</div>
-                        <div class="slide-desc">Comfortable travel with premium amenities • 40 Seats</div>
-                    </div>
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1200&h=600&fit=crop" alt="Executive Van" />
-                    <span class="slide-badge">👔 Executive</span>
-                    <div class="slide-overlay">
-                        <div class="slide-title">🚐 Executive Van</div>
-                        <div class="slide-desc">Luxury travel for groups and business • 8 Seats</div>
-                    </div>
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=1200&h=600&fit=crop" alt="Luxury SUV" />
-                    <span class="slide-badge">💎 Luxury</span>
-                    <div class="slide-overlay">
-                        <div class="slide-title">🚙 Luxury SUV</div>
-                        <div class="slide-desc">Premium executive travel experience • 7 Seats</div>
-                    </div>
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=1200&h=600&fit=crop" alt="Premium Sedan" />
-                    <span class="slide-badge">🚗 Premium</span>
-                    <div class="slide-overlay">
-                        <div class="slide-title">🚗 Premium Sedan</div>
-                        <div class="slide-desc">Elegant and comfortable city travel • 4 Seats</div>
-                    </div>
-                </div>
+   
+        <!-- ===== VEHICLES CAROUSEL ===== -->
+<section id="vehicles" class="carousel-section">
+    <div style="max-width:1200px; margin:0 auto 32px; text-align:center;">
+        <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Our Fleet</span>
+        <h2 style="font-size:2.5rem; font-weight:800; color:#0f172a; margin-top:4px;">Our <span style="color:#f59e0b;">Vehicles</span></h2>
+        <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Choose from our range of vehicles for your travel needs</p>
+    </div>
+    
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:16px; max-width:1200px; margin:0 auto;">
+        {% for vehicle in vehicles %}
+        <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+            <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;">
+                {% if vehicle.vehicle_type == 'Bus' %}
+                    <i class="fas fa-bus"></i>
+                {% elif vehicle.vehicle_type == 'Noah' %}
+                    <i class="fas fa-shuttle-van"></i>
+                {% else %}
+                    <i class="fas fa-car"></i>
+                {% endif %}
             </div>
-            <button class="carousel-btn prev" onclick="moveCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
-            <button class="carousel-btn next" onclick="moveCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+            <h4 style="font-weight:700; color:#0f172a;">{{ vehicle.vehicle_type }}</h4>
+            <p style="font-size:0.75rem; color:#64748b;">{{ vehicle.capacity }} Seats</p>
+            <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh {{ vehicle.base_price }}</p>
         </div>
-        <div class="carousel-dots" id="carouselDots">
-            <button class="carousel-dot active" onclick="goToSlide(0)"></button>
-            <button class="carousel-dot" onclick="goToSlide(1)"></button>
-            <button class="carousel-dot" onclick="goToSlide(2)"></button>
-            <button class="carousel-dot" onclick="goToSlide(3)"></button>
-        </div>
-    </section>
+        {% endfor %}
+    </div>
+</section>
 
     <!-- ===== FEATURES ===== -->
     <section style="max-width:1200px; margin:0 auto; padding:0 20px 48px;">
