@@ -30,23 +30,24 @@
         /* ===== ANIMATIONS ===== */
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
         
-        /* ===== HEADER ===== */
+        /* ===== NAVBAR ===== */
         .app-header {
-            background: #ffffff;
-            padding: 16px 24px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 14px 24px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04);
             position: sticky;
             top: 0;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         .app-header .brand {
             display: flex;
@@ -80,6 +81,54 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        
+        .header-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .header-btn:hover { 
+            transform: translateY(-2px) scale(1.02); 
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.35);
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            padding: 8px 14px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transition: all 0.3s;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        .nav-link:hover { color: var(--gold); background: rgba(245, 158, 11, 0.05); }
+        .nav-link:hover::after { width: 60%; }
+        .nav-link.active { color: var(--gold); }
+        .nav-link.active::after { width: 60%; }
         
         .date-badge {
             display: inline-block;
@@ -353,10 +402,93 @@
             height: fit-content;
         }
         
+        /* ===== FOOTER ===== */
+        .app-footer {
+            background: #0a0a1a;
+            padding: 48px 20px 24px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.02);
+        }
+        .app-footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+        .app-footer .footer-brand h3 {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+        .app-footer .footer-brand h3 span { color: #f59e0b; }
+        .app-footer .footer-brand p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            max-width: 300px;
+            line-height: 1.6;
+        }
+        .app-footer .footer-links h4 {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .app-footer .footer-links a {
+            display: block;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            transition: color 0.3s;
+        }
+        .app-footer .footer-links a:hover { color: #f59e0b; }
+        .app-footer .footer-links a i { margin-right: 6px; width: 16px; }
+        .app-footer .footer-bottom {
+            max-width: 1200px;
+            margin: 32px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .app-footer .footer-bottom p {
+            color: #475569;
+            font-size: 0.8rem;
+        }
+        .app-footer .footer-bottom .social-icons {
+            display: flex;
+            gap: 12px;
+        }
+        .app-footer .footer-bottom .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .app-footer .footer-bottom .social-icons a:hover {
+            background: #f59e0b;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .booking-grid { grid-template-columns: 1fr !important; }
             .sticky-card { position: relative; top: 0; }
+            .app-footer .footer-content { grid-template-columns: 1fr 1fr; }
         }
         
         @media (max-width: 768px) {
@@ -369,6 +501,9 @@
             .app-header .brand .brand-text { font-size: 1rem; }
             .app-header .brand .brand-icon { width: 36px; height: 36px; font-size: 1rem; }
             .date-badge { font-size: 0.65rem; padding: 4px 12px; }
+            .header-btn { padding: 6px 14px; font-size: 0.7rem; }
+            .nav-links { display: none !important; }
+            .app-footer .footer-content { grid-template-columns: 1fr; gap: 24px; }
         }
         
         @media (max-width: 480px) {
@@ -385,20 +520,29 @@
             .summary-total .value { font-size: 1rem; }
             .bus-info .value { font-size: 0.75rem; }
             .bus-info .label { font-size: 0.6rem; }
+            .app-footer .footer-bottom { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
+    <!-- ===== NAVBAR ===== -->
     <header class="app-header">
         <a href="/" class="brand">
             <div class="brand-icon"><i class="fas fa-bus"></i></div>
             <div class="brand-text">Don<span>Travels</span></div>
         </a>
         <div style="display:flex; align-items:center; gap:12px;">
+            <div class="nav-links" style="display:flex; align-items:center; gap:4px;">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/#vehicles" class="nav-link">Vehicles</a>
+                <a href="/check-booking" class="nav-link"><i class="fas fa-ticket-alt"></i> Check</a>
+                <a href="/admin/login" class="nav-link"><i class="fas fa-user-shield"></i> Admin</a>
+            </div>
             <span class="date-badge"><i class="fas fa-calendar"></i> {{ date }}</span>
-            <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+            <a href="/" class="header-btn" style="font-size:0.75rem; padding:6px 16px;">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
         </div>
     </header>
 
@@ -531,6 +675,46 @@
             
         </div>
     </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Don<span>Travels</span></h3>
+                <p>Premium executive transport services across Kenya. Book your ride with us for a comfortable and safe journey.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="/">Home</a>
+                <a href="/#vehicles">Vehicles</a>
+                <a href="/check-booking">Check Booking</a>
+                <a href="/admin/login">Admin</a>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <a href="#">Bus Transport</a>
+                <a href="#">Executive Taxis</a>
+                <a href="#">Group Travel</a>
+                <a href="#">Airport Transfers</a>
+            </div>
+            <div class="footer-links">
+                <h4>Contact</h4>
+                <a href="tel:+254700000000"><i class="fas fa-phone"></i> +254 700 000 000</a>
+                <a href="mailto:info@dontravels.com"><i class="fas fa-envelope"></i> info@dontravels.com</a>
+                <a href="#"><i class="fas fa-map-marker-alt"></i> Gilgil, Kenya</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2026 Don Travels. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         let selectedSeats = [];
