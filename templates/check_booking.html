@@ -6,9 +6,11 @@
     <title>Check Booking · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f4f8; }
+        
         .form-input {
             border: 1.5px solid #e2e8f0;
             border-radius: 12px;
@@ -16,12 +18,17 @@
             width: 100%;
             font-size: 0.95rem;
             transition: all 0.2s;
+            background: white;
         }
         .form-input:focus {
             outline: none;
             border-color: #f59e0b;
             box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
         }
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+        
         .btn-primary {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
@@ -30,10 +37,36 @@
             font-weight: 700;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 100%;
+            font-size: 1rem;
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-outline {
+            display: inline-block;
+            padding: 12px 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 9999px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+            transition: all 0.3s;
+            background: white;
+        }
+        .btn-outline:hover {
+            border-color: #f59e0b;
+            color: #f59e0b;
+            background: #fffbeb;
+        }
         
         .status-badge {
             display: inline-block;
@@ -41,6 +74,7 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
+            text-transform: capitalize;
         }
         .status-badge.confirmed {
             background: #d1fae5;
@@ -58,7 +92,8 @@
         .detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            align-items: center;
+            padding: 12px 0;
             border-bottom: 1px solid #f1f5f9;
         }
         .detail-row:last-child {
@@ -66,79 +101,265 @@
         }
         .detail-label {
             color: #64748b;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-label i {
+            color: #f59e0b;
+            width: 18px;
             font-size: 0.9rem;
         }
         .detail-value {
             font-weight: 600;
             color: #0f172a;
+            text-align: right;
         }
         .detail-value.highlight {
             color: #f59e0b;
         }
+        
+        .booking-card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        
+        .ref-box {
+            background: linear-gradient(135deg, #fef3c7, #fffbeb);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #fde68a;
+        }
+        .ref-box .ref-label {
+            font-size: 0.65rem;
+            color: #92400e;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .ref-box .ref-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #d97706;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header-title h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .header-title h3 i {
+            color: #f59e0b;
+            margin-right: 8px;
+        }
+        
+        .search-card {
+            background: white;
+            border-radius: 24px;
+            padding: 36px 32px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .search-card .icon-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fef3c7, #fffbeb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2rem;
+            color: #f59e0b;
+        }
+        
+        .flash-message {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .flash-message i {
+            font-size: 1.1rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f1f5f9;
+        }
+        
+        .vehicle-tag {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 14px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .seat-tag {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 0 2px;
+        }
+        
+        .payment-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .payment-badge.paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .payment-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        @media (max-width: 640px) {
+            .booking-card { padding: 20px 16px; }
+            .search-card { padding: 24px 20px; }
+            .detail-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .detail-value { text-align: left; width: 100%; }
+            .action-buttons { flex-direction: column; }
+            .header-title { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .ref-box .ref-value { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
-    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04);">
+
+    <!-- ===== HEADER ===== -->
+    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
         <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
             <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
                 <i class="fas fa-bus" style="color:#f59e0b;"></i> Don<span style="color:#f59e0b;">Travels</span>
             </a>
-            <a href="/" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Back</a>
+            <a href="/" style="color:#64748b; text-decoration:none; font-weight:500; transition:color 0.3s;">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
         </div>
     </header>
 
-    <section style="max-width:600px; margin:40px auto; padding:0 20px;">
+    <!-- ===== MAIN CONTENT ===== -->
+    <section style="max-width:640px; margin:40px auto; padding:0 20px;">
+
         {% if booking %}
-            <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                    <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a;">
-                        <i class="fas fa-ticket-alt" style="color:#f59e0b;"></i> Booking Details
-                    </h3>
+            <!-- ===== BOOKING DETAILS ===== -->
+            <div class="booking-card">
+
+                <!-- Header -->
+                <div class="header-title">
+                    <h3><i class="fas fa-ticket-alt"></i> Booking Details</h3>
                     <span class="status-badge {{ booking.status or 'confirmed' }}">
+                        <i class="fas fa-circle" style="font-size:0.5rem; margin-right:4px;"></i>
                         {{ (booking.status or 'confirmed')|capitalize }}
                     </span>
                 </div>
-                
-                <div style="background:#f8fafc; border-radius:12px; padding:12px 16px; margin-bottom:16px; text-align:center;">
-                    <span style="font-size:0.7rem; color:#94a3b8; display:block;">Booking Reference</span>
-                    <span style="font-size:1.3rem; font-weight:800; color:#f59e0b;">{{ booking.booking_ref }}</span>
+
+                <!-- Reference Box -->
+                <div class="ref-box">
+                    <div class="ref-label"><i class="fas fa-barcode"></i> Booking Reference</div>
+                    <div class="ref-value">{{ booking.booking_ref }}</div>
                 </div>
-                
+
+                <!-- Passenger Info -->
                 <div class="detail-row">
                     <span class="detail-label"><i class="fas fa-user"></i> Passenger</span>
                     <span class="detail-value">{{ booking.passenger_name }}</span>
                 </div>
-                
+
                 <div class="detail-row">
                     <span class="detail-label"><i class="fas fa-phone"></i> Phone</span>
                     <span class="detail-value">{{ booking.passenger_phone }}</span>
                 </div>
-                
+
+                {% if booking.passenger_email %}
                 <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-calendar"></i> Booking Date</span>
-                    <span class="detail-value highlight">{{ booking.booking_date }}</span>
+                    <span class="detail-label"><i class="fas fa-envelope"></i> Email</span>
+                    <span class="detail-value">{{ booking.passenger_email }}</span>
                 </div>
-                
-                <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-calendar-check"></i> Travel Date</span>
-                    <span class="detail-value highlight">{{ booking.departure_date or booking.booking_date }}</span>
+                {% endif %}
+
+                <!-- Trip Info -->
+                <div style="background:#f8fafc; border-radius:14px; padding:16px; margin:16px 0; border:1px solid #f1f5f9;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em;">Travel Date</div>
+                            <div style="font-weight:700; color:#f59e0b;">
+                                <i class="fas fa-calendar-check" style="font-size:0.8rem;"></i>
+                                {{ booking.departure_date or booking.booking_date }}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em;">Booking Date</div>
+                            <div style="font-weight:600; color:#0f172a;">
+                                <i class="fas fa-calendar" style="font-size:0.8rem; color:#94a3b8;"></i>
+                                {{ booking.booking_date }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
+
+                <!-- Route & Time -->
                 <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-clock"></i> Departure Time</span>
+                    <span class="detail-label"><i class="fas fa-route"></i> Route</span>
+                    <span class="detail-value highlight">
+                        {% if booking.origin and booking.destination %}
+                            {{ booking.origin }} <i class="fas fa-arrow-right" style="font-size:0.6rem; color:#94a3b8;"></i> {{ booking.destination }}
+                        {% else %}
+                            {{ booking.route_id or 'Not specified' }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-clock"></i> Departure</span>
                     <span class="detail-value highlight">{{ booking.departure_time or '08:00' }}</span>
                 </div>
-                
+
                 <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-clock"></i> Arrival Time</span>
+                    <span class="detail-label"><i class="fas fa-clock"></i> Arrival</span>
                     <span class="detail-value">{{ booking.arrival_time or '14:00' }}</span>
                 </div>
-                
+
+                <!-- Vehicle -->
                 <div class="detail-row">
                     <span class="detail-label"><i class="fas fa-car"></i> Vehicle</span>
                     <span class="detail-value">
                         {% if booking.vehicle_type %}
-                            {{ booking.vehicle_type }}
+                            <span class="vehicle-tag">{{ booking.vehicle_type }}</span>
                         {% elif booking.vehicle_id %}
                             Vehicle #{{ booking.vehicle_id }}
                         {% else %}
@@ -146,97 +367,121 @@
                         {% endif %}
                     </span>
                 </div>
-                
-                <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-route"></i> Route</span>
-                    <span class="detail-value">
-                        {% if booking.origin and booking.destination %}
-                            {{ booking.origin }} → {{ booking.destination }}
-                        {% else %}
-                            {{ booking.route_id or 'Not specified' }}
-                        {% endif %}
-                    </span>
-                </div>
-                
+
+                <!-- Seats -->
                 <div class="detail-row">
                     <span class="detail-label"><i class="fas fa-chair"></i> Seats</span>
                     <span class="detail-value">
                         {% if booking.selected_seats %}
                             {% if booking.selected_seats is string %}
-                                {{ booking.selected_seats }}
+                                <span class="seat-tag">{{ booking.selected_seats }}</span>
                             {% else %}
-                                {{ booking.selected_seats|join(', ') }}
+                                {% for seat in booking.selected_seats %}
+                                    <span class="seat-tag">{{ seat }}</span>
+                                {% endfor %}
                             {% endif %}
                         {% else %}
                             Not specified
                         {% endif %}
                     </span>
                 </div>
-                
-                <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-money-bill"></i> Total Fare</span>
-                    <span class="detail-value highlight" style="font-size:1.1rem;">
-                        KSh {{ "%.0f"|format(booking.total_fare or 0) }}
-                    </span>
-                </div>
-                
-                <div class="detail-row">
-                    <span class="detail-label"><i class="fas fa-credit-card"></i> Payment</span>
-                    <span class="detail-value">
-                        {{ (booking.payment_status or 'pending')|capitalize }}
-                        {% if booking.payment_method %}
-                            <span style="font-size:0.7rem; color:#94a3b8;">({{ booking.payment_method|upper }})</span>
-                        {% endif %}
-                    </span>
-                </div>
-                
-                <div style="margin-top:20px; padding-top:16px; border-top:2px solid #f1f5f9;">
-                    <div style="display:flex; gap:12px;">
-                        <a href="/" class="btn-primary" style="display:inline-block; text-decoration:none; text-align:center; padding:12px;">
-                            <i class="fas fa-home"></i> Home
-                        </a>
-                        <a href="/check-booking" style="display:inline-block; padding:12px 24px; border:2px solid #e2e8f0; border-radius:9999px; text-decoration:none; color:#64748b; font-weight:600; text-align:center; flex:1;">
-                            <i class="fas fa-search"></i> Check Another
-                        </a>
+
+                <!-- Fare & Payment -->
+                <div style="background:linear-gradient(135deg, #fef3c7, #fffbeb); border-radius:14px; padding:16px; margin:16px 0; border:1px solid #fde68a;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <div>
+                            <div style="font-size:0.6rem; color:#92400e; text-transform:uppercase; letter-spacing:0.05em;">Total Fare</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:#d97706;">
+                                KSh {{ "%.0f"|format(booking.total_fare or 0) }}
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.6rem; color:#92400e; text-transform:uppercase; letter-spacing:0.05em;">Payment</div>
+                            <div>
+                                <span class="payment-badge {{ booking.payment_status or 'pending' }}">
+                                    {{ (booking.payment_status or 'pending')|capitalize }}
+                                </span>
+                                {% if booking.payment_method %}
+                                    <span style="font-size:0.7rem; color:#92400e; font-weight:600;">
+                                        ({{ booking.payment_method|upper }})
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Actions -->
+                <div class="action-buttons">
+                    <a href="/" class="btn-primary" style="display:inline-block; text-decoration:none; text-align:center; padding:12px;">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/check-booking" class="btn-outline">
+                        <i class="fas fa-search"></i> Check Another
+                    </a>
+                </div>
             </div>
+
         {% else %}
-            <div style="background:white; border-radius:24px; padding:32px; border:1px solid #f1f5f9;">
+            <!-- ===== SEARCH FORM ===== -->
+            <div class="search-card">
+
+                <div class="icon-circle">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+
                 <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a; text-align:center;">
-                    <i class="fas fa-search" style="color:#f59e0b;"></i> Check Booking
+                    Check Your Booking
                 </h2>
-                <p style="color:#64748b; text-align:center; margin-bottom:24px;">Enter your booking reference and phone number</p>
-                
+                <p style="color:#64748b; text-align:center; margin-bottom:28px; font-size:0.95rem;">
+                    Enter your booking reference and phone number to view your trip details
+                </p>
+
                 <form method="POST">
                     <div style="margin-bottom:16px;">
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                            <i class="fas fa-ticket-alt"></i> Booking Reference
+                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:6px;">
+                            <i class="fas fa-ticket-alt" style="color:#f59e0b;"></i> Booking Reference
                         </label>
                         <input type="text" name="booking_ref" class="form-input" placeholder="BC-XXXXXXXX" required />
                     </div>
+
                     <div style="margin-bottom:24px;">
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                            <i class="fas fa-phone"></i> Phone Number
+                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:6px;">
+                            <i class="fas fa-phone" style="color:#f59e0b;"></i> Phone Number
                         </label>
                         <input type="tel" name="phone" class="form-input" placeholder="+254 700 000 000" required />
                     </div>
+
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-search"></i> Find Booking
                     </button>
                 </form>
-                
+
+                <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div style="margin-top:16px; padding:12px; border-radius:12px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b;">
-                                <i class="fas fa-exclamation-circle"></i> {{ message }}
+                            <div class="flash-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ message }}
                             </div>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
+
+                <!-- Help Text -->
+                <div style="margin-top:20px; text-align:center; font-size:0.8rem; color:#94a3b8;">
+                    <i class="fas fa-info-circle" style="color:#f59e0b;"></i>
+                    Your booking reference was sent to you via SMS after booking
+                </div>
             </div>
         {% endif %}
     </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer style="background:white; padding:20px; text-align:center; border-top:1px solid #f1f5f9; margin-top:40px;">
+        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 Don Travels. All rights reserved.</p>
+    </footer>
+
 </body>
 </html>
