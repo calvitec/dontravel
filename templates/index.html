@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #f0f4f8; overflow-x: hidden; }
@@ -384,6 +386,26 @@
       .features-grid { grid-template-columns:1fr 1fr; gap:8px; }
       .hero-subtitle { font-size:1rem; }
     }
+
+    /* Toast notification */
+    .search-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-weight: 500;
+      z-index: 9999;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.4s ease-out;
+      max-width: 90%;
+      text-align: center;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -430,13 +452,13 @@
       </p>
       <!-- search card -->
       <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
-        <form action="/search" method="GET">
+        <form id="searchForm">
           <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
             <div><label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label><input type="text" name="origin" class="form-input" placeholder="Gilgil" required list="origins" /><datalist id="origins"><option value="Gilgil"><option value="Nairobi"><option value="Nakuru"><option value="Naivasha"></datalist></div>
             <div><label class="form-label"><i class="fas fa-flag-checkered"></i> To</label><input type="text" name="destination" class="form-input" placeholder="Nairobi" required list="destinations" /><datalist id="destinations"><option value="Nairobi"><option value="Nakuru"><option value="Gilgil"><option value="Naivasha"></datalist></div>
             <div><label class="form-label"><i class="fas fa-calendar"></i> Date</label><input type="date" name="date" class="form-input" id="dateInput" required /></div>
             <div><label class="form-label"><i class="fas fa-users"></i> Passengers</label><input type="number" name="passengers" class="form-input" min="1" max="40" value="1" required /></div>
-            <div style="grid-column: span 2;"><button type="submit" class="hero-search-btn"><i class="fas fa-search"></i> Search</button></div>
+            <div style="grid-column: span 2;"><button type="submit" class="hero-search-btn" id="searchBtn"><i class="fas fa-search"></i> Search</button></div>
           </div>
         </form>
       </div>
@@ -457,14 +479,14 @@
       <h2 style="font-size:2.8rem; font-weight:800; color:#0f172a; margin-top:4px;">Premium <span style="color:#f59e0b;">Vehicles</span></h2>
       <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Choose from our range of vehicles for your travel needs</p>
     </div>
-    <div class="vehicle-grid">
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Axio" class="vehicle-img" /><h4>Axio</h4><div class="capacity">4 Seats</div><div class="price">KSh 2,000</div><span class="badge">Premium</span><span class="feature-tag">AC</span><span class="feature-tag">WiFi</span></div>
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Spacio" class="vehicle-img" /><h4>Spacio</h4><div class="capacity">5 Seats</div><div class="price">KSh 2,000</div><span class="badge">Comfort</span><span class="feature-tag">AC</span></div>
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Fielder" class="vehicle-img" /><h4>Fielder</h4><div class="capacity">5 Seats</div><div class="price">KSh 2,000</div><span class="badge">Spacious</span><span class="feature-tag">Roof</span></div>
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Noah" class="vehicle-img" /><h4>Noah</h4><div class="capacity">7 Seats</div><div class="price">KSh 1,500</div><span class="badge">Family</span><span class="feature-tag">Kids</span></div>
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Probox" class="vehicle-img" /><h4>Probox</h4><div class="capacity">4 Seats</div><div class="price">KSh 2,000</div><span class="badge">Utility</span><span class="feature-tag">Cargo</span></div>
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Ractis" class="vehicle-img" /><h4>Ractis</h4><div class="capacity">4 Seats</div><div class="price">KSh 2,000</div><span class="badge">Compact</span><span class="feature-tag">City</span></div>
-      <div class="vehicle-card"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Bus" class="vehicle-img" /><h4>Bus</h4><div class="capacity">40 Seats</div><div class="price">KSh 500</div><span class="badge">Economy</span><span class="feature-tag">AC</span><span class="feature-tag">TV</span></div>
+    <div class="vehicle-grid" id="vehicleGrid">
+      <div class="vehicle-card" data-name="Axio"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Axio" class="vehicle-img" /><h4>Axio</h4><div class="capacity">4 Seats</div><div class="price">KSh 2,000</div><span class="badge">Premium</span><span class="feature-tag">AC</span><span class="feature-tag">WiFi</span></div>
+      <div class="vehicle-card" data-name="Spacio"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Spacio" class="vehicle-img" /><h4>Spacio</h4><div class="capacity">5 Seats</div><div class="price">KSh 2,000</div><span class="badge">Comfort</span><span class="feature-tag">AC</span></div>
+      <div class="vehicle-card" data-name="Fielder"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Fielder" class="vehicle-img" /><h4>Fielder</h4><div class="capacity">5 Seats</div><div class="price">KSh 2,000</div><span class="badge">Spacious</span><span class="feature-tag">Roof</span></div>
+      <div class="vehicle-card" data-name="Noah"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Noah" class="vehicle-img" /><h4>Noah</h4><div class="capacity">7 Seats</div><div class="price">KSh 1,500</div><span class="badge">Family</span><span class="feature-tag">Kids</span></div>
+      <div class="vehicle-card" data-name="Probox"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Probox" class="vehicle-img" /><h4>Probox</h4><div class="capacity">4 Seats</div><div class="price">KSh 2,000</div><span class="badge">Utility</span><span class="feature-tag">Cargo</span></div>
+      <div class="vehicle-card" data-name="Ractis"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Ractis" class="vehicle-img" /><h4>Ractis</h4><div class="capacity">4 Seats</div><div class="price">KSh 2,000</div><span class="badge">Compact</span><span class="feature-tag">City</span></div>
+      <div class="vehicle-card" data-name="Bus"><img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Bus" class="vehicle-img" /><h4>Bus</h4><div class="capacity">40 Seats</div><div class="price">KSh 500</div><span class="badge">Economy</span><span class="feature-tag">AC</span><span class="feature-tag">TV</span></div>
     </div>
   </section>
 
@@ -509,39 +531,258 @@
   </footer>
 
   <script>
-    (function() {
-      // Date input min/max
-      const dateInput = document.getElementById('dateInput');
-      if (dateInput) {
-        const today = new Date();
-        const maxDate = new Date(); maxDate.setDate(today.getDate() + 30);
-        dateInput.setAttribute('min', today.toISOString().split('T')[0]);
-        dateInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
-        if (!dateInput.value) dateInput.value = today.toISOString().split('T')[0];
-      }
-
-      // Header scroll effect
-      const header = document.getElementById('mainHeader');
-      window.addEventListener('scroll', function() {
-        header.classList.toggle('scrolled', window.scrollY > 20);
-      });
-
-      // observer for animations
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-          }
+    // ============================================
+    // SUPABASE CONFIGURATION - UPDATE THESE!
+    // ============================================
+    const SUPABASE_URL = 'hzqrdwerkgfmfaufabjr.supabase.co';  // ← CHANGE THIS
+    const SUPABASE_ANON_KEY = 'sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld';           // ← CHANGE THIS
+    
+    // Initialize Supabase
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // ============================================
+    // CACHE SYSTEM FOR INSTANT SEARCH
+    // ============================================
+    const searchCache = new Map();
+    const CACHE_DURATION = 30000; // 30 seconds
+    let allVehiclesCache = null;
+    let allVehiclesTimestamp = 0;
+    
+    // ============================================
+    // PRELOAD ALL VEHICLES ON PAGE LOAD
+    // ============================================
+    async function preloadVehicles() {
+        try {
+            const { data, error } = await supabase
+                .from('vehicles')
+                .select('id, name, seats, price, type, features, routes')
+                .eq('available', true)
+                .limit(100);
+            
+            if (!error && data) {
+                allVehiclesCache = data;
+                allVehiclesTimestamp = Date.now();
+                console.log('✅ Vehicles preloaded:', data.length);
+            }
+        } catch (error) {
+            console.log('Preload skipped:', error);
+        }
+    }
+    
+    // ============================================
+    // INSTANT SEARCH FUNCTION
+    // ============================================
+    async function searchVehicles(origin, destination, date, passengers) {
+        const cacheKey = `${origin}-${destination}-${passengers}`;
+        const passengerCount = parseInt(passengers) || 1;
+        
+        // 1. Check cache first (INSTANT!)
+        if (searchCache.has(cacheKey)) {
+            const cached = searchCache.get(cacheKey);
+            if (Date.now() - cached.timestamp < CACHE_DURATION) {
+                console.log('⚡ Cache hit:', cacheKey);
+                return cached.data;
+            }
+        }
+        
+        // 2. If we have all vehicles cached, filter instantly
+        if (allVehiclesCache && (Date.now() - allVehiclesTimestamp < CACHE_DURATION)) {
+            console.log('⚡ Filtering from cached vehicles');
+            const route = `${origin}-${destination}`;
+            
+            const results = allVehiclesCache.filter(v => {
+                const hasRoute = v.routes && v.routes.some(r => 
+                    r === route || (r.includes(origin) && r.includes(destination))
+                );
+                return v.seats >= passengerCount && hasRoute;
+            });
+            
+            // Cache this filtered result
+            searchCache.set(cacheKey, {
+                data: results,
+                timestamp: Date.now()
+            });
+            
+            return results;
+        }
+        
+        // 3. If not cached, query Supabase (with proper indexes)
+        try {
+            console.log('📡 Querying Supabase...');
+            const route = `${origin}-${destination}`;
+            
+            const { data, error } = await supabase
+                .from('vehicles')
+                .select('id, name, seats, price, type, features, routes')
+                .gte('seats', passengerCount)
+                .eq('available', true)
+                .contains('routes', [route])
+                .order('price', { ascending: true })
+                .limit(20);
+            
+            if (error) throw error;
+            
+            // Cache the results
+            searchCache.set(cacheKey, {
+                data: data || [],
+                timestamp: Date.now()
+            });
+            
+            return data || [];
+        } catch (error) {
+            console.error('Search error:', error);
+            return [];
+        }
+    }
+    
+    // ============================================
+    // DISPLAY RESULTS INSTANTLY
+    // ============================================
+    function displayResults(results, origin, destination, passengers) {
+        // Reset all vehicle cards
+        document.querySelectorAll('.vehicle-card').forEach(card => {
+            card.style.borderColor = '#f1f5f9';
+            card.style.boxShadow = 'none';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
         });
-      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-      document.querySelectorAll('.vehicle-card, .feature-card, .testimonial-card').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        observer.observe(el);
-      });
-    })();
+        
+        if (results && results.length > 0) {
+            // Highlight available vehicles
+            const names = results.map(v => v.name);
+            let foundCount = 0;
+            
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                const name = card.querySelector('h4').textContent;
+                if (names.includes(name)) {
+                    card.style.borderColor = '#22c55e';
+                    card.style.boxShadow = '0 0 30px rgba(34,197,94,0.2)';
+                    card.style.transform = 'scale(1.02)';
+                    foundCount++;
+                } else {
+                    card.style.opacity = '0.3';
+                }
+            });
+            
+            showToast(`✅ Found ${foundCount} vehicles for ${passengers} passengers!`);
+        } else {
+            showToast(`❌ No vehicles available for ${passengers} passengers on ${origin} → ${destination}`);
+        }
+    }
+    
+    // ============================================
+    // TOAST NOTIFICATION
+    // ============================================
+    function showToast(message) {
+        // Remove existing toast
+        const existing = document.querySelector('.search-toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'search-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.4s';
+            setTimeout(() => toast.remove(), 400);
+        }, 3000);
+    }
+    
+    // ============================================
+    // MAIN - DOM CONTENT LOADED
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Preload vehicles
+        preloadVehicles();
+        
+        // Date input setup
+        const dateInput = document.getElementById('dateInput');
+        if (dateInput) {
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30);
+            dateInput.setAttribute('min', today.toISOString().split('T')[0]);
+            dateInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
+            if (!dateInput.value) dateInput.value = today.toISOString().split('T')[0];
+        }
+        
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', function() {
+            header.classList.toggle('scrolled', window.scrollY > 20);
+        });
+        
+        // ============================================
+        // SEARCH FORM HANDLER - INSTANT RESPONSE
+        // ============================================
+        const searchForm = document.getElementById('searchForm');
+        const searchBtn = document.getElementById('searchBtn');
+        
+        if (searchForm) {
+            searchForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const origin = this.querySelector('input[name="origin"]').value.trim() || 'Gilgil';
+                const destination = this.querySelector('input[name="destination"]').value.trim() || 'Nairobi';
+                const date = this.querySelector('input[name="date"]').value || 'Today';
+                const passengers = this.querySelector('input[name="passengers"]').value || '1';
+                
+                // Show loading only if not cached
+                const cacheKey = `${origin}-${destination}-${passengers}`;
+                if (!searchCache.has(cacheKey)) {
+                    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                    searchBtn.disabled = true;
+                }
+                
+                // Search (instant if cached)
+                const results = await searchVehicles(origin, destination, date, passengers);
+                
+                // Restore button
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Search';
+                searchBtn.disabled = false;
+                
+                // Display results instantly
+                displayResults(results, origin, destination, passengers);
+                
+                // Scroll to vehicles section
+                document.querySelector('#vehicles').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        }
+        
+        // ============================================
+        // ANIMATION OBSERVER
+        // ============================================
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        
+        document.querySelectorAll('.vehicle-card, .feature-card, .testimonial-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            observer.observe(el);
+        });
+        
+        // Refresh cache periodically
+        setInterval(() => {
+            const now = Date.now();
+            for (const [key, value] of searchCache) {
+                if (now - value.timestamp > CACHE_DURATION * 2) {
+                    searchCache.delete(key);
+                }
+            }
+        }, 60000);
+    });
   </script>
 </body>
 </html>
