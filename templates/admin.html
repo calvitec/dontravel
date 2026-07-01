@@ -1,207 +1,590 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard · Don Travels</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f4f8; }
-        
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid #f1f5f9;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.04); }
-        .stat-card .stat-number { font-size: 2rem; font-weight: 800; color: #f59e0b; }
-        .stat-card .stat-label { color: #64748b; font-size: 0.85rem; }
-        
-        .admin-nav {
-            background: white;
-            padding: 16px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .admin-nav .nav-link {
-            color: #64748b;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .admin-nav .nav-link:hover { background: #f8fafc; color: #0f172a; }
-        .admin-nav .nav-link.active { background: #f59e0b; color: white; }
-        
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid #f1f5f9;
-            overflow-x: auto;
-        }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th { text-align: left; padding: 12px 16px; color: #64748b; font-weight: 600; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
-        tr:hover { background: #f8fafc; }
-        
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .status-confirmed { background: #d1fae5; color: #065f46; }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-cancelled { background: #fee2e2; color: #991b1b; }
-        
-        .db-status {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .db-connected { background: #d1fae5; color: #065f46; }
-        .db-disconnected { background: #fee2e2; color: #991b1b; }
-        
-        @media (max-width: 768px) {
-            .admin-nav { flex-direction: column; align-items: stretch; }
-            .admin-nav .nav-links { display: flex; flex-wrap: wrap; gap: 4px; }
-            .admin-nav .nav-link { padding: 6px 12px; font-size: 0.8rem; }
-            .stat-card .stat-number { font-size: 1.5rem; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Console · Don Travels</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+  body { background: #f0f4f8; margin: 0; }
+
+  .app-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { background: #0f172a; color: #e2e8f0; padding: 20px 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 20px; font-weight: 800; font-size: 1.15rem; color: white; }
+  .sidebar .brand i { color: #f59e0b; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+    color: #94a3b8; cursor: pointer; font-weight: 500; font-size: 0.9rem;
+    transition: all .2s; border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: #1e293b; color: white; }
+  .nav-item.active { background: #f59e0b; color: white; }
+  .nav-item i { width: 18px; text-align: center; }
+  .sidebar .db-pill {
+    margin-top: 20px; padding: 10px 12px; border-radius: 10px; background: #1e293b;
+    font-size: 0.72rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;
+  }
+  .db-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+  .db-dot.off { background: #ef4444; }
+
+  /* Main */
+  .main { padding: 22px 28px; max-width: 100%; overflow-x: hidden; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 10px; }
+  .topbar h1 { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0; }
+  .topbar .sub { color: #64748b; font-size: 0.85rem; margin-top: 2px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Stat cards */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: white; border-radius: 16px; padding: 18px; border: 1px solid #f1f5f9; }
+  .stat-card .stat-number { font-size: 1.7rem; font-weight: 800; color: #0f172a; }
+  .stat-card .stat-label { color: #64748b; font-size: 0.78rem; margin-top: 2px; }
+  .stat-card i { color: #f59e0b; margin-right: 6px; }
+
+  .card { background: white; border-radius: 18px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 20px; }
+  .card h3 { font-weight: 700; color: #0f172a; margin: 0 0 14px; font-size: 1rem; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 10px 12px; color: #64748b; font-weight: 600; border-bottom: 2px solid #f1f5f9; white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; white-space: nowrap; }
+  tr:hover td { background: #f8fafc; }
+
+  .badge { padding: 3px 10px; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: capitalize; }
+  .badge-confirmed { background: #d1fae5; color: #065f46; }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .badge-cancelled { background: #fee2e2; color: #991b1b; }
+  .badge-completed { background: #dbeafe; color: #1e40af; }
+  .badge-active { background: #d1fae5; color: #065f46; }
+  .badge-available { background: #d1fae5; color: #065f46; }
+
+  .btn { border: none; cursor: pointer; border-radius: 9999px; font-weight: 600; font-size: 0.8rem; padding: 7px 14px; transition: all .2s; }
+  .btn-amber { background: #f59e0b; color: white; }
+  .btn-amber:hover { background: #d97706; }
+  .btn-dark { background: #0f172a; color: white; }
+  .btn-dark:hover { background: #1e293b; }
+  .btn-ghost { background: #f1f5f9; color: #334155; }
+  .btn-ghost:hover { background: #e2e8f0; }
+  .btn-danger { background: #fee2e2; color: #991b1b; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-sm { padding: 5px 10px; font-size: 0.72rem; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .input, select.input {
+    border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 8px 12px;
+    font-size: 0.85rem; width: 100%; background: white;
+  }
+  .input:focus { outline: none; border-color: #f59e0b; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .toolbar .grow { flex: 1; min-width: 160px; }
+
+  .empty-state { text-align: center; padding: 50px 20px; color: #94a3b8; }
+  .empty-state i { font-size: 2.5rem; margin-bottom: 10px; display: block; color: #cbd5e1; }
+
+  /* Modal */
+  .modal-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5);
+    align-items: center; justify-content: center; z-index: 100; padding: 16px;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal-box { background: white; border-radius: 18px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+  .modal-box h3 { font-weight: 800; color: #0f172a; margin: 0 0 16px; font-size: 1.1rem; }
+  .form-field { margin-bottom: 12px; }
+  .form-field label { font-size: 0.75rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px; }
+
+  .toast {
+    position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: white;
+    padding: 12px 20px; border-radius: 12px; font-size: 0.85rem; z-index: 200;
+    display: none; align-items: center; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .toast.show { display: flex; }
+  .toast.error { background: #991b1b; }
+  .toast.success i { color: #34d399; }
+
+  .mobile-toggle { display: none; }
+
+  @media (max-width: 900px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .sidebar { position: fixed; left: -260px; top: 0; width: 220px; z-index: 90; transition: left .3s; }
+    .sidebar.open { left: 0; }
+    .mobile-toggle { display: inline-flex; }
+    .main { padding: 16px; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- ===== ADMIN NAV ===== -->
-    <nav class="admin-nav">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <i class="fas fa-bus" style="color:#f59e0b; font-size:1.5rem;"></i>
-            <span style="font-weight:800; font-size:1.2rem; color:#0f172a;">Don <span style="color:#f59e0b;">Travels</span></span>
-            <span style="font-size:0.75rem; color:#94a3b8; background:#f1f5f9; padding:2px 12px; border-radius:12px;">
-                Admin
-            </span>
-            <span class="db-status {% if db_connected %}db-connected{% else %}db-disconnected{% endif %}">
-                <i class="fas {% if db_connected %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-                {{ db_type|capitalize }}
-            </span>
-        </div>
-        <div class="nav-links">
-            <a href="/admin" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="/admin/bookings" class="nav-link"><i class="fas fa-ticket-alt"></i> Bookings</a>
-            <a href="/admin/logout" class="nav-link" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </nav>
+<div class="app-shell">
 
-    <!-- ===== DASHBOARD ===== -->
-    <section style="max-width:1200px; margin:24px auto; padding:0 20px;">
-        <!-- Stats -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:16px; margin-bottom:24px;">
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_bookings|default(0) }}</div>
-                <div class="stat-label"><i class="fas fa-ticket-alt"></i> Total Bookings</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">KSh {{ stats.total_revenue|default(0)|int }}</div>
-                <div class="stat-label"><i class="fas fa-coins"></i> Revenue</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_vehicles|default(0) }}</div>
-                <div class="stat-label"><i class="fas fa-car"></i> Vehicles</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_routes|default(0) }}</div>
-                <div class="stat-label"><i class="fas fa-route"></i> Routes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_buses|default(0) }}</div>
-                <div class="stat-label"><i class="fas fa-bus"></i> Buses</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.today_bookings|default(0) }}</div>
-                <div class="stat-label"><i class="fas fa-calendar-day"></i> Today</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.pending_payments|default(0) }}</div>
-                <div class="stat-label"><i class="fas fa-clock"></i> Pending Payments</div>
-            </div>
-        </div>
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><i class="fas fa-bus"></i> Don<span style="color:#f59e0b;">Travels</span></div>
+    <button class="nav-item active" data-panel="dashboard"><i class="fas fa-th-large"></i> Dashboard</button>
+    <button class="nav-item" data-panel="bookings"><i class="fas fa-ticket-alt"></i> Bookings</button>
+    <button class="nav-item" data-panel="buses"><i class="fas fa-bus"></i> Buses</button>
+    <button class="nav-item" data-panel="routes"><i class="fas fa-route"></i> Routes</button>
+    <button class="nav-item" data-panel="vehicles"><i class="fas fa-shuttle-van"></i> Vehicles</button>
+    <button class="nav-item" data-panel="schedules"><i class="fas fa-calendar-alt"></i> Schedules</button>
+    <a href="/admin/logout" class="nav-item" style="color:#f87171; text-decoration:none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
 
-        <!-- Recent Bookings -->
-        <div class="table-container">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-                <h3 style="font-weight:700; color:#0f172a;">
-                    <i class="fas fa-clock" style="color:#f59e0b;"></i> Recent Bookings
-                </h3>
-                <span style="font-size:0.8rem; color:#94a3b8;">
-                    Total: {{ bookings|length }}
-                </span>
-            </div>
-            
-            {% if bookings %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ref</th>
-                        <th>Passenger</th>
-                        <th>Seats</th>
-                        <th>Fare</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for booking in bookings[:10] %}
-                    <tr>
-                        <td style="font-weight:600; color:#f59e0b; font-family:monospace;">{{ booking.booking_ref }}</td>
-                        <td>{{ booking.passenger_name }}</td>
-                        <td>{{ booking.selected_seats|join(', ') }}</td>
-                        <td>KSh {{ booking.total_fare }}</td>
-                        <td>
-                            <span class="status-badge status-{{ booking.status }}">
-                                {{ booking.status|capitalize }}
-                            </span>
-                        </td>
-                        <td style="color:#64748b; font-size:0.8rem;">
-                            {{ booking.created_at[:10] if booking.created_at else 'N/A' }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div style="text-align:center; padding:40px 20px; color:#94a3b8;">
-                <i class="fas fa-inbox" style="font-size:3rem; display:block; margin-bottom:12px; opacity:0.5;"></i>
-                <p style="font-size:1rem;">No bookings yet</p>
-                <p style="font-size:0.85rem;">When customers book rides, they'll appear here</p>
-            </div>
-            {% endif %}
+    <div class="db-pill">
+      <span class="db-dot {{ 'off' if not db_connected else '' }}"></span>
+      {{ 'Supabase connected' if db_connected else 'Local JSON storage' }}
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <button class="mobile-toggle btn btn-ghost btn-sm" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+        <h1 id="pageTitle">Dashboard</h1>
+        <div class="sub" id="pageSub">Overview of your bus operations</div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="/admin/export/bookings.csv" class="btn btn-ghost"><i class="fas fa-download"></i> Export CSV</a>
+        <a href="/" target="_blank" class="btn btn-dark"><i class="fas fa-external-link-alt"></i> View Site</a>
+      </div>
+    </div>
+
+    <!-- ================= DASHBOARD PANEL ================= -->
+    <section class="panel active" id="panel-dashboard">
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card"><div class="stat-number">{{ stats.total_bookings }}</div><div class="stat-label"><i class="fas fa-ticket-alt"></i>Total Bookings</div></div>
+        <div class="stat-card"><div class="stat-number">KSh {{ "%.0f"|format(stats.total_revenue) }}</div><div class="stat-label"><i class="fas fa-coins"></i>Revenue</div></div>
+        <div class="stat-card"><div class="stat-number">{{ stats.total_buses }}</div><div class="stat-label"><i class="fas fa-bus"></i>Buses</div></div>
+        <div class="stat-card"><div class="stat-number">{{ stats.total_routes }}</div><div class="stat-label"><i class="fas fa-route"></i>Routes</div></div>
+        <div class="stat-card"><div class="stat-number">{{ stats.today_bookings }}</div><div class="stat-label"><i class="fas fa-calendar-day"></i>Today</div></div>
+        <div class="stat-card"><div class="stat-number">{{ stats.pending_payments }}</div><div class="stat-label"><i class="fas fa-clock"></i>Pending Payments</div></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+          <h3 style="margin:0;"><i class="fas fa-chart-line" style="color:#f59e0b;"></i> Bookings & Revenue Trend</h3>
+          <select class="input" style="width:auto;" id="trendRange" onchange="loadTrend()">
+            <option value="7">Last 7 days</option>
+            <option value="14" selected>Last 14 days</option>
+            <option value="30">Last 30 days</option>
+          </select>
         </div>
+        <canvas id="trendChart" height="90"></canvas>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-clock" style="color:#f59e0b;"></i> Recent Bookings</h3>
+        <div class="table-wrap"><table id="recentBookingsTable">
+          <thead><tr><th>Ref</th><th>Passenger</th><th>Seats</th><th>Fare</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
     </section>
 
-    <!-- ===== FOOTER ===== -->
-    <footer style="background:white; padding:16px 20px; text-align:center; border-top:1px solid #f1f5f9; margin-top:24px;">
-        <p style="color:#94a3b8; font-size:0.85rem;">© 2026 Don Travels Admin Panel</p>
-        <p style="color:#cbd5e1; font-size:0.7rem; margin-top:4px;">
-            <i class="fas fa-database"></i> Database: {{ db_type|capitalize }}
-            <span class="{% if db_connected %}text-green-600{% else %}text-red-600{% endif %}" style="margin-left:8px;">
-                {% if db_connected %}✅ Connected{% else %}❌ Disconnected{% endif %}
-            </span>
-        </p>
-    </footer>
+    <!-- ================= BOOKINGS PANEL ================= -->
+    <section class="panel" id="panel-bookings">
+      <div class="card">
+        <div class="toolbar">
+          <input class="input grow" id="bkSearch" placeholder="Search ref, name, or phone..." oninput="debounceLoadBookings()" />
+          <input class="input" type="date" id="bkFrom" style="width:auto;" onchange="loadBookings()" />
+          <input class="input" type="date" id="bkTo" style="width:auto;" onchange="loadBookings()" />
+          <select class="input" id="bkStatus" style="width:auto;" onchange="loadBookings()">
+            <option value="all">All statuses</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn btn-ghost" onclick="clearBookingFilters()"><i class="fas fa-rotate-left"></i> Reset</button>
+        </div>
+        <div class="table-wrap"><table id="bookingsTable">
+          <thead><tr><th>Ref</th><th>Passenger</th><th>Phone</th><th>Seats</th><th>Fare</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+        <div id="bookingsEmpty" class="empty-state" style="display:none;"><i class="fas fa-ticket-alt"></i>No bookings match these filters</div>
+      </div>
+    </section>
 
+    <!-- ================= BUSES PANEL ================= -->
+    <section class="panel" id="panel-buses">
+      <div class="card">
+        <div class="toolbar">
+          <div class="grow" style="font-weight:600; color:#0f172a;"><span id="busesCount">0</span> buses</div>
+          <button class="btn btn-amber" onclick="openEntityModal('buses')"><i class="fas fa-plus"></i> Add Bus</button>
+        </div>
+        <div class="table-wrap"><table id="busesTable">
+          <thead><tr><th>Bus ID</th><th>Company</th><th>Route</th><th>Departs</th><th>Arrives</th><th>Fare</th><th>Seats</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ================= ROUTES PANEL ================= -->
+    <section class="panel" id="panel-routes">
+      <div class="card">
+        <div class="toolbar">
+          <div class="grow" style="font-weight:600; color:#0f172a;"><span id="routesCount">0</span> routes</div>
+          <button class="btn btn-amber" onclick="openEntityModal('routes')"><i class="fas fa-plus"></i> Add Route</button>
+        </div>
+        <div class="table-wrap"><table id="routesTable">
+          <thead><tr><th>Origin</th><th>Destination</th><th>Distance (km)</th><th>Base Fare</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ================= VEHICLES PANEL ================= -->
+    <section class="panel" id="panel-vehicles">
+      <div class="card">
+        <div class="toolbar">
+          <div class="grow" style="font-weight:600; color:#0f172a;"><span id="vehiclesCount">0</span> vehicles</div>
+          <button class="btn btn-amber" onclick="openEntityModal('vehicles')"><i class="fas fa-plus"></i> Add Vehicle</button>
+        </div>
+        <div class="table-wrap"><table id="vehiclesTable">
+          <thead><tr><th>ID</th><th>Type</th><th>Plate</th><th>Capacity</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ================= SCHEDULES PANEL ================= -->
+    <section class="panel" id="panel-schedules">
+      <div class="card">
+        <div class="toolbar">
+          <div class="grow" style="font-weight:600; color:#0f172a;"><span id="schedulesCount">0</span> schedules</div>
+          <button class="btn btn-amber" onclick="openEntityModal('schedules')"><i class="fas fa-plus"></i> Add Schedule</button>
+        </div>
+        <div class="table-wrap"><table id="schedulesTable">
+          <thead><tr><th>Bus ID</th><th>Departure Date</th><th>Status</th><th>Available Seats</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== GENERIC ADD/EDIT MODAL ===== -->
+<div class="modal-backdrop" id="entityModal">
+  <div class="modal-box">
+    <h3 id="entityModalTitle">Add item</h3>
+    <form id="entityForm"></form>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="btn btn-amber" style="flex:1;" onclick="submitEntityForm()"><i class="fas fa-check"></i> Save</button>
+      <button class="btn btn-ghost" onclick="closeEntityModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<script>
+const DB_CONNECTED = {{ 'true' if db_connected else 'false' }};
+
+// ---------- Small helpers ----------
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.className = 'toast show' + (isError ? ' error' : ' success');
+  document.getElementById('toastMsg').textContent = msg;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+function esc(s) { return (s === null || s === undefined) ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function api(url, opts) {
+  const res = await fetch(url, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
+  if (res.status === 401) { window.location.href = '/admin/login'; return null; }
+  return res;
+}
+
+// ---------- Sidebar navigation ----------
+const titles = {
+  dashboard: ['Dashboard', 'Overview of your bus operations'],
+  bookings: ['Bookings', 'Search, filter, and manage every booking'],
+  buses: ['Buses', 'Manage bus trips, fares, and capacity'],
+  routes: ['Routes', 'Manage origin-destination routes and base fares'],
+  vehicles: ['Vehicles', 'Manage your fleet'],
+  schedules: ['Schedules', 'Manage which buses run on which dates']
+};
+document.querySelectorAll('.nav-item[data-panel]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item[data-panel]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const panel = btn.dataset.panel;
+    document.getElementById('panel-' + panel).classList.add('active');
+    document.getElementById('pageTitle').textContent = titles[panel][0];
+    document.getElementById('pageSub').textContent = titles[panel][1];
+    document.getElementById('sidebar').classList.remove('open');
+    loadPanel(panel);
+  });
+});
+function loadPanel(panel) {
+  if (panel === 'dashboard') { loadTrend(); loadRecentBookings(); }
+  if (panel === 'bookings') loadBookings();
+  if (panel === 'buses') loadBuses();
+  if (panel === 'routes') loadRoutes();
+  if (panel === 'vehicles') loadVehicles();
+  if (panel === 'schedules') loadSchedules();
+}
+
+// ---------- Dashboard: trend chart ----------
+let trendChart;
+async function loadTrend() {
+  const days = document.getElementById('trendRange').value;
+  const res = await api(`/admin/api/stats?days=${days}`);
+  if (!res) return;
+  const data = await res.json();
+  const labels = data.map(d => d.date.slice(5));
+  const revenue = data.map(d => d.revenue);
+  const bookings = data.map(d => d.bookings);
+
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        { type: 'bar', label: 'Bookings', data: bookings, backgroundColor: '#fde68a', yAxisID: 'y1', borderRadius: 6 },
+        { type: 'line', label: 'Revenue (KSh)', data: revenue, borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.35, yAxisID: 'y', pointRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        y: { position: 'left', title: { display: true, text: 'Revenue' } },
+        y1: { position: 'right', title: { display: true, text: 'Bookings' }, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+}
+
+async function loadRecentBookings() {
+  const res = await api('/admin/api/bookings');
+  if (!res) return;
+  const data = (await res.json()).slice(0, 8);
+  const tbody = document.querySelector('#recentBookingsTable tbody');
+  tbody.innerHTML = data.map(b => `
+    <tr>
+      <td style="font-weight:700; color:#f59e0b;">${esc(b.booking_ref)}</td>
+      <td>${esc(b.passenger_name)}</td>
+      <td>${esc((b.selected_seats || []).join(', '))}</td>
+      <td>KSh ${esc(b.total_fare)}</td>
+      <td><span class="badge badge-${esc((b.status||'').toLowerCase())}">${esc(b.status)}</span></td>
+      <td style="color:#64748b;">${esc(b.booking_date)}</td>
+    </tr>`).join('') || `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:24px;">No bookings yet</td></tr>`;
+}
+
+// ---------- Bookings panel ----------
+let bkDebounce;
+function debounceLoadBookings() { clearTimeout(bkDebounce); bkDebounce = setTimeout(loadBookings, 350); }
+function clearBookingFilters() {
+  document.getElementById('bkSearch').value = '';
+  document.getElementById('bkFrom').value = '';
+  document.getElementById('bkTo').value = '';
+  document.getElementById('bkStatus').value = 'all';
+  loadBookings();
+}
+async function loadBookings() {
+  const params = new URLSearchParams({
+    q: document.getElementById('bkSearch').value,
+    date_from: document.getElementById('bkFrom').value,
+    date_to: document.getElementById('bkTo').value,
+    status: document.getElementById('bkStatus').value
+  });
+  const res = await api('/admin/api/bookings?' + params.toString());
+  if (!res) return;
+  const data = await res.json();
+  const tbody = document.querySelector('#bookingsTable tbody');
+  document.getElementById('bookingsEmpty').style.display = data.length ? 'none' : 'block';
+  tbody.innerHTML = data.map(b => {
+    const status = (b.status || '').toLowerCase();
+    return `
+    <tr>
+      <td style="font-weight:700; color:#f59e0b;">${esc(b.booking_ref)}</td>
+      <td>${esc(b.passenger_name)}</td>
+      <td>${esc(b.passenger_phone)}</td>
+      <td>${esc((b.selected_seats || []).join(', '))}</td>
+      <td>KSh ${esc(b.total_fare)}</td>
+      <td><span class="badge badge-${status}">${esc(b.status)}</span></td>
+      <td style="color:#64748b;">${esc(b.booking_date)}</td>
+      <td>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          ${status !== 'confirmed' ? `<button class="btn btn-sm btn-ghost" onclick="setBookingStatus('${b.booking_ref}','confirmed')">Confirm</button>` : ''}
+          ${status !== 'completed' ? `<button class="btn btn-sm btn-ghost" onclick="setBookingStatus('${b.booking_ref}','completed')">Complete</button>` : ''}
+          ${status !== 'cancelled' ? `<button class="btn btn-sm btn-danger" onclick="setBookingStatus('${b.booking_ref}','cancelled')">Cancel</button>` : ''}
+          <button class="btn btn-sm btn-ghost" onclick="deleteBooking('${b.booking_ref}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+async function setBookingStatus(ref, status) {
+  if (status === 'cancelled' && !confirm(`Cancel booking ${ref}? This will release its seats.`)) return;
+  const res = await api(`/admin/api/bookings/${ref}/status`, { method: 'POST', body: JSON.stringify({ status }) });
+  if (!res) return;
+  const data = await res.json();
+  if (data.success) { showToast(`Booking ${ref} marked ${status}`); loadBookings(); }
+  else showToast(data.error || 'Failed to update booking', true);
+}
+async function deleteBooking(ref) {
+  if (!confirm(`Permanently delete booking ${ref}? This cannot be undone.`)) return;
+  const res = await api(`/admin/api/bookings/${ref}`, { method: 'DELETE' });
+  if (!res) return;
+  const data = await res.json();
+  if (data.success) { showToast('Booking deleted'); loadBookings(); }
+  else showToast(data.error || 'Failed to delete booking', true);
+}
+
+// ---------- Generic entity CRUD (buses, routes, vehicles, schedules) ----------
+const ENTITY_CONFIG = {
+  buses: {
+    label: 'Bus',
+    columns: ['bus_id','company_name','route_id','departure_time','arrival_time','fare','total_seats','status'],
+    render: (b) => `
+      <td>${esc(b.bus_id)}</td><td>${esc(b.company_name)}</td><td>${esc(b.route_id)}</td>
+      <td>${esc(b.departure_time)}</td><td>${esc(b.arrival_time)}</td><td>KSh ${esc(b.fare)}</td>
+      <td>${esc(b.total_seats)}</td><td><span class="badge badge-${(b.status||'').toLowerCase()==='active'?'active':'cancelled'}">${esc(b.status)}</span></td>`,
+    fields: [
+      { key: 'bus_id', label: 'Bus ID (e.g. BUS-032)', type: 'text', required: true },
+      { key: 'company_name', label: 'Company Name', type: 'text', required: true },
+      { key: 'route_id', label: 'Route ID', type: 'number', required: true },
+      { key: 'vehicle_id', label: 'Vehicle ID', type: 'number' },
+      { key: 'departure_time', label: 'Departure Time (HH:MM:SS)', type: 'text', placeholder: '08:00:00' },
+      { key: 'arrival_time', label: 'Arrival Time (HH:MM:SS)', type: 'text', placeholder: '14:00:00' },
+      { key: 'fare', label: 'Fare (KSh)', type: 'number', required: true },
+      { key: 'total_seats', label: 'Total Seats', type: 'number', required: true },
+      { key: 'status', label: 'Status', type: 'select', options: ['active', 'inactive'] }
+    ]
+  },
+  routes: {
+    label: 'Route',
+    columns: ['origin','destination','distance_km','base_fare'],
+    render: (r) => `<td>${esc(r.origin)}</td><td>${esc(r.destination)}</td><td>${esc(r.distance_km)}</td><td>KSh ${esc(r.base_fare)}</td>`,
+    fields: [
+      { key: 'origin', label: 'Origin', type: 'text', required: true },
+      { key: 'destination', label: 'Destination', type: 'text', required: true },
+      { key: 'distance_km', label: 'Distance (km)', type: 'number' },
+      { key: 'base_fare', label: 'Base Fare (KSh)', type: 'number', required: true }
+    ]
+  },
+  vehicles: {
+    label: 'Vehicle',
+    columns: ['id','vehicle_type','plate_number','capacity'],
+    render: (v) => `<td>${esc(v.id)}</td><td>${esc(v.vehicle_type)}</td><td>${esc(v.plate_number)}</td><td>${esc(v.capacity)}</td>`,
+    fields: [
+      { key: 'vehicle_type', label: 'Vehicle Type', type: 'select', options: ['Bus', 'Noah', 'Car'], required: true },
+      { key: 'plate_number', label: 'Plate Number', type: 'text' },
+      { key: 'capacity', label: 'Capacity', type: 'number' }
+    ]
+  },
+  schedules: {
+    label: 'Schedule',
+    columns: ['bus_id','departure_date','status','available_seats'],
+    render: (s) => `<td>${esc(s.bus_id)}</td><td>${esc(s.departure_date)}</td><td><span class="badge badge-${(s.status||'').toLowerCase()==='available'?'available':'cancelled'}">${esc(s.status)}</span></td><td>${esc(s.available_seats)}</td>`,
+    fields: [
+      { key: 'bus_id', label: 'Bus ID (numeric)', type: 'number', required: true },
+      { key: 'departure_date', label: 'Departure Date', type: 'date', required: true },
+      { key: 'status', label: 'Status', type: 'select', options: ['available', 'full', 'cancelled'] },
+      { key: 'total_seats', label: 'Total Seats', type: 'number' },
+      { key: 'available_seats', label: 'Available Seats', type: 'number' }
+    ]
+  }
+};
+
+async function loadEntity(table) {
+  const res = await api(`/admin/api/${table}`);
+  if (!res) return;
+  const data = await res.json();
+  const cfg = ENTITY_CONFIG[table];
+  document.getElementById(table + 'Count').textContent = data.length;
+  const tbody = document.querySelector(`#${table}Table tbody`);
+  tbody.innerHTML = data.map(item => `
+    <tr>
+      ${cfg.render(item)}
+      <td>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-sm btn-ghost" onclick='openEntityModal("${table}", ${JSON.stringify(item).replace(/'/g, "&#39;")})'><i class="fas fa-pen"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="deleteEntity('${table}', ${item.id})"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`).join('') || `<tr><td colspan="${cfg.columns.length+1}" style="text-align:center; color:#94a3b8; padding:24px;">No records yet — add your first one</td></tr>`;
+}
+function loadBuses() { loadEntity('buses'); }
+function loadRoutes() { loadEntity('routes'); }
+function loadVehicles() { loadEntity('vehicles'); }
+function loadSchedules() { loadEntity('schedules'); }
+
+let currentEntity = null;
+let currentEntityId = null;
+function openEntityModal(table, item) {
+  currentEntity = table;
+  currentEntityId = item ? item.id : null;
+  const cfg = ENTITY_CONFIG[table];
+  document.getElementById('entityModalTitle').textContent = (item ? 'Edit ' : 'Add ') + cfg.label;
+  const form = document.getElementById('entityForm');
+  form.innerHTML = cfg.fields.map(f => {
+    const val = item ? (item[f.key] ?? '') : (f.default ?? '');
+    if (f.type === 'select') {
+      return `<div class="form-field"><label>${f.label}</label>
+        <select class="input" name="${f.key}" ${f.required ? 'required' : ''}>
+          ${f.options.map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
+        </select></div>`;
+    }
+    return `<div class="form-field"><label>${f.label}</label>
+      <input class="input" type="${f.type}" name="${f.key}" value="${esc(val)}" placeholder="${f.placeholder||''}" ${f.required?'required':''} />
+      </div>`;
+  }).join('');
+  document.getElementById('entityModal').classList.add('active');
+}
+function closeEntityModal() { document.getElementById('entityModal').classList.remove('active'); }
+async function submitEntityForm() {
+  const form = document.getElementById('entityForm');
+  if (!form.reportValidity()) return;
+  const cfg = ENTITY_CONFIG[currentEntity];
+  const data = {};
+  cfg.fields.forEach(f => {
+    const el = form.elements[f.key];
+    let val = el.value;
+    if (f.type === 'number' && val !== '') val = Number(val);
+    if (val !== '') data[f.key] = val;
+  });
+
+  const url = currentEntityId ? `/admin/api/${currentEntity}/${currentEntityId}` : `/admin/api/${currentEntity}`;
+  const method = currentEntityId ? 'PUT' : 'POST';
+  const res = await api(url, { method, body: JSON.stringify(data) });
+  if (!res) return;
+  const result = await res.json();
+  if (result.success) {
+    showToast(`${cfg.label} ${currentEntityId ? 'updated' : 'added'}`);
+    closeEntityModal();
+    loadEntity(currentEntity);
+  } else {
+    showToast(result.error || 'Save failed', true);
+  }
+}
+async function deleteEntity(table, id) {
+  const cfg = ENTITY_CONFIG[table];
+  if (!confirm(`Delete this ${cfg.label.toLowerCase()}? This cannot be undone.`)) return;
+  const res = await api(`/admin/api/${table}/${id}`, { method: 'DELETE' });
+  if (!res) return;
+  const data = await res.json();
+  if (data.success) { showToast(`${cfg.label} deleted`); loadEntity(table); }
+  else showToast(data.error || 'Delete failed', true);
+}
+
+// ---------- Init ----------
+loadTrend();
+loadRecentBookings();
+</script>
 </body>
 </html>
