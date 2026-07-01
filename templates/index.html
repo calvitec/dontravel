@@ -280,8 +280,8 @@
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-radius: 24px;
-            padding: 28px 32px;
-            max-width: 700px;
+            padding: 32px 36px;
+            max-width: 900px;
             border: 1px solid rgba(255,255,255,0.06);
             box-shadow: 0 30px 80px rgba(0,0,0,0.3);
         }
@@ -349,7 +349,7 @@
             color: rgba(255,255,255,0.4); 
         }
         
-        /* ===== CAROUSEL ===== */
+        /* ===== CAROUSEL SECTION ===== */
         .carousel-section {
             background: white;
             padding: 60px 20px;
@@ -591,19 +591,19 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .hero-title { font-size: 3.2rem; letter-spacing: -2px; }
-            .hero-search-card { max-width: 100%; }
+            .hero-search-card { max-width: 100%; padding: 24px 20px; }
             .hero-stats { gap: 24px; }
             .hero-stats .stat-item .number { font-size: 1.6rem; }
             .carousel-slide img { height: 300px; }
-            .hero-search-grid { grid-template-columns: 1fr 1fr 1fr !important; }
+            .search-grid { grid-template-columns: 1fr 1fr 1fr !important; }
         }
         @media (max-width: 768px) {
             .hero-title { font-size: 2.4rem; letter-spacing: -1.5px; }
             .hero-section { min-height: auto; padding: 120px 0 60px; }
             .hero-content { padding: 20px 16px; }
             .hero-subtitle { font-size: 0.95rem; }
-            .hero-search-card { padding: 20px 16px; border-radius: 20px; }
-            .hero-search-grid { grid-template-columns: 1fr 1fr !important; }
+            .hero-search-card { padding: 16px; border-radius: 20px; }
+            .search-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
             .hero-stats { gap: 16px; flex-wrap: wrap; }
             .hero-stats .stat-item .number { font-size: 1.4rem; }
             .carousel-slide img { height: 220px; }
@@ -628,7 +628,7 @@
             .feature-card .icon-wrap { width: 44px; height: 44px; font-size: 1.2rem; }
             .hero-search-card { padding: 12px; }
             .hero-search-card .form-input { padding: 10px 14px; font-size: 0.85rem; }
-            .hero-search-grid { grid-template-columns: 1fr !important; }
+            .search-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -691,17 +691,17 @@
                 Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
             </p>
             
-            <!-- Search Card with Time Filters -->
+            <!-- Search Card with Time Filters - FIXED LAYOUT -->
             <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
                 <form action="/search" method="GET">
-                    <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; align-items:end;">
+                    <div class="search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:14px; align-items:end;">
                         <div>
                             <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
-                            <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
+                            <input type="text" name="origin" class="form-input" placeholder="Gilgil" required />
                         </div>
                         <div>
                             <label class="form-label"><i class="fas fa-flag-checkered"></i> To</label>
-                            <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
+                            <input type="text" name="destination" class="form-input" placeholder="Nairobi" required />
                         </div>
                         <div>
                             <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
@@ -721,7 +721,7 @@
                         </div>
                         <div>
                             <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
-                            <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
+                            <input type="number" name="passengers" class="form-input" min="1" max="40" value="1" required />
                         </div>
                         <div>
                             <button type="submit" class="hero-search-btn">
@@ -753,34 +753,59 @@
         </div>
     </section>
 
-   
-        <!-- ===== VEHICLES CAROUSEL ===== -->
-<section id="vehicles" class="carousel-section">
-    <div style="max-width:1200px; margin:0 auto 32px; text-align:center;">
-        <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Our Fleet</span>
-        <h2 style="font-size:2.5rem; font-weight:800; color:#0f172a; margin-top:4px;">Our <span style="color:#f59e0b;">Vehicles</span></h2>
-        <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Choose from our range of vehicles for your travel needs</p>
-    </div>
-    
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:16px; max-width:1200px; margin:0 auto;">
-        {% for vehicle in vehicles %}
-        <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
-            <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;">
-                {% if vehicle.vehicle_type == 'Bus' %}
-                    <i class="fas fa-bus"></i>
-                {% elif vehicle.vehicle_type == 'Noah' %}
-                    <i class="fas fa-shuttle-van"></i>
-                {% else %}
-                    <i class="fas fa-car"></i>
-                {% endif %}
-            </div>
-            <h4 style="font-weight:700; color:#0f172a;">{{ vehicle.vehicle_type }}</h4>
-            <p style="font-size:0.75rem; color:#64748b;">{{ vehicle.capacity }} Seats</p>
-            <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh {{ vehicle.base_price }}</p>
+    <!-- ===== VEHICLES CAROUSEL ===== -->
+    <section id="vehicles" class="carousel-section">
+        <div style="max-width:1200px; margin:0 auto 32px; text-align:center;">
+            <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Our Fleet</span>
+            <h2 style="font-size:2.5rem; font-weight:800; color:#0f172a; margin-top:4px;">Our <span style="color:#f59e0b;">Vehicles</span></h2>
+            <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Choose from our range of vehicles for your travel needs</p>
         </div>
-        {% endfor %}
-    </div>
-</section>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:16px; max-width:1200px; margin:0 auto;">
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-car"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Axio</h4>
+                <p style="font-size:0.75rem; color:#64748b;">4 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 2,000</p>
+            </div>
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-car"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Spacio</h4>
+                <p style="font-size:0.75rem; color:#64748b;">5 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 2,000</p>
+            </div>
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-car"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Fielder</h4>
+                <p style="font-size:0.75rem; color:#64748b;">5 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 2,000</p>
+            </div>
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-shuttle-van"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Noah</h4>
+                <p style="font-size:0.75rem; color:#64748b;">7 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 1,500</p>
+            </div>
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-car"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Probox</h4>
+                <p style="font-size:0.75rem; color:#64748b;">4 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 2,000</p>
+            </div>
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-car"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Ractis</h4>
+                <p style="font-size:0.75rem; color:#64748b;">4 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 2,000</p>
+            </div>
+            <div style="background:white; border-radius:16px; padding:16px; text-align:center; border:1px solid #f1f5f9; transition:all 0.3s;">
+                <div style="font-size:2.5rem; color:#f59e0b; margin-bottom:8px;"><i class="fas fa-bus"></i></div>
+                <h4 style="font-weight:700; color:#0f172a;">Bus</h4>
+                <p style="font-size:0.75rem; color:#64748b;">40 Seats</p>
+                <p style="font-size:0.8rem; font-weight:600; color:#f59e0b;">KSh 500</p>
+            </div>
+        </div>
+    </section>
 
     <!-- ===== FEATURES ===== -->
     <section style="max-width:1200px; margin:0 auto; padding:0 20px 48px;">
@@ -827,7 +852,7 @@
                     <div class="quote">"Don Travels made our group trip amazing! The Toyota Hiace was spacious and comfortable. Professional driver too."</div>
                     <div class="author">
                         <div class="avatar">JM</div>
-                        <div><div class="name">James Mwangi</div><div class="route">Nairobi → Mombasa · 2 days ago</div></div>
+                        <div><div class="name">James Mwangi</div><div class="route">Gilgil → Nairobi · 2 days ago</div></div>
                     </div>
                 </div>
                 <div class="testimonial-card">
@@ -835,15 +860,15 @@
                     <div class="quote">"Executive van was perfect for our business trip. Very professional service and the vehicle was spotless."</div>
                     <div class="author">
                         <div class="avatar">SO</div>
-                        <div><div class="name">Sarah Ochieng</div><div class="route">Kisumu → Nairobi · 5 days ago</div></div>
+                        <div><div class="name">Sarah Ochieng</div><div class="route">Gilgil → Nakuru · 5 days ago</div></div>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <div class="quote">"Best transport service in Kenya! The premium sedan was luxurious and the ride was smooth. Highly recommend!"</div>
+                    <div class="quote">"Best transport service! The premium sedan was luxurious and the ride was smooth. Highly recommend!"</div>
                     <div class="author">
                         <div class="avatar">DK</div>
-                        <div><div class="name">David Kiprop</div><div class="route">Eldoret → Nairobi · 1 week ago</div></div>
+                        <div><div class="name">David Kiprop</div><div class="route">Gilgil → Nairobi · 1 week ago</div></div>
                     </div>
                 </div>
             </div>
