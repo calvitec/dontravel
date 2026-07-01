@@ -400,11 +400,11 @@ def generate_booking_id():
     return 'BK-' + str(uuid.uuid4().hex[:8]).upper()
 
 # ================================================================
-# ===== API SEARCH ENDPOINT - RETURNS BUS IDs FOR BOOKING =====
+# ===== API SEARCH ENDPOINT - DEDUPLICATED VEHICLES =====
 # ================================================================
 @app.route('/api/search')
 def api_search():
-    """Fast API endpoint for AJAX search - returns JSON with BUS IDs for booking"""
+    """Fast API endpoint - returns ONE bus per vehicle type (deduplicated)"""
     origin = request.args.get('origin', '').strip()
     destination = request.args.get('destination', '').strip()
     date = request.args.get('date', '')
@@ -429,6 +429,9 @@ def api_search():
         
         # 2. Get all buses for this route
         buses = load_buses()
+        
+        # 3. Track unique vehicles by model name
+        seen_vehicles = set()
         results = []
         
         for bus in buses:
@@ -447,12 +450,21 @@ def api_search():
             if capacity < passengers:
                 continue
             
-            # Get bus ID for booking (this is what the booking page expects)
+            # Get vehicle model name
+            vehicle_model = vehicle.get('vehicle_model', 'Vehicle')
+            
+            # Skip if we've already added this vehicle type
+            if vehicle_model in seen_vehicles:
+                continue
+            
+            seen_vehicles.add(vehicle_model)
+            
+            # Get first bus ID for this vehicle type (for booking)
             bus_id = bus.get('id')
             
             results.append({
-                'id': bus_id,  # ← BUS ID for booking link
-                'vehicle_model': vehicle.get('vehicle_model', 'Vehicle'),
+                'id': bus_id,  # Bus ID for booking
+                'vehicle_model': vehicle_model,
                 'vehicle_type': vehicle.get('vehicle_type', 'Standard'),
                 'capacity': capacity,
                 'base_price': float(vehicle.get('base_price', 500)),
@@ -512,6 +524,7 @@ def search_results():
         # 2. Get all buses for this route
         buses = load_buses()
         results = []
+        seen_vehicles = set()
 
         for bus in buses:
             if bus.get('route_id') != route_id:
@@ -563,6 +576,13 @@ def search_results():
 
             # 7. Check if enough seats available
             if available_seats >= passengers:
+                vehicle_model = vehicle.get('vehicle_model', 'Vehicle')
+                
+                # Only add one bus per vehicle type
+                if vehicle_model in seen_vehicles:
+                    continue
+                seen_vehicles.add(vehicle_model)
+                
                 results.append({
                     'bus': bus,
                     'vehicle': vehicle,
