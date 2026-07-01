@@ -349,6 +349,66 @@ def get_booking_by_ref(booking_ref):
 
     return None
 
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            return jsonify({'success': False, 'error': 'Unauthorized. Please log in again.'}), 401
+        return f(*args, **kwargs)
+    return decorated
+
+# ===== GENERIC SUPABASE CRUD (used by admin management routes) =====
+def sb_select(table, query=""):
+    if DB_CONNECTED:
+        try:
+            url = f"{SUPABASE_URL}/rest/v1/{table}?select=*"
+            if query:
+                url += f"&{query}"
+            r = requests.get(url, headers=SUPABASE_HEADERS, timeout=10)
+            if r.status_code == 200:
+                return r.json()
+        except Exception as e:
+            print(f"sb_select error ({table}): {e}")
+    return load_json(f'{table}.json')
+
+def sb_insert(table, data):
+    if DB_CONNECTED:
+        r = requests.post(f"{SUPABASE_URL}/rest/v1/{table}", headers=SUPABASE_HEADERS, json=data, timeout=10)
+        if r.status_code == 201:
+            res = r.json()
+            return res[0] if res else data
+        raise Exception(f"Supabase insert failed ({r.status_code}): {r.text[:300]}")
+    items = load_json(f'{table}.json')
+    data = dict(data)
+    data['id'] = max([int(i.get('id', 0) or 0) for i in items], default=0) + 1
+    items.append(data)
+    save_json(f'{table}.json', items)
+    return data
+
+def sb_update(table, id_value, data):
+    if DB_CONNECTED:
+        r = requests.patch(f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{id_value}", headers=SUPABASE_HEADERS, json=data, timeout=10)
+        if r.status_code in (200, 204):
+            return True
+        raise Exception(f"Supabase update failed ({r.status_code}): {r.text[:300]}")
+    items = load_json(f'{table}.json')
+    for item in items:
+        if str(item.get('id')) == str(id_value):
+            item.update(data)
+    save_json(f'{table}.json', items)
+    return True
+
+def sb_delete(table, id_value):
+    if DB_CONNECTED:
+        r = requests.delete(f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{id_value}", headers=SUPABASE_HEADERS, timeout=10)
+        if r.status_code in (200, 204):
+            return True
+        raise Exception(f"Supabase delete failed ({r.status_code}): {r.text[:300]}")
+    items = load_json(f'{table}.json')
+    items = [i for i in items if str(i.get('id')) != str(id_value)]
+    save_json(f'{table}.json', items)
+    return True
+
 def generate_booking_ref():
     return 'BC-' + str(uuid.uuid4().hex[:8]).upper()
 
@@ -782,6 +842,273 @@ def admin_logout():
     session.pop('admin_logged_in', None)
     flash('Logged out successfully', 'success')
     return redirect(url_for('admin_login'))
+
+# ================================================================
+# ===== ADMIN MANAGEMENT API =====
+# ================================================================
+
+# ---------- Bookings management ----------
+@app.route('/admin/api/bookings', methods=['GET'])
+@admin_required
+def admin_api_bookings():
+    bookings = load_bookings()
+    date_from = request.args.get('date_from', '')
+    date_to = request.args.get('date_to', '')
+    status = request.args.get('status', 'all')
+    q = request.args.get('q', '').lower().strip()
+
+    def matches(b):
+        bd = b.get('booking_date', '') or ''
+        if date_from and bd < date_from:
+            return False
+        if date_to and bd > date_to:
+            return False
+        if status and status != 'all' and (b.get('status') or '').lower() != status.lower():
+            return False
+        if q:
+            haystack = ' '.join([
+                str(b.get('booking_ref', '')),
+                str(b.get('passenger_name', '')),
+                str(b.get('passenger_phone', '')),
+                str(b.get('passenger_email', ''))
+            ]).lower()
+            if q not in haystack:
+                return False
+        return True
+
+    filtered = [b for b in bookings if matches(b)]
+    filtered.sort(key=lambda b: b.get('created_at', ''), reverse=True)
+    return jsonify(filtered)
+
+@app.route('/admin/api/bookings/<booking_ref>/status', methods=['POST'])
+@admin_required
+def admin_api_booking_status(booking_ref):
+    data = request.get_json() or {}
+    new_status = (data.get('status') or '').lower()
+    if new_status not in ['confirmed', 'pending', 'cancelled', 'completed']:
+        return jsonify({'success': False, 'error': 'Invalid status'}), 400
+
+    booking = get_booking_by_ref(booking_ref)
+    if not booking:
+        return jsonify({'success': False, 'error': 'Booking not found'}), 404
+
+    try:
+        if DB_CONNECTED:
+            r = requests.patch(
+                f"{SUPABASE_URL}/rest/v1/bookings?booking_ref=eq.{booking_ref}",
+                headers=SUPABASE_HEADERS,
+                json={'status': new_status},
+                timeout=10
+            )
+            if r.status_code not in (200, 204):
+                raise Exception(f"Status update failed ({r.status_code}): {r.text[:300]}")
+        else:
+            bookings = load_json('bookings.json')
+            for b in bookings:
+                if b.get('booking_ref') == booking_ref:
+                    b['status'] = new_status
+            save_json('bookings.json', bookings)
+
+        # Cancelling releases the seats back into inventory
+        if new_status == 'cancelled':
+            bus_id = booking.get('bus_id')
+            schedule_id = booking.get('schedule_id')
+            booking_date = booking.get('booking_date')
+            seats_to_release = [str(s) for s in booking.get('selected_seats', [])]
+
+            if DB_CONNECTED and schedule_id:
+                resp = requests.get(
+                    f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{booking_date}",
+                    headers=SUPABASE_HEADERS, timeout=10
+                )
+                if resp.status_code == 200 and resp.json():
+                    seat_row = resp.json()[0]
+                    current = seat_row.get('booked_seats_list', [])
+                    updated = [s for s in current if s not in seats_to_release]
+                    requests.patch(
+                        f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{booking_date}",
+                        headers=SUPABASE_HEADERS,
+                        json={'booked_seats_list': updated, 'booked_seats': len(updated), 'updated_at': datetime.utcnow().isoformat()},
+                        timeout=10
+                    )
+            elif not DB_CONNECTED:
+                seat_data = load_bus_seats(bus_id, booking_date)
+                current = seat_data.get('booked_seats_list', [])
+                updated = [s for s in current if s not in seats_to_release]
+                update_bus_seats(bus_id, booking_date, updated)
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/bookings/<booking_ref>', methods=['DELETE'])
+@admin_required
+def admin_api_delete_booking(booking_ref):
+    try:
+        if DB_CONNECTED:
+            r = requests.delete(f"{SUPABASE_URL}/rest/v1/bookings?booking_ref=eq.{booking_ref}", headers=SUPABASE_HEADERS, timeout=10)
+            if r.status_code not in (200, 204):
+                raise Exception(f"Delete failed ({r.status_code}): {r.text[:300]}")
+        else:
+            bookings = load_json('bookings.json')
+            bookings = [b for b in bookings if b.get('booking_ref') != booking_ref]
+            save_json('bookings.json', bookings)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+# ---------- Revenue / bookings trend for dashboard chart ----------
+@app.route('/admin/api/stats')
+@admin_required
+def admin_api_stats():
+    days = int(request.args.get('days', 14))
+    bookings = load_bookings()
+    today = datetime.now().date()
+
+    def safe_float(v):
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return 0.0
+
+    buckets = {}
+    for i in range(days):
+        d = (today - timedelta(days=days - 1 - i)).strftime('%Y-%m-%d')
+        buckets[d] = {'date': d, 'bookings': 0, 'revenue': 0.0}
+
+    for b in bookings:
+        created = (b.get('created_at') or '')[:10]
+        if created in buckets and (b.get('status') or '').lower() != 'cancelled':
+            buckets[created]['bookings'] += 1
+            buckets[created]['revenue'] += safe_float(b.get('total_fare', 0))
+
+    return jsonify(list(buckets.values()))
+
+# ---------- Generic CRUD for buses / routes / vehicles / schedules ----------
+@app.route('/admin/api/buses', methods=['GET', 'POST'])
+@admin_required
+def admin_api_buses():
+    if request.method == 'GET':
+        return jsonify(sb_select('buses'))
+    try:
+        result = sb_insert('buses', request.get_json() or {})
+        return jsonify({'success': True, 'data': result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/buses/<int:item_id>', methods=['PUT', 'DELETE'])
+@admin_required
+def admin_api_bus_detail(item_id):
+    try:
+        if request.method == 'DELETE':
+            sb_delete('buses', item_id)
+        else:
+            sb_update('buses', item_id, request.get_json() or {})
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/routes', methods=['GET', 'POST'])
+@admin_required
+def admin_api_routes():
+    if request.method == 'GET':
+        return jsonify(sb_select('routes'))
+    try:
+        result = sb_insert('routes', request.get_json() or {})
+        return jsonify({'success': True, 'data': result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/routes/<int:item_id>', methods=['PUT', 'DELETE'])
+@admin_required
+def admin_api_route_detail(item_id):
+    try:
+        if request.method == 'DELETE':
+            sb_delete('routes', item_id)
+        else:
+            sb_update('routes', item_id, request.get_json() or {})
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/vehicles', methods=['GET', 'POST'])
+@admin_required
+def admin_api_vehicles():
+    if request.method == 'GET':
+        return jsonify(sb_select('vehicles'))
+    try:
+        result = sb_insert('vehicles', request.get_json() or {})
+        return jsonify({'success': True, 'data': result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/vehicles/<int:item_id>', methods=['PUT', 'DELETE'])
+@admin_required
+def admin_api_vehicle_detail(item_id):
+    try:
+        if request.method == 'DELETE':
+            sb_delete('vehicles', item_id)
+        else:
+            sb_update('vehicles', item_id, request.get_json() or {})
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/schedules', methods=['GET', 'POST'])
+@admin_required
+def admin_api_schedules():
+    if request.method == 'GET':
+        return jsonify(sb_select('schedules'))
+    try:
+        result = sb_insert('schedules', request.get_json() or {})
+        return jsonify({'success': True, 'data': result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/admin/api/schedules/<int:item_id>', methods=['PUT', 'DELETE'])
+@admin_required
+def admin_api_schedule_detail(item_id):
+    try:
+        if request.method == 'DELETE':
+            sb_delete('schedules', item_id)
+        else:
+            sb_update('schedules', item_id, request.get_json() or {})
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+# ---------- CSV export ----------
+@app.route('/admin/export/bookings.csv')
+def admin_export_bookings():
+    if not session.get('admin_logged_in'):
+        flash('Please login to access admin panel', 'error')
+        return redirect(url_for('admin_login'))
+
+    import io, csv
+    from flask import Response
+
+    bookings = load_bookings()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Booking Ref', 'Passenger', 'Phone', 'Email', 'Seats', 'Fare', 'Status', 'Payment', 'Date', 'Created At'])
+    for b in bookings:
+        writer.writerow([
+            b.get('booking_ref', ''),
+            b.get('passenger_name', ''),
+            b.get('passenger_phone', ''),
+            b.get('passenger_email', ''),
+            ', '.join(str(s) for s in b.get('selected_seats', [])),
+            b.get('total_fare', ''),
+            b.get('status', ''),
+            b.get('payment_method', ''),
+            b.get('booking_date', ''),
+            b.get('created_at', '')
+        ])
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': 'attachment; filename=bookings.csv'}
+    )
 
 @app.route('/admin')
 def admin_dashboard():
