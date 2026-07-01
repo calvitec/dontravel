@@ -752,6 +752,39 @@
             </div>
         </div>
     </section>
+    <form action="/search" method="GET">
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; align-items:end;">
+        <div>
+            <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
+            <input type="text" name="origin" class="form-input" placeholder="Nairobi" required />
+        </div>
+        <div>
+            <label class="form-label"><i class="fas fa-flag-checkered"></i> To</label>
+            <input type="text" name="destination" class="form-input" placeholder="Mombasa" required />
+        </div>
+        <div>
+            <label class="form-label"><i class="fas fa-calendar"></i> Date</label>
+            <input type="date" name="date" class="form-input" required />
+        </div>
+        <div>
+            <label class="form-label"><i class="fas fa-clock"></i> From</label>
+            <input type="time" name="time_from" class="form-input" />
+        </div>
+        <div>
+            <label class="form-label"><i class="fas fa-clock"></i> To</label>
+            <input type="time" name="time_to" class="form-input" />
+        </div>
+        <div>
+            <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
+            <input type="number" name="passengers" class="form-input" min="1" max="14" value="1" required />
+        </div>
+        <div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+    </div>
+</form>
 
     <!-- ===== VEHICLES CAROUSEL ===== -->
     <section id="vehicles" class="carousel-section">
