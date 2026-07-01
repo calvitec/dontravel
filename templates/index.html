@@ -939,10 +939,7 @@
             </div>
         </div>
         
-        <!-- Light overlay so text is readable -->
         <div class="hero-overlay"></div>
-        
-        <!-- Floating accents -->
         <div class="hero-accent gold"></div>
         <div class="hero-accent purple"></div>
         <div class="hero-accent blue"></div>
@@ -965,7 +962,7 @@
                 Compare prices, choose your seats, and travel in style across <strong>Kenya</strong>.
             </p>
             
-            <!-- ===== SEARCH CARD - RESULTS SHOW ON THIS PAGE ===== -->
+            <!-- ===== SEARCH CARD ===== -->
             <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
                 <form id="searchForm" onsubmit="return false;">
                     <div class="search-grid">
@@ -1005,7 +1002,7 @@
                     </div>
                 </form>
                 
-                <!-- ===== RESULTS APPEAR HERE (on the homepage) ===== -->
+                <!-- ===== RESULTS CONTAINER ===== -->
                 <div id="searchResults"></div>
             </div>
             
@@ -1272,14 +1269,13 @@
 
         resetInterval();
 
-        // ===== INSTANT AJAX SEARCH - RESULTS ON HOMEPAGE =====
+        // ===== INSTANT AJAX SEARCH WITH BOOKING BUTTONS =====
         const searchForm = document.getElementById('searchForm');
         const searchBtn = document.getElementById('searchBtn');
         const resultsContainer = document.getElementById('searchResults');
 
         if (searchForm) {
             searchForm.addEventListener('submit', async function(e) {
-                // PREVENT PAGE RELOAD - results stay on this page
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -1288,13 +1284,11 @@
                 const date = document.getElementById('dateInput').value || new Date().toISOString().split('T')[0];
                 const passengers = document.getElementById('passengerInput').value || '1';
                 
-                // Show loading state
                 searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
                 searchBtn.disabled = true;
                 resultsContainer.innerHTML = '';
                 
                 try {
-                    // Make AJAX request to Flask API
                     const response = await fetch(`/api/search?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${date}&passengers=${passengers}`);
                     
                     if (!response.ok) {
@@ -1304,30 +1298,15 @@
                     const data = await response.json();
                     console.log('Search results:', data);
                     
-                    // Display results instantly on the homepage
-                    displaySearchResults(data, origin, destination, passengers);
+                    displaySearchResults(data, origin, destination, passengers, date);
                 } catch (error) {
                     console.error('Search error:', error);
                     showToast('❌ Error searching. Please try again.');
                     resultsContainer.innerHTML = `
-                        <div style="
-                            margin-top: 20px;
-                            padding: 30px 20px;
-                            background: rgba(255,255,255,0.05);
-                            backdrop-filter: blur(10px);
-                            border-radius: 16px;
-                            border: 1px solid rgba(255,255,255,0.08);
-                            text-align: center;
-                            animation: slideUp 0.5s ease-out;
-                        ">
-                            <div style="font-size: 2.5rem; margin-bottom: 12px;">❌</div>
-                            <h3 style="color: white; font-size: 1.1rem; margin: 0;">Search Error</h3>
-                            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 6px;">
-                                ${error.message}
-                            </p>
-                            <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 4px;">
-                                Please try again or check your connection
-                            </p>
+                        <div style="margin-top:20px; padding:30px 20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); text-align:center;">
+                            <div style="font-size:2.5rem; margin-bottom:12px;">❌</div>
+                            <h3 style="color:white; font-size:1.1rem; margin:0;">Search Error</h3>
+                            <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-top:6px;">${error.message}</p>
                         </div>
                     `;
                     resultsContainer.className = 'visible';
@@ -1338,31 +1317,21 @@
             });
         }
 
-        function displaySearchResults(results, origin, destination, passengers) {
-            // Clear previous results
+        function displaySearchResults(results, origin, destination, passengers, date) {
             resultsContainer.innerHTML = '';
             
             if (results && results.length > 0) {
-                // Build results HTML
                 let html = `
-                    <div style="
-                        margin-top: 20px;
-                        padding: 20px;
-                        background: rgba(255,255,255,0.05);
-                        backdrop-filter: blur(10px);
-                        border-radius: 16px;
-                        border: 1px solid rgba(255,255,255,0.08);
-                        animation: slideUp 0.5s ease-out;
-                    ">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-                            <h3 style="color: #fbbf24; font-size: 1.1rem; margin: 0;">
+                    <div style="margin-top:20px; padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); animation:slideUp 0.5s ease-out;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+                            <h3 style="color:#fbbf24; font-size:1.1rem; margin:0;">
                                 ✅ Found ${results.length} vehicles for ${passengers} passengers
                             </h3>
-                            <span style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">
-                                ${origin} → ${destination} · ${new Date().toLocaleDateString()}
+                            <span style="color:rgba(255,255,255,0.6); font-size:0.8rem;">
+                                ${origin} → ${destination} · ${new Date(date).toLocaleDateString()}
                             </span>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
                 `;
                 
                 results.forEach(vehicle => {
@@ -1370,8 +1339,8 @@
                     const capacity = vehicle.capacity || vehicle.seats || 0;
                     const price = vehicle.base_price || vehicle.price || 500;
                     const type = vehicle.vehicle_type || vehicle.type || 'Standard';
+                    const vehicleId = vehicle.id || vehicle.vehicle_id || 1;
                     
-                    // Get icon based on vehicle name
                     let icon = 'fa-car';
                     const lowerName = name.toLowerCase();
                     if (lowerName.includes('bus')) icon = 'fa-bus';
@@ -1379,24 +1348,24 @@
                     else if (lowerName.includes('truck') || lowerName.includes('probox')) icon = 'fa-truck';
                     
                     html += `
-                        <div class="result-card" style="
-                            background: rgba(255,255,255,0.06);
-                            border: 1px solid rgba(34,197,94,0.2);
-                            border-radius: 12px;
-                            padding: 16px;
-                            text-align: center;
-                            transition: all 0.3s;
-                        ">
-                            <div style="font-size: 2rem; margin-bottom: 8px;">
+                        <div class="result-card">
+                            <div style="font-size:2rem; margin-bottom:8px;">
                                 <i class="fas ${icon}"></i>
                             </div>
-                            <h4 style="color: white; font-weight: 700; font-size: 1rem; margin: 0;">${name}</h4>
-                            <div style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">${capacity} Seats</div>
-                            <div style="color: #f59e0b; font-weight: 700; font-size: 1.1rem; margin: 4px 0;">KSh ${Number(price).toLocaleString()}</div>
-                            <div style="display: flex; justify-content: center; gap: 4px; flex-wrap: wrap;">
-                                <span style="display: inline-block; background: rgba(34,197,94,0.15); color: #22c55e; padding: 2px 12px; border-radius: 9999px; font-size: 0.65rem; font-weight: 600;">Available</span>
-                                <span style="display: inline-block; background: rgba(245,158,11,0.1); color: #f59e0b; padding: 2px 12px; border-radius: 9999px; font-size: 0.65rem; font-weight: 600;">${type}</span>
+                            <h4 style="color:white; font-weight:700; font-size:1rem; margin:0;">${name}</h4>
+                            <div style="color:rgba(255,255,255,0.6); font-size:0.8rem;">${capacity} Seats</div>
+                            <div style="color:#f59e0b; font-weight:700; font-size:1.1rem; margin:4px 0;">KSh ${Number(price).toLocaleString()}</div>
+                            <div style="display:flex; justify-content:center; gap:4px; flex-wrap:wrap; margin-bottom:10px;">
+                                <span style="display:inline-block; background:rgba(34,197,94,0.15); color:#22c55e; padding:2px 12px; border-radius:9999px; font-size:0.65rem; font-weight:600;">Available</span>
+                                <span style="display:inline-block; background:rgba(245,158,11,0.1); color:#f59e0b; padding:2px 12px; border-radius:9999px; font-size:0.65rem; font-weight:600;">${type}</span>
                             </div>
+                            <!-- ===== BOOK NOW BUTTON ===== -->
+                            <a href="/booking/${vehicleId}?date=${date}" 
+                               style="display:inline-block; background:linear-gradient(135deg, #f59e0b, #d97706); color:white; padding:8px 20px; border-radius:9999px; font-weight:600; font-size:0.85rem; text-decoration:none; transition:all 0.3s; width:100%; box-sizing:border-box;"
+                               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(245,158,11,0.3)';"
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <i class="fas fa-calendar-check"></i> Book Now
+                            </a>
                         </div>
                     `;
                 });
@@ -1408,33 +1377,19 @@
                 resultsContainer.innerHTML = html;
                 resultsContainer.className = 'visible';
                 
-                // Highlight matching vehicles in the fleet
                 highlightVehicles(results);
             } else {
                 resultsContainer.innerHTML = `
-                    <div style="
-                        margin-top: 20px;
-                        padding: 30px 20px;
-                        background: rgba(255,255,255,0.05);
-                        backdrop-filter: blur(10px);
-                        border-radius: 16px;
-                        border: 1px solid rgba(255,255,255,0.08);
-                        text-align: center;
-                        animation: slideUp 0.5s ease-out;
-                    ">
-                        <div style="font-size: 2.5rem; margin-bottom: 12px;">🚌</div>
-                        <h3 style="color: white; font-size: 1.1rem; margin: 0;">No vehicles available</h3>
-                        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 6px;">
+                    <div style="margin-top:20px; padding:30px 20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); text-align:center; animation:slideUp 0.5s ease-out;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">🚌</div>
+                        <h3 style="color:white; font-size:1.1rem; margin:0;">No vehicles available</h3>
+                        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-top:6px;">
                             No vehicles found for ${passengers} passengers on ${origin} → ${destination}
-                        </p>
-                        <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 4px;">
-                            Try adjusting your search criteria
                         </p>
                     </div>
                 `;
                 resultsContainer.className = 'visible';
                 
-                // Reset highlights
                 document.querySelectorAll('.vehicle-card').forEach(card => {
                     card.style.borderColor = '#f1f5f9';
                     card.style.boxShadow = 'none';
@@ -1442,7 +1397,6 @@
                 });
             }
             
-            // Scroll to results
             setTimeout(() => {
                 resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
@@ -1470,22 +1424,11 @@
             const toast = document.createElement('div');
             toast.className = 'search-toast';
             toast.style.cssText = `
-                position: fixed;
-                bottom: 30px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0,0,0,0.85);
-                backdrop-filter: blur(12px);
-                color: white;
-                padding: 16px 32px;
-                border-radius: 16px;
-                font-weight: 500;
-                z-index: 9999;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                animation: slideUp 0.4s ease-out;
-                max-width: 90%;
-                text-align: center;
-                font-size: 1rem;
+                position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+                background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); color:white;
+                padding:16px 32px; border-radius:16px; font-weight:500; z-index:9999;
+                box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:slideUp 0.4s ease-out;
+                max-width:90%; text-align:center; font-size:1rem;
             `;
             toast.textContent = message;
             document.body.appendChild(toast);
