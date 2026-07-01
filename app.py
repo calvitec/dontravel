@@ -68,20 +68,12 @@ def save_json(file_path, data):
 
 # ===== HELPERS FOR LENIENT STATUS MATCHING =====
 def bus_is_active(bus):
-    """
-    Treat a bus as active unless it's explicitly marked inactive/cancelled/disabled.
-    Missing status, None, or unexpected casing no longer hides the bus.
-    """
     status = bus.get('status')
     if status is None or status == '':
         return True
     return str(status).strip().lower() not in ('inactive', 'cancelled', 'canceled', 'disabled', 'suspended')
 
 def schedule_is_available(schedule):
-    """
-    Treat a schedule as available unless it's explicitly marked full/cancelled/closed.
-    Missing status, None, or unexpected casing no longer hides the schedule.
-    """
     status = schedule.get('status')
     if status is None or status == '':
         return True
@@ -270,11 +262,6 @@ def get_route_by_id(route_id):
     return None
 
 def get_schedule_by_bus_and_date(bus_id, date):
-    """
-    Relaxed version: fetch by bus_id + date only (no status filter in the query),
-    then apply a lenient status check in Python so missing/odd status values
-    don't hide otherwise-valid schedules.
-    """
     if DB_CONNECTED:
         try:
             response = requests.get(
@@ -288,13 +275,10 @@ def get_schedule_by_bus_and_date(bus_id, date):
                     if schedule_is_available(s):
                         return s
                 if data:
-                    # Nothing passed the lenient check, but rows exist for this bus/date.
-                    # Return the first one anyway rather than reporting "no schedule".
                     return data[0]
         except Exception as e:
             print(f"Error getting schedule: {e}")
 
-    # JSON fallback
     schedules = load_json('schedules.json')
     matches = [s for s in schedules if s.get('bus_id') == bus_id and s.get('departure_date') == date]
     for s in matches:
@@ -357,7 +341,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ===== GENERIC SUPABASE CRUD (used by admin management routes) =====
+# ===== GENERIC SUPABASE CRUD =====
 def sb_select(table, query=""):
     if DB_CONNECTED:
         try:
@@ -415,7 +399,63 @@ def generate_booking_ref():
 def generate_booking_id():
     return 'BK-' + str(uuid.uuid4().hex[:8]).upper()
 
+# ================================================================
+# ===== NEW: API SEARCH ENDPOINT FOR AJAX =====
+# ================================================================
+@app.route('/api/search')
+def api_search():
+    """Fast API endpoint for AJAX search - returns JSON"""
+    origin = request.args.get('origin', '').strip()
+    destination = request.args.get('destination', '').strip()
+    date = request.args.get('date', '')
+    passengers = int(request.args.get('passengers', 1))
+    
+    if not origin or not destination or not date:
+        return jsonify([])
+    
+    try:
+        # 1. Find the route
+        routes = load_routes()
+        route = None
+        for r in routes:
+            if r.get('origin', '').lower().strip() == origin.lower().strip() and r.get('destination', '').lower().strip() == destination.lower().strip():
+                route = r
+                break
+        
+        if not route:
+            return jsonify([])
+        
+        # 2. Get all vehicles
+        vehicles = load_vehicles()
+        results = []
+        
+        for vehicle in vehicles:
+            capacity = vehicle.get('capacity', 0)
+            if capacity < passengers:
+                continue
+            
+            results.append({
+                'vehicle_model': vehicle.get('vehicle_model', 'Vehicle'),
+                'vehicle_type': vehicle.get('vehicle_type', 'Standard'),
+                'capacity': capacity,
+                'base_price': float(vehicle.get('base_price', 500)),
+                'available_seats': capacity,
+                'fare': float(vehicle.get('base_price', 500))
+            })
+        
+        # Sort by price
+        results.sort(key=lambda x: x.get('base_price', 500))
+        
+        return jsonify(results)
+        
+    except Exception as e:
+        print(f"API Search error: {e}")
+        traceback.print_exc()
+        return jsonify([])
+
+# ================================================================
 # ===== ROUTES =====
+# ================================================================
 
 @app.route('/')
 def index():
@@ -453,7 +493,7 @@ def search_results():
 
         route_id = route.get('id')
 
-        # 2. Get all buses for this route (lenient active check — missing/odd status no longer hides a bus)
+        # 2. Get all buses for this route
         buses = load_buses()
         results = []
 
@@ -465,11 +505,10 @@ def search_results():
 
             bus_id = bus.get('id')
 
-            # 3. Check if this bus has a schedule on the selected date (lenient — falls back to
-            #    any matching row if none is explicitly "available")
+            # 3. Check if this bus has a schedule on the selected date
             schedule = get_schedule_by_bus_and_date(bus_id, date)
             if not schedule:
-                continue  # No schedule row at all for this bus/date
+                continue
 
             # 4. Get vehicle info
             vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
@@ -546,7 +585,6 @@ def booking_page(bus_id):
 
     date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
 
-    # Get schedule for this bus on this date (lenient)
     schedule = get_schedule_by_bus_and_date(bus_id, date)
 
     if not schedule:
@@ -559,7 +597,6 @@ def booking_page(bus_id):
     total_seats = schedule.get('total_seats', bus.get('total_seats', 40))
     schedule_id = schedule.get('id')
 
-    # Get booked seats from bus_seats
     booked_seats_list = []
     if DB_CONNECTED:
         try:
@@ -599,12 +636,8 @@ def booking_page(bus_id):
 
 @app.route('/debug/search')
 def debug_search():
-    """Debug route to see what's in the database"""
     try:
-        # Check what's in schedules
         schedules = load_schedules()
-
-        # Check a specific date
         date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
         buses = load_buses()
         routes = load_routes()
@@ -619,7 +652,6 @@ def debug_search():
             'schedules_for_date': []
         }
 
-        # Find schedules for the date
         for s in schedules:
             if s.get('departure_date') == date:
                 bus = get_bus_by_id(s.get('bus_id'))
@@ -668,7 +700,6 @@ def create_booking():
         if not bus:
             return jsonify({'success': False, 'error': 'Bus not found'}), 404
 
-        # Get schedule for this date (lenient)
         schedule = get_schedule_by_bus_and_date(bus_id, booking_date)
 
         if not schedule:
@@ -676,7 +707,6 @@ def create_booking():
 
         schedule_id = schedule.get('id')
 
-        # Get current booked seats
         booked_seats_list = []
         if DB_CONNECTED:
             try:
@@ -691,19 +721,16 @@ def create_booking():
             except:
                 pass
 
-        # Check if seats are already booked
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
                 return jsonify({'success': False, 'error': f'Seat {seat} is already booked for {booking_date}'}), 400
 
-        # Update booked seats
         new_booked_list = booked_seats_list.copy()
         for seat in selected_seats:
             seat = str(seat)
             if seat not in new_booked_list:
                 new_booked_list.append(seat)
 
-        # Update bus_seats
         if DB_CONNECTED:
             try:
                 check = requests.get(
@@ -713,7 +740,6 @@ def create_booking():
                 )
 
                 if check.status_code == 200 and check.json():
-                    # Update existing
                     response = requests.patch(
                         f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{booking_date}",
                         headers=SUPABASE_HEADERS,
@@ -725,7 +751,6 @@ def create_booking():
                         timeout=10
                     )
                 else:
-                    # Insert new
                     response = requests.post(
                         f"{SUPABASE_URL}/rest/v1/bus_seats",
                         headers=SUPABASE_HEADERS,
@@ -741,10 +766,8 @@ def create_booking():
                 print(f"Error updating seats: {e}")
                 return jsonify({'success': False, 'error': 'Failed to update seats'}), 500
         else:
-            # JSON fallback
             update_bus_seats(bus_id, booking_date, new_booked_list)
 
-        # Create booking
         booking_ref = generate_booking_ref()
         booking_id = generate_booking_id()
 
@@ -773,7 +796,6 @@ def create_booking():
         if DB_CONNECTED:
             save_booking_to_supabase(booking_data)
         else:
-            # JSON fallback
             bookings = load_json('bookings.json')
             bookings.append(booking_data)
             save_json('bookings.json', bookings)
@@ -847,7 +869,6 @@ def admin_logout():
 # ===== ADMIN MANAGEMENT API =====
 # ================================================================
 
-# ---------- Bookings management ----------
 @app.route('/admin/api/bookings', methods=['GET'])
 @admin_required
 def admin_api_bookings():
@@ -909,7 +930,6 @@ def admin_api_booking_status(booking_ref):
                     b['status'] = new_status
             save_json('bookings.json', bookings)
 
-        # Cancelling releases the seats back into inventory
         if new_status == 'cancelled':
             bus_id = booking.get('bus_id')
             schedule_id = booking.get('schedule_id')
@@ -957,7 +977,6 @@ def admin_api_delete_booking(booking_ref):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
-# ---------- Revenue / bookings trend for dashboard chart ----------
 @app.route('/admin/api/stats')
 @admin_required
 def admin_api_stats():
@@ -984,7 +1003,6 @@ def admin_api_stats():
 
     return jsonify(list(buckets.values()))
 
-# ---------- Generic CRUD for buses / routes / vehicles / schedules ----------
 @app.route('/admin/api/buses', methods=['GET', 'POST'])
 @admin_required
 def admin_api_buses():
@@ -1077,7 +1095,6 @@ def admin_api_schedule_detail(item_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
-# ---------- CSV export ----------
 @app.route('/admin/export/bookings.csv')
 def admin_export_bookings():
     if not session.get('admin_logged_in'):
@@ -1177,7 +1194,6 @@ if __name__ == '__main__':
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
 
-    # Show data counts
     vehicles = load_vehicles()
     routes = load_routes()
     buses = load_buses()
@@ -1191,7 +1207,6 @@ if __name__ == '__main__':
     print(f"📊 Bookings: {len(bookings)}")
     print("="*60)
 
-    # Show some sample schedules
     if schedules:
         print("\n📅 Sample Schedules:")
         for s in schedules[:5]:
