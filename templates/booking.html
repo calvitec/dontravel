@@ -30,6 +30,7 @@
         /* ===== ANIMATIONS ===== */
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
@@ -368,6 +369,22 @@
             .app-header .brand .brand-text { font-size: 1rem; }
             .app-header .brand .brand-icon { width: 36px; height: 36px; font-size: 1rem; }
             .date-badge { font-size: 0.65rem; padding: 4px 12px; }
+        }
+        
+        @media (max-width: 480px) {
+            .app-header .brand .brand-text { font-size: 0.85rem; }
+            .app-header .brand .brand-icon { width: 32px; height: 32px; font-size: 0.8rem; }
+            .date-badge { font-size: 0.55rem; padding: 3px 8px; }
+            .card { padding: 16px; }
+            .seat-grid { max-width: 240px; gap: 6px; }
+            .seat { padding: 8px 4px; font-size: 0.65rem; border-radius: 6px; }
+            .trip-info { padding: 10px; }
+            .trip-info .info-item { font-size: 0.7rem; gap: 6px; }
+            .form-input { padding: 10px 12px; font-size: 0.8rem; }
+            .btn-primary { font-size: 0.8rem; padding: 10px 16px; }
+            .summary-total .value { font-size: 1rem; }
+            .bus-info .value { font-size: 0.75rem; }
+            .bus-info .label { font-size: 0.6rem; }
         }
     </style>
 </head>
