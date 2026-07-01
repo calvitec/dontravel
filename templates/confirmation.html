@@ -85,9 +85,9 @@
         <div class="success-icon"><i class="fas fa-check-circle"></i></div>
         <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a;">Booking Confirmed! 🎉</h2>
         <p style="color:#64748b;">Your bus tickets have been reserved successfully.</p>
-        
+
         <div class="booking-ref"><i class="fas fa-ticket-alt" style="color:#f59e0b;"></i> {{ booking.booking_ref }}</div>
-        
+
         <div style="text-align:left; margin:20px 0;">
             <div class="detail-row">
                 <span class="label">Passenger</span>
@@ -101,6 +101,18 @@
                 <span class="label">Date</span>
                 <span class="value" style="color:#f59e0b;">{{ booking.booking_date }}</span>
             </div>
+            {% if booking.departure_time %}
+            <div class="detail-row">
+                <span class="label">Departure</span>
+                <span class="value"><i class="fas fa-clock" style="color:#f59e0b;"></i> {{ booking.departure_time }}</span>
+            </div>
+            {% endif %}
+            {% if booking.arrival_time %}
+            <div class="detail-row">
+                <span class="label">Arrival</span>
+                <span class="value"><i class="fas fa-clock" style="color:#f59e0b;"></i> {{ booking.arrival_time }}</span>
+            </div>
+            {% endif %}
             <div class="detail-row">
                 <span class="label">Seats</span>
                 <span class="value">{{ booking.selected_seats|join(', ') }}</span>
@@ -120,14 +132,14 @@
                 </span>
             </div>
         </div>
-        
+
         <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
             <button onclick="window.print()" class="print-btn">
                 <i class="fas fa-print"></i> Print Ticket
             </button>
             <a href="/" class="btn-home"><i class="fas fa-home"></i> Back to Home</a>
         </div>
-        
+
         <p style="color:#94a3b8; font-size:0.75rem; margin-top:16px;">
             <i class="fas fa-envelope"></i> A confirmation has been sent to your email.
         </p>
