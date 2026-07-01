@@ -400,11 +400,11 @@ def generate_booking_id():
     return 'BK-' + str(uuid.uuid4().hex[:8]).upper()
 
 # ================================================================
-# ===== API SEARCH ENDPOINT FOR AJAX (RETURNS VEHICLE IDS) =====
+# ===== API SEARCH ENDPOINT - RETURNS BUS IDs FOR BOOKING =====
 # ================================================================
 @app.route('/api/search')
 def api_search():
-    """Fast API endpoint for AJAX search - returns JSON with vehicle IDs"""
+    """Fast API endpoint for AJAX search - returns JSON with BUS IDs for booking"""
     origin = request.args.get('origin', '').strip()
     destination = request.args.get('destination', '').strip()
     date = request.args.get('date', '')
@@ -422,20 +422,36 @@ def api_search():
                 route = r
                 break
         
-        # 2. Get all vehicles
-        vehicles = load_vehicles()
+        if not route:
+            return jsonify([])
+        
+        route_id = route.get('id')
+        
+        # 2. Get all buses for this route
+        buses = load_buses()
         results = []
         
-        for vehicle in vehicles:
+        for bus in buses:
+            if bus.get('route_id') != route_id:
+                continue
+            if not bus_is_active(bus):
+                continue
+            
+            # Get vehicle for this bus
+            vehicle_id = bus.get('vehicle_id')
+            vehicle = get_vehicle_by_id(vehicle_id)
+            if not vehicle:
+                continue
+                
             capacity = vehicle.get('capacity', 0)
             if capacity < passengers:
                 continue
             
-            # Get vehicle ID for booking link
-            vehicle_id = vehicle.get('id')
+            # Get bus ID for booking (this is what the booking page expects)
+            bus_id = bus.get('id')
             
             results.append({
-                'id': vehicle_id,  # ← IMPORTANT: For booking link
+                'id': bus_id,  # ← BUS ID for booking link
                 'vehicle_model': vehicle.get('vehicle_model', 'Vehicle'),
                 'vehicle_type': vehicle.get('vehicle_type', 'Standard'),
                 'capacity': capacity,
@@ -446,7 +462,6 @@ def api_search():
         
         # Sort by price
         results.sort(key=lambda x: x.get('base_price', 500))
-        
         return jsonify(results)
         
     except Exception as e:
