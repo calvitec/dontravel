@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Book Seats · Don Travels</title>
+    <title>Select Seats · Don Travels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -121,9 +121,29 @@
             font-weight: 600;
         }
         
+        .trip-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        .trip-info .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+        .trip-info .info-item i { color: #f59e0b; width: 18px; }
+        .trip-info .info-item strong { color: #0f172a; }
+        
         @media (max-width: 768px) {
             .booking-grid { grid-template-columns: 1fr !important; }
             .seat-grid { max-width: 280px; }
+            .trip-info { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -148,13 +168,22 @@
                 <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
                     <i class="fas fa-chair" style="color:#f59e0b;"></i> Select Your Seats
                 </h3>
+                
                 <div class="bus-info">
                     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                        <div><span class="label">Bus:</span> <span class="value">{{ bus.company_name or 'Don Travels Express' }}</span></div>
+                        <div><span class="label">Vehicle:</span> <span class="value">{{ vehicle.vehicle_type }}</span></div>
                         <div><span class="label">Route:</span> <span class="value">{{ route.origin }} → {{ route.destination }}</span></div>
                         <div><span class="label">Fare:</span> <span class="value" style="color:#f59e0b;">KSh {{ bus.fare or 1500 }}</span></div>
                         <div><span class="label">Date:</span> <span class="value" style="color:#f59e0b;">{{ date }}</span></div>
                     </div>
+                </div>
+                
+                <!-- Trip Info -->
+                <div class="trip-info">
+                    <div class="info-item"><i class="fas fa-clock"></i> Departure: <strong>{{ bus.departure_time or '08:00' }}</strong></div>
+                    <div class="info-item"><i class="fas fa-clock"></i> Arrival: <strong>{{ bus.arrival_time or '14:00' }}</strong></div>
+                    <div class="info-item"><i class="fas fa-car"></i> Vehicle: <strong>{{ vehicle.vehicle_type }}</strong></div>
+                    <div class="info-item"><i class="fas fa-users"></i> Capacity: <strong>{{ bus.total_seats }} seats</strong></div>
                 </div>
                 
                 <!-- Calculate booked count from seat data -->
@@ -195,16 +224,24 @@
                 
                 <div style="background:#f8fafc; border-radius:12px; padding:16px; margin-bottom:16px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:#64748b;">Bus:</span>
-                        <span style="font-weight:600; color:#0f172a;">{{ bus.company_name or 'Don Travels Express' }}</span>
+                        <span style="color:#64748b;">Vehicle:</span>
+                        <span style="font-weight:600; color:#0f172a;">{{ vehicle.vehicle_type }}</span>
                     </div>
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                         <span style="color:#64748b;">Route:</span>
                         <span style="font-weight:600; color:#0f172a;">{{ route.origin }} → {{ route.destination }}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                         <span style="color:#64748b;">Date:</span>
                         <span style="font-weight:600; color:#f59e0b;">{{ date }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span style="color:#64748b;">Departure:</span>
+                        <span style="font-weight:600; color:#f59e0b;">{{ bus.departure_time or '08:00' }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#64748b;">Arrival:</span>
+                        <span style="font-weight:600; color:#f59e0b;">{{ bus.arrival_time or '14:00' }}</span>
                     </div>
                     <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">
                         <span style="color:#64748b;">Seats:</span>
@@ -241,28 +278,25 @@
                 </button>
                 
                 <p style="text-align:center; color:#94a3b8; font-size:0.7rem; margin-top:8px;">
-                    <i class="fas fa-lock" style="color:#f59e0b;"></i> Your payment will be collected upon arrival
+                    <i class="fas fa-lock" style="color:#f59e0b;"></i> Payment will be collected upon arrival
                 </p>
             </div>
         </div>
     </section>
 
     <script>
-        // Get variables from template
         let selectedSeats = [];
         const farePerSeat = {{ bus.fare or 1500 }};
         const busId = {{ bus.id }};
         const bookingDate = document.getElementById('bookingDate').value;
+        const vehicleType = "{{ vehicle.vehicle_type }}";
+        const isBus = vehicleType === 'Bus';
 
         function toggleSeat(element) {
-            // Check if seat is booked
-            if (element.classList.contains('booked')) {
-                return;
-            }
+            if (element.classList.contains('booked')) return;
             
             const seatId = element.dataset.seat;
             
-            // Toggle selection
             if (element.classList.contains('selected')) {
                 element.classList.remove('selected');
                 selectedSeats = selectedSeats.filter(s => s !== seatId);
@@ -271,11 +305,7 @@
                 selectedSeats.push(seatId);
             }
             
-            // Update the summary
             updateSummary();
-            
-            // Debug log
-            console.log('Selected seats:', selectedSeats);
         }
 
         function updateSummary() {
@@ -284,10 +314,7 @@
             
             document.getElementById('selectedSeatsDisplay').textContent = count > 0 ? selectedSeats.join(', ') : 'None selected';
             document.getElementById('totalFare').textContent = `KSh ${total.toLocaleString()}`;
-            
-            // Enable/disable confirm button
-            const confirmBtn = document.getElementById('confirmBtn');
-            confirmBtn.disabled = count === 0;
+            document.getElementById('confirmBtn').disabled = count === 0;
         }
 
         function confirmBooking() {
@@ -347,14 +374,7 @@
             });
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateSummary();
-            console.log('Bus ID:', busId);
-            console.log('Booking Date:', bookingDate);
-            console.log('Fare per seat:', farePerSeat);
-            console.log('Total seats:', document.querySelectorAll('.seat').length);
-        });
+        document.addEventListener('DOMContentLoaded', updateSummary);
     </script>
 </body>
 </html>
