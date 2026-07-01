@@ -342,6 +342,8 @@ def search_results():
     destination = request.args.get('destination', '').strip()
     date = request.args.get('date', '')
     passengers = int(request.args.get('passengers', 1))
+    time_from = request.args.get('time_from', '')
+    time_to = request.args.get('time_to', '')
     
     buses = load_buses()
     routes = load_routes()
@@ -357,6 +359,16 @@ def search_results():
                         booked = seat_data.get('booked_seats', 0)
                         total = bus.get('total_seats', 40)
                         available = total - booked
+                        
+                        # Time filter
+                        dep_time = bus.get('departure_time', '')
+                        if time_from and dep_time:
+                            if dep_time < time_from:
+                                continue
+                        if time_to and dep_time:
+                            if dep_time > time_to:
+                                continue
+                        
                         if available >= passengers:
                             results.append({
                                 'bus': bus,
@@ -367,7 +379,15 @@ def search_results():
                                 'date': date
                             })
     
-    return render_template('search_results.html', results=results, origin=origin, destination=destination, date=date, passengers=passengers)
+    return render_template('search_results.html', 
+        results=results, 
+        origin=origin, 
+        destination=destination, 
+        date=date, 
+        passengers=passengers,
+        time_from=time_from,
+        time_to=time_to
+    )
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
@@ -420,6 +440,7 @@ def create_booking():
             return jsonify({'success': False, 'error': 'Bus not found'}), 404
         
         booking_date = data.get('booking_date', datetime.now().strftime('%Y-%m-%d'))
+        booking_time = data.get('booking_time', datetime.now().strftime('%H:%M:%S'))
         passenger_name = data.get('passenger_name', '').strip()
         passenger_phone = data.get('passenger_phone', '').strip()
         passenger_email = data.get('passenger_email', '').strip()
@@ -431,6 +452,7 @@ def create_booking():
         print(f"💺 Seats: {selected_seats}")
         print(f"💰 Fare: {total_fare}")
         print(f"📅 Date: {booking_date}")
+        print(f"⏰ Time: {booking_time}")
         
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
@@ -470,6 +492,9 @@ def create_booking():
             'selected_seats': selected_seats,
             'total_fare': total_fare,
             'booking_date': booking_date,
+            'booking_time': booking_time,
+            'departure_time': bus.get('departure_time'),
+            'arrival_time': bus.get('arrival_time'),
             'status': 'confirmed',
             'payment_status': 'paid' if payment_method in ['mpesa', 'card'] else 'pending',
             'payment_method': payment_method,
