@@ -939,7 +939,10 @@
             </div>
         </div>
         
+        <!-- Light overlay so text is readable -->
         <div class="hero-overlay"></div>
+        
+        <!-- Floating accents -->
         <div class="hero-accent gold"></div>
         <div class="hero-accent purple"></div>
         <div class="hero-accent blue"></div>
@@ -962,9 +965,9 @@
                 Compare prices, choose your seats, and travel in style across <strong>Kenya</strong>.
             </p>
             
-            <!-- Search Card -->
+            <!-- ===== SEARCH CARD - RESULTS SHOW ON THIS PAGE ===== -->
             <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
-                <form id="searchForm">
+                <form id="searchForm" onsubmit="return false;">
                     <div class="search-grid">
                         <div class="search-field">
                             <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
@@ -1002,7 +1005,7 @@
                     </div>
                 </form>
                 
-                <!-- Results Container -->
+                <!-- ===== RESULTS APPEAR HERE (on the homepage) ===== -->
                 <div id="searchResults"></div>
             </div>
             
@@ -1269,14 +1272,14 @@
 
         resetInterval();
 
-        // ===== INSTANT AJAX SEARCH - NO PAGE RELOAD =====
+        // ===== INSTANT AJAX SEARCH - RESULTS ON HOMEPAGE =====
         const searchForm = document.getElementById('searchForm');
         const searchBtn = document.getElementById('searchBtn');
         const resultsContainer = document.getElementById('searchResults');
 
         if (searchForm) {
             searchForm.addEventListener('submit', async function(e) {
-                // IMPORTANT: Prevent page reload
+                // PREVENT PAGE RELOAD - results stay on this page
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -1301,7 +1304,7 @@
                     const data = await response.json();
                     console.log('Search results:', data);
                     
-                    // Display results instantly below the search form
+                    // Display results instantly on the homepage
                     displaySearchResults(data, origin, destination, passengers);
                 } catch (error) {
                     console.error('Search error:', error);
@@ -1368,6 +1371,13 @@
                     const price = vehicle.base_price || vehicle.price || 500;
                     const type = vehicle.vehicle_type || vehicle.type || 'Standard';
                     
+                    // Get icon based on vehicle name
+                    let icon = 'fa-car';
+                    const lowerName = name.toLowerCase();
+                    if (lowerName.includes('bus')) icon = 'fa-bus';
+                    else if (lowerName.includes('noah') || lowerName.includes('van')) icon = 'fa-shuttle-van';
+                    else if (lowerName.includes('truck') || lowerName.includes('probox')) icon = 'fa-truck';
+                    
                     html += `
                         <div class="result-card" style="
                             background: rgba(255,255,255,0.06);
@@ -1378,7 +1388,7 @@
                             transition: all 0.3s;
                         ">
                             <div style="font-size: 2rem; margin-bottom: 8px;">
-                                <i class="fas ${getVehicleIcon(name)}"></i>
+                                <i class="fas ${icon}"></i>
                             </div>
                             <h4 style="color: white; font-weight: 700; font-size: 1rem; margin: 0;">${name}</h4>
                             <div style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">${capacity} Seats</div>
@@ -1451,20 +1461,6 @@
                     card.style.opacity = '0.4';
                 }
             });
-        }
-
-        function getVehicleIcon(name) {
-            const icons = {
-                'bus': 'fa-bus',
-                'axio': 'fa-car',
-                'spacio': 'fa-car-side',
-                'fielder': 'fa-caravan',
-                'noah': 'fa-shuttle-van',
-                'probox': 'fa-truck',
-                'ractis': 'fa-car'
-            };
-            const key = name.toLowerCase();
-            return icons[key] || 'fa-car';
         }
 
         function showToast(message) {
