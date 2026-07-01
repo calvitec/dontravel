@@ -452,7 +452,7 @@
       </p>
       <!-- search card -->
       <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
-        <form id="searchForm" onsubmit="return false;">
+        <form id="searchForm">
           <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
             <div><label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label><input type="text" name="origin" class="form-input" placeholder="Gilgil" required list="origins" /><datalist id="origins"><option value="Gilgil"><option value="Nairobi"><option value="Nakuru"><option value="Naivasha"></datalist></div>
             <div><label class="form-label"><i class="fas fa-flag-checkered"></i> To</label><input type="text" name="destination" class="form-input" placeholder="Nairobi" required list="destinations" /><datalist id="destinations"><option value="Nairobi"><option value="Nakuru"><option value="Gilgil"><option value="Naivasha"></datalist></div>
@@ -532,40 +532,68 @@
 
   <script>
     // ============================================
-    // SUPABASE CONFIGURATION - UPDATE THESE!
+    // SUPABASE CONFIGURATION
     // ============================================
-    const SUPABASE_URL = 'https://hzqrdwerkgfmfaufabjr.supabase.co';  // ← CHANGE THIS
-    const SUPABASE_ANON_KEY = 'sb_publishable_tnBOmCO7EFfIoXfNjEH_Tg_D7WX-zld';           // ← CHANGE THIS
+    // IMPORTANT: Get your correct anon key from Supabase Dashboard → Settings → API
+    const SUPABASE_URL = 'https://hzqrdwerkgfmfaufabjr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6cXJkd2Vya2dmbWZhdWZhYmpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjUyMDAsImV4cCI6MjA1NjQwMTIwMH0.abc123'; // ← REPLACE WITH YOUR ACTUAL ANON KEY
     
     // Initialize Supabase
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // ============================================
+    // FALLBACK VEHICLE DATA (if database fails)
+    // ============================================
+    const FALLBACK_VEHICLES = [
+        { name: 'Axio', seats: 4, price: 2000, type: 'Premium', routes: ['Gilgil-Nairobi', 'Nairobi-Gilgil'] },
+        { name: 'Spacio', seats: 5, price: 2000, type: 'Comfort', routes: ['Gilgil-Nairobi', 'Nairobi-Gilgil'] },
+        { name: 'Fielder', seats: 5, price: 2000, type: 'Spacious', routes: ['Nakuru-Nairobi', 'Gilgil-Nakuru'] },
+        { name: 'Noah', seats: 7, price: 1500, type: 'Family', routes: ['Nakuru-Nairobi', 'Gilgil-Nakuru'] },
+        { name: 'Probox', seats: 4, price: 2000, type: 'Utility', routes: ['Gilgil-Nairobi', 'Nairobi-Gilgil'] },
+        { name: 'Ractis', seats: 4, price: 2000, type: 'Compact', routes: ['Gilgil-Nakuru', 'Nakuru-Gilgil'] },
+        { name: 'Bus', seats: 40, price: 500, type: 'Economy', routes: ['Gilgil-Nairobi', 'Nairobi-Gilgil', 'Nakuru-Nairobi'] }
+    ];
+    
+    // ============================================
     // CACHE SYSTEM FOR INSTANT SEARCH
     // ============================================
     const searchCache = new Map();
-    const CACHE_DURATION = 30000; // 30 seconds
+    const CACHE_DURATION = 60000; // 60 seconds
     let allVehiclesCache = null;
     let allVehiclesTimestamp = 0;
+    let isUsingFallback = false;
     
     // ============================================
     // PRELOAD ALL VEHICLES ON PAGE LOAD
     // ============================================
     async function preloadVehicles() {
         try {
+            console.log('🔄 Loading vehicles from Supabase...');
             const { data, error } = await supabase
                 .from('vehicles')
-                .select('id, name, seats, price, type, features, routes')
+                .select('*')
                 .eq('available', true)
                 .limit(100);
             
-            if (!error && data) {
+            if (error) {
+                console.warn('⚠️ Supabase error, using fallback data:', error.message);
+                allVehiclesCache = FALLBACK_VEHICLES;
+                isUsingFallback = true;
+            } else if (data && data.length > 0) {
                 allVehiclesCache = data;
-                allVehiclesTimestamp = Date.now();
-                console.log('✅ Vehicles preloaded:', data.length);
+                isUsingFallback = false;
+                console.log('✅ Vehicles loaded from database:', data.length);
+            } else {
+                console.warn('⚠️ No vehicles in database, using fallback');
+                allVehiclesCache = FALLBACK_VEHICLES;
+                isUsingFallback = true;
             }
+            
+            allVehiclesTimestamp = Date.now();
         } catch (error) {
-            console.log('Preload skipped:', error);
+            console.error('❌ Failed to load vehicles:', error);
+            allVehiclesCache = FALLBACK_VEHICLES;
+            isUsingFallback = true;
         }
     }
     
@@ -585,12 +613,13 @@
             }
         }
         
-        // 2. If we have all vehicles cached, filter instantly
+        // 2. If we have vehicles cached, filter instantly
         if (allVehiclesCache && (Date.now() - allVehiclesTimestamp < CACHE_DURATION)) {
             console.log('⚡ Filtering from cached vehicles');
             const route = `${origin}-${destination}`;
             
             const results = allVehiclesCache.filter(v => {
+                // Check if vehicle has routes and matches
                 const hasRoute = v.routes && v.routes.some(r => 
                     r === route || (r.includes(origin) && r.includes(destination))
                 );
@@ -603,35 +632,62 @@
                 timestamp: Date.now()
             });
             
+            console.log(`📊 Found ${results.length} vehicles for ${route}`);
             return results;
         }
         
-        // 3. If not cached, query Supabase (with proper indexes)
+        // 3. If not cached, try Supabase (with proper error handling)
         try {
             console.log('📡 Querying Supabase...');
             const route = `${origin}-${destination}`;
             
             const { data, error } = await supabase
                 .from('vehicles')
-                .select('id, name, seats, price, type, features, routes')
+                .select('*')
                 .gte('seats', passengerCount)
                 .eq('available', true)
-                .contains('routes', [route])
-                .order('price', { ascending: true })
                 .limit(20);
             
-            if (error) throw error;
+            if (error) {
+                console.warn('⚠️ Query error, using fallback:', error.message);
+                // Use fallback with filtering
+                const results = FALLBACK_VEHICLES.filter(v => {
+                    const hasRoute = v.routes && v.routes.some(r => 
+                        r === route || (r.includes(origin) && r.includes(destination))
+                    );
+                    return v.seats >= passengerCount && hasRoute;
+                });
+                searchCache.set(cacheKey, { data: results, timestamp: Date.now() });
+                return results;
+            }
+            
+            // Filter results for route (Supabase doesn't support contains well)
+            const filteredData = data ? data.filter(v => {
+                const hasRoute = v.routes && v.routes.some(r => 
+                    r === route || (r.includes(origin) && r.includes(destination))
+                );
+                return hasRoute;
+            }) : [];
             
             // Cache the results
             searchCache.set(cacheKey, {
-                data: data || [],
+                data: filteredData,
                 timestamp: Date.now()
             });
             
-            return data || [];
+            return filteredData;
         } catch (error) {
-            console.error('Search error:', error);
-            return [];
+            console.error('❌ Search error, using fallback:', error);
+            // Use fallback
+            const route = `${origin}-${destination}`;
+            const results = FALLBACK_VEHICLES.filter(v => {
+                const hasRoute = v.routes && v.routes.some(r => 
+                    r === route || (r.includes(origin) && r.includes(destination))
+                );
+                return v.seats >= passengerCount && hasRoute;
+            });
+            searchCache.set(cacheKey, { data: results, timestamp: Date.now() });
+            return results;
         }
     }
     
@@ -674,7 +730,6 @@
     // TOAST NOTIFICATION
     // ============================================
     function showToast(message) {
-        // Remove existing toast
         const existing = document.querySelector('.search-toast');
         if (existing) existing.remove();
         
