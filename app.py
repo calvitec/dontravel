@@ -400,11 +400,11 @@ def generate_booking_id():
     return 'BK-' + str(uuid.uuid4().hex[:8]).upper()
 
 # ================================================================
-# ===== NEW: API SEARCH ENDPOINT FOR AJAX =====
+# ===== API SEARCH ENDPOINT FOR AJAX (RETURNS VEHICLE IDS) =====
 # ================================================================
 @app.route('/api/search')
 def api_search():
-    """Fast API endpoint for AJAX search - returns JSON"""
+    """Fast API endpoint for AJAX search - returns JSON with vehicle IDs"""
     origin = request.args.get('origin', '').strip()
     destination = request.args.get('destination', '').strip()
     date = request.args.get('date', '')
@@ -422,9 +422,6 @@ def api_search():
                 route = r
                 break
         
-        if not route:
-            return jsonify([])
-        
         # 2. Get all vehicles
         vehicles = load_vehicles()
         results = []
@@ -434,7 +431,11 @@ def api_search():
             if capacity < passengers:
                 continue
             
+            # Get vehicle ID for booking link
+            vehicle_id = vehicle.get('id')
+            
             results.append({
+                'id': vehicle_id,  # ← IMPORTANT: For booking link
                 'vehicle_model': vehicle.get('vehicle_model', 'Vehicle'),
                 'vehicle_type': vehicle.get('vehicle_type', 'Standard'),
                 'capacity': capacity,
