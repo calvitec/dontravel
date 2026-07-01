@@ -280,8 +280,8 @@
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-radius: 24px;
-            padding: 32px 36px;
-            max-width: 900px;
+            padding: 28px 32px;
+            max-width: 700px;
             border: 1px solid rgba(255,255,255,0.06);
             box-shadow: 0 30px 80px rgba(0,0,0,0.3);
         }
@@ -591,19 +591,18 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .hero-title { font-size: 3.2rem; letter-spacing: -2px; }
-            .hero-search-card { max-width: 100%; padding: 24px 20px; }
+            .hero-search-card { max-width: 100%; }
             .hero-stats { gap: 24px; }
             .hero-stats .stat-item .number { font-size: 1.6rem; }
             .carousel-slide img { height: 300px; }
-            .search-grid { grid-template-columns: 1fr 1fr 1fr !important; }
         }
         @media (max-width: 768px) {
             .hero-title { font-size: 2.4rem; letter-spacing: -1.5px; }
             .hero-section { min-height: auto; padding: 120px 0 60px; }
             .hero-content { padding: 20px 16px; }
             .hero-subtitle { font-size: 0.95rem; }
-            .hero-search-card { padding: 16px; border-radius: 20px; }
-            .search-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .hero-search-card { padding: 20px 16px; border-radius: 20px; }
+            .hero-search-grid { grid-template-columns: 1fr 1fr !important; }
             .hero-stats { gap: 16px; flex-wrap: wrap; }
             .hero-stats .stat-item .number { font-size: 1.4rem; }
             .carousel-slide img { height: 220px; }
@@ -628,7 +627,6 @@
             .feature-card .icon-wrap { width: 44px; height: 44px; font-size: 1.2rem; }
             .hero-search-card { padding: 12px; }
             .hero-search-card .form-input { padding: 10px 14px; font-size: 0.85rem; }
-            .search-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -691,10 +689,10 @@
                 Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
             </p>
             
-            <!-- Search Card with Time Filters - FIXED LAYOUT -->
+            <!-- Search Card - NO TIME FILTERS -->
             <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
                 <form action="/search" method="GET">
-                    <div class="search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:14px; align-items:end;">
+                    <div class="hero-search-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:14px; align-items:end;">
                         <div>
                             <label class="form-label"><i class="fas fa-map-marker-alt"></i> From</label>
                             <input type="text" name="origin" class="form-input" placeholder="Gilgil" required />
@@ -710,14 +708,6 @@
                                    max="{{ max_date }}" 
                                    value="{{ today }}" 
                                    required />
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-clock"></i> From</label>
-                            <input type="time" name="time_from" class="form-input" />
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-clock"></i> To</label>
-                            <input type="time" name="time_to" class="form-input" />
                         </div>
                         <div>
                             <label class="form-label"><i class="fas fa-users"></i> Passengers</label>
