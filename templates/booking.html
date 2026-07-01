@@ -8,80 +8,235 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f4f8; }
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a1a; min-height: 100vh; }
         
+        /* ===== BRAND COLORS ===== */
+        :root {
+            --gold: #f59e0b;
+            --gold-dark: #d97706;
+            --gold-light: #fbbf24;
+            --dark: #0a0a1a;
+            --dark-card: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.06);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255,255,255,0.6);
+            --text-muted: rgba(255,255,255,0.3);
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        
+        /* ===== GLASS HEADER ===== */
+        .app-header {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 16px 24px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .app-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .app-header .brand .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
+            transition: transform 0.3s;
+        }
+        .app-header .brand:hover .brand-icon { transform: rotate(-5deg) scale(1.05); }
+        .app-header .brand .brand-text {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+        .app-header .brand .brand-text span { 
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: white;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .header-btn:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.35);
+        }
+        
+        .date-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+        
+        .back-link {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        .back-link:hover { color: var(--gold); }
+        
+        /* ===== MAIN CONTAINER ===== */
+        .booking-container {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== GLASS CARD ===== */
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 28px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s;
+        }
+        .glass-card:hover {
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+        
+        .glass-card h3 {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .glass-card h3 i { color: var(--gold); margin-right: 8px; }
+        .glass-card .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        
+        /* ===== BUS INFO ===== */
+        .bus-info {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--glass-border);
+        }
+        .bus-info .label { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .bus-info .value { font-weight: 600; color: white; }
+        .bus-info .value.gold { color: var(--gold); }
+        
+        /* ===== TRIP INFO ===== */
+        .trip-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0 16px;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+        }
+        .trip-info .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .trip-info .info-item i { color: var(--gold); width: 18px; }
+        .trip-info .info-item strong { color: white; }
+        
+        /* ===== SEATS ===== */
         .seat-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            max-width: 320px;
+            gap: 10px;
+            max-width: 340px;
             margin: 0 auto;
         }
         .seat {
-            padding: 10px 8px;
-            border-radius: 8px;
-            border: 2px solid #e2e8f0;
+            padding: 12px 8px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.8rem;
             font-weight: 600;
-            background: white;
+            background: rgba(255,255,255,0.04);
+            color: var(--text-secondary);
         }
-        .seat:hover:not(.booked):not(.selected) { border-color: #f59e0b; }
-        .seat.available { background: white; color: #0f172a; }
-        .seat.available:hover { background: #fffbeb; }
-        .seat.selected { background: #f59e0b; border-color: #f59e0b; color: white; }
-        .seat.booked { 
-            background: #e5e7eb; 
-            border-color: #d1d5db; 
-            color: #9ca3af; 
-            cursor: not-allowed;
-            text-decoration: line-through;
+        .seat:hover:not(.booked):not(.selected) { 
+            border-color: var(--gold); 
+            background: rgba(245,158,11,0.05);
+            transform: scale(1.05);
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+        .seat.available { 
+            background: rgba(255,255,255,0.04); 
+            color: var(--text-secondary);
+        }
+        .seat.selected { 
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
+            border-color: var(--gold); 
             color: white;
-            padding: 14px 32px;
-            border-radius: 9999px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .seat.booked { 
+            background: rgba(255,255,255,0.04); 
+            border-color: rgba(255,255,255,0.05); 
+            color: var(--text-muted); 
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
         
-        .form-input {
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            width: 100%;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: #f59e0b;
-            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
-        }
-        .bus-info {
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        .bus-info .label { color: #64748b; font-size: 0.8rem; }
-        .bus-info .value { font-weight: 600; color: #0f172a; }
-        
+        /* ===== LEGEND ===== */
         .seat-legend {
             display: flex;
-            gap: 16px;
+            gap: 20px;
             justify-content: center;
-            margin-bottom: 16px;
+            margin: 12px 0 16px;
             flex-wrap: wrap;
         }
         .seat-legend .legend-item {
@@ -89,92 +244,215 @@
             align-items: center;
             gap: 6px;
             font-size: 0.75rem;
-            color: #64748b;
+            color: var(--text-secondary);
         }
         .seat-legend .legend-item .dot {
             width: 20px;
             height: 20px;
-            border-radius: 4px;
-            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            border: 2px solid rgba(255,255,255,0.1);
             display: inline-block;
+            transition: all 0.3s;
         }
-        .seat-legend .legend-item .dot.available { background: white; }
-        .seat-legend .legend-item .dot.selected { background: #f59e0b; border-color: #f59e0b; }
-        .seat-legend .legend-item .dot.booked { background: #e5e7eb; border-color: #d1d5db; }
+        .seat-legend .legend-item .dot.available { background: rgba(255,255,255,0.04); }
+        .seat-legend .legend-item .dot.selected { background: var(--gold); border-color: var(--gold); }
+        .seat-legend .legend-item .dot.booked { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.05); opacity: 0.4; }
         
         .seat-status {
-            font-size: 0.7rem;
-            color: #94a3b8;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
             text-align: center;
-            margin-top: 8px;
+            margin-top: 12px;
         }
         .seat-status .booked-count { color: #ef4444; font-weight: 600; }
         .seat-status .available-count { color: #10b981; font-weight: 600; }
         
-        .date-badge {
-            display: inline-block;
-            background: #f59e0b;
+        .seat-hint {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .seat-hint i { color: var(--gold); margin-right: 4px; }
+        
+        /* ===== FORM ===== */
+        .form-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            width: 100%;
+            font-size: 0.9rem;
+            transition: all 0.3s;
             color: white;
-            padding: 2px 14px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.06);
         }
         
-        .trip-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin: 12px 0;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 12px;
+        .form-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .trip-info .info-item {
+        .form-label i { color: var(--gold); margin-right: 4px; }
+        .form-label .required { color: #ef4444; margin-left: 2px; }
+        
+        .form-group {
+            margin: 12px 0;
+        }
+        
+        /* ===== SUMMARY ===== */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item .label { color: var(--text-secondary); font-size: 0.85rem; }
+        .summary-item .value { color: white; font-weight: 600; }
+        .summary-item .value.gold { color: var(--gold); }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            margin-top: 8px;
+            border-top: 2px solid rgba(245, 158, 11, 0.2);
+        }
+        .summary-total .label { font-weight: 700; color: white; font-size: 1rem; }
+        .summary-total .value { font-weight: 800; font-size: 1.3rem; color: var(--gold); }
+        
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: white;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            font-size: 1rem;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: #475569;
+            justify-content: center;
+            gap: 10px;
         }
-        .trip-info .info-item i { color: #f59e0b; width: 18px; }
-        .trip-info .info-item strong { color: #0f172a; }
+        .btn-primary:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.35);
+        }
+        .btn-primary:disabled { 
+            opacity: 0.4; 
+            cursor: not-allowed; 
+            transform: none; 
+        }
+        
+        .btn-primary i { font-size: 1.1rem; }
+        
+        .payment-note {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            margin-top: 10px;
+        }
+        .payment-note i { color: var(--gold); margin-right: 4px; }
+        
+        /* ===== STICKY RIGHT PANEL ===== */
+        .sticky-card {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .booking-grid { grid-template-columns: 1fr !important; }
+            .sticky-card { position: relative; top: 0; }
+            .seat-grid { max-width: 300px; }
+        }
         
         @media (max-width: 768px) {
-            .booking-grid { grid-template-columns: 1fr !important; }
-            .seat-grid { max-width: 280px; }
-            .trip-info { grid-template-columns: 1fr; }
+            .booking-container { padding: 0 12px; margin: 16px auto; }
+            .glass-card { padding: 20px; }
+            .seat-grid { max-width: 280px; gap: 8px; }
+            .seat { padding: 10px 6px; font-size: 0.7rem; }
+            .trip-info { grid-template-columns: 1fr; padding: 12px; }
+            .app-header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+            .app-header .brand .brand-text { font-size: 1rem; }
+            .app-header .brand .brand-icon { width: 36px; height: 36px; font-size: 1rem; }
+            .header-btn { padding: 6px 14px; font-size: 0.7rem; }
+            .date-badge { font-size: 0.65rem; padding: 4px 12px; }
+            .bus-info { padding: 12px 14px; }
+            .bus-info .value { font-size: 0.85rem; }
+            .summary-total .value { font-size: 1.1rem; }
+            .btn-primary { font-size: 0.9rem; padding: 12px 24px; }
+            .seat-legend { gap: 12px; }
+            .seat-legend .legend-item { font-size: 0.65rem; }
+            .seat-legend .legend-item .dot { width: 16px; height: 16px; }
+            .trip-info .info-item { font-size: 0.75rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .app-header .brand .brand-text { font-size: 0.85rem; }
+            .app-header .brand .brand-icon { width: 32px; height: 32px; font-size: 0.8rem; }
+            .header-btn { padding: 4px 10px; font-size: 0.6rem; }
+            .date-badge { font-size: 0.55rem; padding: 3px 8px; }
+            .glass-card { padding: 16px; }
+            .seat-grid { max-width: 240px; gap: 6px; }
+            .seat { padding: 8px 4px; font-size: 0.65rem; border-radius: 6px; }
+            .trip-info { padding: 10px; }
+            .trip-info .info-item { font-size: 0.7rem; gap: 6px; }
+            .form-input { padding: 10px 12px; font-size: 0.8rem; }
+            .btn-primary { font-size: 0.8rem; padding: 10px 16px; }
+            .summary-total .value { font-size: 1rem; }
+            .bus-info .value { font-size: 0.75rem; }
+            .bus-info .label { font-size: 0.6rem; }
         }
     </style>
 </head>
 <body>
 
-    <header style="background:white; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:sticky; top:0; z-index:50;">
-        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
-            <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.3rem; color:#0f172a;">
-                <i class="fas fa-bus" style="color:#f59e0b;"></i> Don<span style="color:#f59e0b;">Travels</span>
-            </a>
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span class="date-badge"><i class="fas fa-calendar"></i> {{ date }}</span>
-                <a href="/" style="color:#64748b; text-decoration:none;"><i class="fas fa-arrow-left"></i> Back</a>
-            </div>
+    <!-- ===== HEADER ===== -->
+    <header class="app-header">
+        <a href="/" class="brand">
+            <div class="brand-icon"><i class="fas fa-bus"></i></div>
+            <div class="brand-text">Don<span>Travels</span></div>
+        </a>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span class="date-badge"><i class="fas fa-calendar"></i> {{ date }}</span>
+            <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
         </div>
     </header>
 
-    <section style="max-width:1100px; margin:32px auto; padding:0 20px;">
-        <div class="booking-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
-            <!-- Left: Seat Selection -->
-            <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9;">
-                <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-                    <i class="fas fa-chair" style="color:#f59e0b;"></i> Select Your Seats
-                </h3>
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="booking-container">
+        <div class="booking-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:28px;">
+            
+            <!-- ===== LEFT: SEAT SELECTION ===== -->
+            <div class="glass-card animate-slide-up">
+                <h3><i class="fas fa-chair"></i> Select Your Seats</h3>
+                <p class="subtitle">Choose your preferred seats for the journey</p>
                 
+                <!-- Bus Info -->
                 <div class="bus-info">
-                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                        <div><span class="label">Vehicle:</span> <span class="value">{{ vehicle.vehicle_type }}</span></div>
-                        <div><span class="label">Route:</span> <span class="value">{{ route.origin }} → {{ route.destination }}</span></div>
-                        <div><span class="label">Fare:</span> <span class="value" style="color:#f59e0b;">KSh {{ bus.fare or 1500 }}</span></div>
-                        <div><span class="label">Date:</span> <span class="value" style="color:#f59e0b;">{{ date }}</span></div>
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+                        <div><span class="label">Vehicle</span><br><span class="value">{{ vehicle.vehicle_type or vehicle.vehicle_model or 'Vehicle' }}</span></div>
+                        <div><span class="label">Route</span><br><span class="value">{{ route.origin }} → {{ route.destination }}</span></div>
+                        <div><span class="label">Fare</span><br><span class="value gold">KSh {{ bus.fare or 1500 }}</span></div>
+                        <div><span class="label">Date</span><br><span class="value gold">{{ date }}</span></div>
                     </div>
                 </div>
                 
@@ -182,11 +460,11 @@
                 <div class="trip-info">
                     <div class="info-item"><i class="fas fa-clock"></i> Departure: <strong>{{ bus.departure_time or '08:00' }}</strong></div>
                     <div class="info-item"><i class="fas fa-clock"></i> Arrival: <strong>{{ bus.arrival_time or '14:00' }}</strong></div>
-                    <div class="info-item"><i class="fas fa-car"></i> Vehicle: <strong>{{ vehicle.vehicle_type }}</strong></div>
-                    <div class="info-item"><i class="fas fa-users"></i> Capacity: <strong>{{ bus.total_seats }} seats</strong></div>
+                    <div class="info-item"><i class="fas fa-car"></i> Vehicle: <strong>{{ vehicle.vehicle_type or 'Standard' }}</strong></div>
+                    <div class="info-item"><i class="fas fa-users"></i> Capacity: <strong>{{ bus.total_seats or 40 }} seats</strong></div>
                 </div>
                 
-                <!-- Calculate booked count from seat data -->
+                <!-- Seat Status -->
                 {% set booked_count = seats|selectattr('status', 'equalto', 'booked')|list|length %}
                 {% set total_seats = bus.total_seats or 40 %}
                 {% set available_count = total_seats - booked_count %}
@@ -196,12 +474,14 @@
                     <span class="booked-count">{{ booked_count }}</span> seats booked
                 </div>
                 
+                <!-- Legend -->
                 <div class="seat-legend">
                     <div class="legend-item"><span class="dot available"></span> Available</div>
                     <div class="legend-item"><span class="dot selected"></span> Selected</div>
                     <div class="legend-item"><span class="dot booked"></span> Booked</div>
                 </div>
                 
+                <!-- Seat Grid -->
                 <div class="seat-grid" id="seatGrid">
                     {% for seat in seats %}
                         <div class="seat {{ seat.status }}" data-seat="{{ seat.id }}" onclick="toggleSeat(this)">
@@ -210,87 +490,88 @@
                     {% endfor %}
                 </div>
                 
-                <div style="text-align:center; margin-top:12px; font-size:0.8rem; color:#94a3b8;">
+                <div class="seat-hint">
                     <i class="fas fa-info-circle"></i> Click on available seats to select or deselect
                 </div>
             </div>
             
-            <!-- Right: Booking Summary -->
-            <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9; position:sticky; top:80px; height:fit-content;">
-                <h4 style="font-weight:700; color:#0f172a; font-size:1.1rem; margin-bottom:4px;">
-                    <i class="fas fa-receipt" style="color:#f59e0b;"></i> Booking Summary
-                </h4>
-                <p style="color:#64748b; font-size:0.85rem; margin-bottom:16px;">Review your selection before confirming</p>
+            <!-- ===== RIGHT: BOOKING SUMMARY ===== -->
+            <div class="glass-card animate-slide-up sticky-card" style="animation-delay:0.15s;">
+                <h3><i class="fas fa-receipt"></i> Booking Summary</h3>
+                <p class="subtitle">Review your selection before confirming</p>
                 
-                <div style="background:#f8fafc; border-radius:12px; padding:16px; margin-bottom:16px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:#64748b;">Vehicle:</span>
-                        <span style="font-weight:600; color:#0f172a;">{{ vehicle.vehicle_type }}</span>
+                <!-- Summary Details -->
+                <div style="background:rgba(255,255,255,0.02); border-radius:14px; padding:16px; margin-bottom:16px; border:1px solid var(--glass-border);">
+                    <div class="summary-item">
+                        <span class="label">Vehicle</span>
+                        <span class="value">{{ vehicle.vehicle_type or vehicle.vehicle_model or 'Vehicle' }}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:#64748b;">Route:</span>
-                        <span style="font-weight:600; color:#0f172a;">{{ route.origin }} → {{ route.destination }}</span>
+                    <div class="summary-item">
+                        <span class="label">Route</span>
+                        <span class="value">{{ route.origin }} → {{ route.destination }}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:#64748b;">Date:</span>
-                        <span style="font-weight:600; color:#f59e0b;">{{ date }}</span>
+                    <div class="summary-item">
+                        <span class="label">Date</span>
+                        <span class="value gold">{{ date }}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span style="color:#64748b;">Departure:</span>
-                        <span style="font-weight:600; color:#f59e0b;">{{ bus.departure_time or '08:00' }}</span>
+                    <div class="summary-item">
+                        <span class="label">Departure</span>
+                        <span class="value gold">{{ bus.departure_time or '08:00' }}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:#64748b;">Arrival:</span>
-                        <span style="font-weight:600; color:#f59e0b;">{{ bus.arrival_time or '14:00' }}</span>
+                    <div class="summary-item">
+                        <span class="label">Arrival</span>
+                        <span class="value gold">{{ bus.arrival_time or '14:00' }}</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">
-                        <span style="color:#64748b;">Seats:</span>
-                        <span style="font-weight:600; color:#f59e0b;" id="selectedSeatsDisplay">None selected</span>
+                    <div class="summary-item">
+                        <span class="label">Seats</span>
+                        <span class="value gold" id="selectedSeatsDisplay">None selected</span>
                     </div>
                 </div>
                 
-                <div style="display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid #f1f5f9;">
-                    <span style="font-weight:600; color:#0f172a;">Total Fare</span>
-                    <span style="font-weight:800; font-size:1.3rem; color:#f59e0b;" id="totalFare">KSh 0</span>
+                <!-- Total -->
+                <div class="summary-total">
+                    <span class="label">Total Fare</span>
+                    <span class="value" id="totalFare">KSh 0</span>
                 </div>
                 
+                <!-- Passenger Details -->
                 <div style="margin:16px 0;">
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
-                        <i class="fas fa-user"></i> Full Name <span style="color:#ef4444;">*</span>
-                    </label>
-                    <input type="text" id="passengerName" class="form-input" placeholder="John Doe" />
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-user"></i> Full Name <span class="required">*</span></label>
+                        <input type="text" id="passengerName" class="form-input" placeholder="Enter your full name" />
+                    </div>
                     
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin:8px 0 4px;">
-                        <i class="fas fa-phone"></i> Phone Number <span style="color:#ef4444;">*</span>
-                    </label>
-                    <input type="tel" id="passengerPhone" class="form-input" placeholder="+254 700 000 000" />
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-phone"></i> Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="passengerPhone" class="form-input" placeholder="e.g. 0712345678" />
+                    </div>
                     
-                    <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin:8px 0 4px;">
-                        <i class="fas fa-envelope"></i> Email (Optional)
-                    </label>
-                    <input type="email" id="passengerEmail" class="form-input" placeholder="john@example.com" />
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-envelope"></i> Email <span style="color:var(--text-muted); font-weight:400;">(Optional)</span></label>
+                        <input type="email" id="passengerEmail" class="form-input" placeholder="you@example.com" />
+                    </div>
                 </div>
                 
                 <input type="hidden" id="bookingDate" value="{{ date }}" />
                 
+                <!-- Confirm Button -->
                 <button class="btn-primary" onclick="confirmBooking()" id="confirmBtn" disabled>
                     <i class="fas fa-check-circle"></i> Confirm Booking
                 </button>
                 
-                <p style="text-align:center; color:#94a3b8; font-size:0.7rem; margin-top:8px;">
-                    <i class="fas fa-lock" style="color:#f59e0b;"></i> Payment will be collected upon arrival
-                </p>
+                <div class="payment-note">
+                    <i class="fas fa-lock"></i> Payment will be collected upon arrival
+                </div>
             </div>
+            
         </div>
-    </section>
+    </div>
 
     <script>
         let selectedSeats = [];
         const farePerSeat = {{ bus.fare or 1500 }};
         const busId = {{ bus.id }};
         const bookingDate = document.getElementById('bookingDate').value;
-        const vehicleType = "{{ vehicle.vehicle_type }}";
-        const isBus = vehicleType === 'Bus';
 
         function toggleSeat(element) {
             if (element.classList.contains('booked')) return;
@@ -315,6 +596,14 @@
             document.getElementById('selectedSeatsDisplay').textContent = count > 0 ? selectedSeats.join(', ') : 'None selected';
             document.getElementById('totalFare').textContent = `KSh ${total.toLocaleString()}`;
             document.getElementById('confirmBtn').disabled = count === 0;
+            
+            // Update button text based on selection
+            const btn = document.getElementById('confirmBtn');
+            if (count > 0) {
+                btn.innerHTML = `<i class="fas fa-check-circle"></i> Confirm Booking (${count} seat${count > 1 ? 's' : ''})`;
+            } else {
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Booking';
+            }
         }
 
         function confirmBooking() {
@@ -364,13 +653,13 @@
                 } else {
                     alert('❌ Booking failed: ' + data.error);
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Booking';
+                    updateSummary();
                 }
             })
             .catch(err => {
                 alert('❌ Network error: ' + err.message);
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Booking';
+                updateSummary();
             });
         }
 
