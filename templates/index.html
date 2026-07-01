@@ -20,7 +20,6 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(245,158,11,0.1); } 50% { box-shadow: 0 0 40px rgba(245,158,11,0.2); } }
-        @keyframes borderGlow { 0%,100% { border-color: rgba(245,158,11,0.1); } 50% { border-color: rgba(245,158,11,0.3); } }
         
         .animate-float { animation: float 6s ease-in-out infinite; }
         .animate-slide-up { animation: slideUp 0.8s ease-out forwards; }
@@ -132,7 +131,7 @@
         .nav-link.active { color: #f59e0b; }
         .nav-link.active::after { width: 60%; }
         
-        /* ===== CINEMATIC HERO ===== */
+        /* ===== CINEMATIC HERO WITH TEXT OVERLAY ===== */
         .hero-section {
             position: relative;
             min-height: 100vh;
@@ -140,15 +139,16 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: #0a0a1a;
             padding-top: 80px;
+            background: #0a0a1a;
         }
+        
+        /* Hero Background Image */
         .hero-background {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             z-index: 0;
         }
         .hero-background img {
@@ -156,39 +156,21 @@
             height: 100%;
             object-fit: cover;
         }
+        
+        /* Dark Overlay - Makes text readable */
         .hero-overlay {
             position: absolute;
             inset: 0;
             background: linear-gradient(135deg, 
-                rgba(10,10,26,0.88) 0%,
-                rgba(10,10,26,0.4) 40%,
-                rgba(10,10,26,0.2) 70%,
+                rgba(10,10,26,0.75) 0%,
+                rgba(10,10,26,0.3) 40%,
+                rgba(10,10,26,0.15) 70%,
                 rgba(10,10,26,0.05) 100%
             );
             z-index: 1;
         }
-        .hero-particles {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        .hero-particles .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            animation: floatParticle 15s infinite linear;
-        }
-        @keyframes floatParticle {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
-        }
         
+        /* Floating Accents */
         .hero-accent {
             position: absolute;
             border-radius: 50%;
@@ -199,7 +181,7 @@
         .hero-accent.gold {
             width: 500px;
             height: 500px;
-            background: rgba(245, 158, 11, 0.06);
+            background: rgba(245, 158, 11, 0.08);
             top: -100px;
             right: -100px;
             animation: float 8s ease-in-out infinite;
@@ -207,7 +189,7 @@
         .hero-accent.purple {
             width: 350px;
             height: 350px;
-            background: rgba(124, 58, 237, 0.05);
+            background: rgba(124, 58, 237, 0.06);
             bottom: -50px;
             left: -50px;
             animation: float 10s ease-in-out infinite reverse;
@@ -215,34 +197,70 @@
         .hero-accent.blue {
             width: 250px;
             height: 250px;
-            background: rgba(59, 130, 246, 0.04);
+            background: rgba(59, 130, 246, 0.05);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             animation: float 12s ease-in-out infinite 2s;
         }
         
+        /* ===== TRANSPARENT TEXT OVERLAY ===== */
         .hero-content {
             position: relative;
             z-index: 2;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 24px 40px;
+            padding: 40px 24px;
+        }
+        
+        /* Transparent Text Effect */
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -3px;
+            line-height: 1.05;
+            margin-bottom: 16px;
+            max-width: 700px;
+            text-shadow: 0 2px 40px rgba(0,0,0,0.3);
+        }
+        .hero-title .highlight { 
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+            text-shadow: none;
+        }
+        
+        .hero-subtitle {
+            color: rgba(255,255,255,0.85);
+            max-width: 550px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 32px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            font-weight: 400;
+        }
+        .hero-subtitle strong {
+            color: #fbbf24;
+            font-weight: 600;
         }
         
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(245, 158, 11, 0.12);
+            background: rgba(245, 158, 11, 0.15);
             backdrop-filter: blur(10px);
             padding: 8px 24px;
             border-radius: 9999px;
             font-size: 0.8rem;
             color: #fbbf24;
             font-weight: 600;
-            border: 1px solid rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.1);
             margin-bottom: 24px;
         }
         .hero-badge .dot {
@@ -252,51 +270,33 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        
-        .hero-title {
-            font-size: 4.5rem;
-            font-weight: 900;
-            color: white;
-            letter-spacing: -3px;
-            line-height: 1.05;
-            margin-bottom: 16px;
-            max-width: 700px;
-        }
-        .hero-title .highlight { 
-            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s ease-in-out infinite;
+        .hero-badge .rating {
+            background: rgba(245,158,11,0.2);
+            padding: 2px 12px;
+            border-radius: 9999px;
+            font-size: 0.65rem;
         }
         
-        .hero-subtitle {
-            color: rgba(255,255,255,0.6);
-            max-width: 500px;
-            font-size: 1.15rem;
-            line-height: 1.8;
-            margin-bottom: 32px;
-        }
-        
+        /* Search Card - Glass Effect */
         .hero-search-card {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.06);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-radius: 24px;
             padding: 32px;
             max-width: 750px;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
             transition: all 0.4s;
         }
         .hero-search-card:hover {
-            border-color: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
         }
         .hero-search-card .form-label {
             font-size: 0.7rem;
             font-weight: 600;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.6);
             display: block;
             margin-bottom: 4px;
             text-transform: uppercase;
@@ -304,8 +304,8 @@
         }
         .hero-search-card .form-label i { color: #f59e0b; margin-right: 4px; }
         .hero-search-card .form-input {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px;
             padding: 14px 18px;
             width: 100%;
@@ -313,11 +313,11 @@
             transition: all 0.3s;
             color: white;
         }
-        .hero-search-card .form-input::placeholder { color: rgba(255,255,255,0.3); }
+        .hero-search-card .form-input::placeholder { color: rgba(255,255,255,0.35); }
         .hero-search-card .form-input:focus {
             outline: none;
             border-color: #f59e0b;
-            background: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.1);
             box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.06);
         }
         .hero-search-card .form-input option { background: #1a1a3e; color: white; }
@@ -339,7 +339,11 @@
             transform: translateY(-3px); 
             box-shadow: 0 12px 35px rgba(245, 158, 11, 0.35);
         }
+        .hero-search-btn:active {
+            transform: scale(0.98);
+        }
         
+        /* Stats */
         .hero-stats {
             display: flex;
             gap: 48px;
@@ -352,10 +356,12 @@
             color: #f59e0b;
             display: block;
             font-feature-settings: "tnum";
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
         }
         .hero-stats .stat-item .label { 
             font-size: 0.8rem; 
-            color: rgba(255,255,255,0.4); 
+            color: rgba(255,255,255,0.5); 
+            font-weight: 400;
         }
         
         /* ===== VEHICLE SHOWCASE ===== */
@@ -462,6 +468,30 @@
             padding: 80px 20px;
             background: #f8fafc;
         }
+        .features-section .section-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .features-section .section-title .tag {
+            color: #f59e0b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .features-section .section-title h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+        .features-section .section-title h2 span { color: #f59e0b; }
+        .features-section .section-title p {
+            color: #64748b;
+            max-width: 500px;
+            margin: 8px auto 0;
+        }
+        
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -502,6 +532,30 @@
             padding: 80px 20px;
             background: white;
         }
+        .testimonials-section .section-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .testimonials-section .section-title .tag {
+            color: #f59e0b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .testimonials-section .section-title h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+        .testimonials-section .section-title h2 span { color: #f59e0b; }
+        .testimonials-section .section-title p {
+            color: #64748b;
+            max-width: 500px;
+            margin: 8px auto 0;
+        }
+        
         .testimonials-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -591,6 +645,7 @@
             transition: color 0.3s;
         }
         .app-footer .footer-links a:hover { color: #f59e0b; }
+        .app-footer .footer-links a i { margin-right: 6px; width: 16px; }
         .app-footer .footer-bottom {
             max-width: 1200px;
             margin: 32px auto 0;
@@ -632,7 +687,7 @@
         
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
-            .hero-title { font-size: 3.2rem; letter-spacing: -2px; }
+            .hero-title { font-size: 3.5rem; letter-spacing: -2px; }
             .hero-search-card { max-width: 100%; }
             .hero-stats { gap: 24px; }
             .hero-stats .stat-item .number { font-size: 1.6rem; }
@@ -642,10 +697,10 @@
         }
         
         @media (max-width: 768px) {
-            .hero-title { font-size: 2.4rem; letter-spacing: -1.5px; }
+            .hero-title { font-size: 2.6rem; letter-spacing: -1.5px; }
             .hero-section { min-height: auto; padding: 120px 0 60px; }
             .hero-content { padding: 20px 16px; }
-            .hero-subtitle { font-size: 0.95rem; }
+            .hero-subtitle { font-size: 1rem; }
             .hero-search-card { padding: 20px 16px; border-radius: 20px; }
             .hero-search-grid { grid-template-columns: 1fr 1fr !important; }
             .hero-stats { gap: 16px; flex-wrap: wrap; }
@@ -664,10 +719,12 @@
             .hero-accent.gold { width: 200px; height: 200px; }
             .hero-accent.purple { width: 150px; height: 150px; }
             .vehicle-showcase .section-title h2 { font-size: 2rem; }
+            .features-section .section-title h2 { font-size: 2rem; }
+            .testimonials-section .section-title h2 { font-size: 2rem; }
         }
         
         @media (max-width: 480px) {
-            .hero-title { font-size: 1.8rem; }
+            .hero-title { font-size: 2rem; }
             .hero-badge { font-size: 0.65rem; padding: 4px 14px; }
             .hero-search-grid { grid-template-columns: 1fr !important; }
             .vehicle-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -679,6 +736,8 @@
             .feature-card { padding: 16px 12px; border-radius: 14px; }
             .feature-card .icon { width: 48px; height: 48px; font-size: 1.2rem; }
             .app-footer .footer-bottom { flex-direction: column; text-align: center; }
+            .hero-stats .stat-item .number { font-size: 1rem; }
+            .hero-stats .stat-item .label { font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -703,41 +762,41 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
+    <!-- ===== CINEMATIC HERO ===== -->
     <section class="hero-section">
+        <!-- Background Image -->
         <div class="hero-background">
             <img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?auto=format&fit=crop&w=1400&q=80" alt="Executive Bus" loading="lazy" />
         </div>
+        
+        <!-- Overlay for Text Readability -->
         <div class="hero-overlay"></div>
+        
+        <!-- Floating Accents -->
         <div class="hero-accent gold"></div>
         <div class="hero-accent purple"></div>
         <div class="hero-accent blue"></div>
         
-        <div class="hero-particles">
-            <div class="particle" style="left:10%; animation-delay:0s; animation-duration:20s;"></div>
-            <div class="particle" style="left:30%; animation-delay:3s; animation-duration:18s;"></div>
-            <div class="particle" style="left:50%; animation-delay:6s; animation-duration:22s;"></div>
-            <div class="particle" style="left:70%; animation-delay:9s; animation-duration:16s;"></div>
-            <div class="particle" style="left:90%; animation-delay:2s; animation-duration:25s;"></div>
-            <div class="particle" style="left:20%; animation-delay:5s; animation-duration:19s;"></div>
-            <div class="particle" style="left:60%; animation-delay:8s; animation-duration:21s;"></div>
-            <div class="particle" style="left:80%; animation-delay:1s; animation-duration:23s;"></div>
-        </div>
-        
+        <!-- Hero Content - Transparent Text Overlay -->
         <div class="hero-content">
+            <!-- Badge -->
             <div class="animate-slide-down" style="animation-delay:0.1s;">
                 <div class="hero-badge">
                     <span class="dot"></span>
                     Premium Executive Transport
-                    <span style="margin-left:8px; background:rgba(245,158,11,0.15); padding:2px 12px; border-radius:9999px; font-size:0.65rem;">⭐ 4.9/5</span>
+                    <span class="rating">⭐ 4.9/5</span>
                 </div>
             </div>
             
+            <!-- Main Title - Transparent Text -->
             <h1 class="hero-title animate-slide-up" style="animation-delay:0.2s;">
                 Travel <span class="highlight">Smart</span>,<br>Travel in <span class="highlight">Comfort</span>
             </h1>
+            
+            <!-- Subtitle - Transparent Text -->
             <p class="hero-subtitle animate-slide-up" style="animation-delay:0.3s;">
-                Book premium buses, executive taxis, and luxury vehicles. Compare prices, choose your seats, and travel in style across Kenya.
+                Book premium <strong>buses</strong>, executive <strong>taxis</strong>, and luxury <strong>vehicles</strong>.<br>
+                Compare prices, choose your seats, and travel in style across <strong>Kenya</strong>.
             </p>
             
             <!-- Search Card -->
@@ -785,6 +844,7 @@
                 </form>
             </div>
             
+            <!-- Stats -->
             <div class="hero-stats animate-fade-in" style="animation-delay:0.6s;">
                 <div class="stat-item">
                     <span class="number">500+</span>
@@ -869,10 +929,10 @@
 
     <!-- ===== FEATURES ===== -->
     <section class="features-section">
-        <div class="section-title" style="text-align:center; margin-bottom:48px;">
-            <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Why Choose Us</span>
-            <h2 style="font-size:2.8rem; font-weight:800; color:#0f172a; margin-top:4px;">Premium <span style="color:#f59e0b;">Service</span></h2>
-            <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Experience the best in executive transport and premium bus services</p>
+        <div class="section-title">
+            <span class="tag">Why Choose Us</span>
+            <h2>Premium <span>Service</span></h2>
+            <p>Experience the best in executive transport and premium bus services</p>
         </div>
         
         <div class="features-grid">
@@ -901,10 +961,10 @@
 
     <!-- ===== TESTIMONIALS ===== -->
     <section class="testimonials-section">
-        <div class="section-title" style="text-align:center; margin-bottom:48px;">
-            <span style="color:#f59e0b; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;">Testimonials</span>
-            <h2 style="font-size:2.8rem; font-weight:800; color:#0f172a; margin-top:4px;">What Our <span style="color:#f59e0b;">Clients</span> Say</h2>
-            <p style="color:#64748b; max-width:500px; margin:8px auto 0;">Real reviews from real travelers</p>
+        <div class="section-title">
+            <span class="tag">Testimonials</span>
+            <h2>What Our <span>Clients</span> Say</h2>
+            <p>Real reviews from real travelers</p>
         </div>
         
         <div class="testimonials-grid">
