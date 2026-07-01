@@ -97,6 +97,20 @@ def load_buses():
             pass
     return load_json('buses.json')
 
+def load_schedules():
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/schedules?select=*",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error loading schedules: {e}")
+    return load_json('schedules.json')
+
 def load_bus_seats(bus_id, date):
     if DB_CONNECTED:
         try:
@@ -234,6 +248,28 @@ def get_route_by_id(route_id):
             return route
     return None
 
+def get_schedule_by_bus_and_date(bus_id, date):
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/schedules?bus_id=eq.{bus_id}&departure_date=eq.{date}&status=eq.available",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200:
+                data = response.json()
+                if data:
+                    return data[0]
+        except Exception as e:
+            print(f"Error getting schedule: {e}")
+    
+    # JSON fallback
+    schedules = load_json('schedules.json')
+    for s in schedules:
+        if s.get('bus_id') == bus_id and s.get('departure_date') == date and s.get('status') == 'available':
+            return s
+    return None
+
 def save_booking_to_supabase(booking_data):
     if not DB_CONNECTED:
         raise Exception("Supabase not connected")
@@ -253,9 +289,6 @@ def save_booking_to_supabase(booking_data):
         error_msg = f"Status: {response.status_code}, Body: {response.text[:200]}"
         print(f"❌ Supabase insert failed: {error_msg}")
         raise Exception(f"Supabase insert failed: {error_msg}")
-
-def save_booking(booking_data):
-    return save_booking_to_supabase(booking_data)
 
 def get_booking_by_ref(booking_ref):
     print(f"🔍 Looking for booking: {booking_ref} in Supabase")
@@ -309,48 +342,103 @@ def search_results():
     time_from = request.args.get('time_from', '')
     time_to = request.args.get('time_to', '')
     
-    buses = load_buses()
-    routes = load_routes()
+    if not origin or not destination or not date:
+        flash('Please fill in all search fields', 'warning')
+        return redirect(url_for('index'))
     
-    results = []
-    for route in routes:
-        if route.get('origin', '').lower().strip() == origin.lower().strip() and route.get('destination', '').lower().strip() == destination.lower().strip():
-            for bus in buses:
-                if bus.get('route_id') == route.get('id') and bus.get('status') == 'active':
-                    vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
-                    if vehicle:
-                        seat_data = load_bus_seats(bus.get('id'), date)
-                        booked = seat_data.get('booked_seats', 0)
-                        total = bus.get('total_seats', 40)
-                        available = total - booked
-                        
-                        dep_time = bus.get('departure_time', '')
-                        if time_from and dep_time:
-                            if dep_time < time_from:
-                                continue
-                        if time_to and dep_time:
-                            if dep_time > time_to:
-                                continue
-                        
-                        if available >= passengers:
-                            results.append({
-                                'bus': bus,
-                                'vehicle': vehicle,
-                                'route': route,
-                                'fare': bus.get('fare', route.get('base_fare', 500)),
-                                'available_seats': available,
-                                'date': date
-                            })
-    
-    return render_template('search_results.html', 
-        results=results, 
-        origin=origin, 
-        destination=destination, 
-        date=date, 
-        passengers=passengers,
-        time_from=time_from,
-        time_to=time_to
-    )
+    try:
+        # 1. Find the route
+        route = None
+        routes = load_routes()
+        for r in routes:
+            if r.get('origin', '').lower().strip() == origin.lower().strip() and r.get('destination', '').lower().strip() == destination.lower().strip():
+                route = r
+                break
+        
+        if not route:
+            flash('No route found for this destination', 'warning')
+            return render_template('search_results.html', results=[], origin=origin, destination=destination, date=date, passengers=passengers)
+        
+        route_id = route.get('id')
+        
+        # 2. Get all buses for this route
+        buses = load_buses()
+        results = []
+        
+        for bus in buses:
+            if bus.get('route_id') == route_id and bus.get('status') == 'active':
+                bus_id = bus.get('id')
+                
+                # 3. Check if this bus has a schedule on the selected date
+                schedule = get_schedule_by_bus_and_date(bus_id, date)
+                if not schedule:
+                    continue  # No schedule for this date
+                
+                # 4. Get vehicle info
+                vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
+                if not vehicle:
+                    continue
+                
+                # 5. Get seat availability
+                booked_seats = 0
+                if DB_CONNECTED:
+                    try:
+                        seat_response = requests.get(
+                            f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule.get('id')}&booking_date=eq.{date}",
+                            headers=SUPABASE_HEADERS,
+                            timeout=10
+                        )
+                        if seat_response.status_code == 200 and seat_response.json():
+                            seat_data = seat_response.json()[0]
+                            booked_seats = seat_data.get('booked_seats', 0)
+                    except:
+                        booked_seats = 0
+                else:
+                    seat_data = load_bus_seats(bus_id, date)
+                    booked_seats = seat_data.get('booked_seats', 0)
+                
+                total_seats = bus.get('total_seats', schedule.get('total_seats', 40))
+                available_seats = total_seats - booked_seats
+                
+                # 6. Apply time filters if any
+                dep_time = bus.get('departure_time', '')
+                if time_from and dep_time:
+                    if dep_time < time_from:
+                        continue
+                if time_to and dep_time:
+                    if dep_time > time_to:
+                        continue
+                
+                # 7. Check if enough seats available
+                if available_seats >= passengers:
+                    results.append({
+                        'bus': bus,
+                        'vehicle': vehicle,
+                        'route': route,
+                        'schedule': schedule,
+                        'fare': bus.get('fare', route.get('base_fare', 500)),
+                        'available_seats': available_seats,
+                        'date': date
+                    })
+        
+        # Sort results by departure time
+        results.sort(key=lambda x: x['bus'].get('departure_time', '00:00'))
+        
+        return render_template('search_results.html', 
+            results=results, 
+            origin=origin, 
+            destination=destination, 
+            date=date, 
+            passengers=passengers,
+            time_from=time_from,
+            time_to=time_to
+        )
+        
+    except Exception as e:
+        print(f"❌ Search error: {e}")
+        traceback.print_exc()
+        flash('An error occurred while searching. Please try again.', 'danger')
+        return render_template('search_results.html', results=[], origin=origin, destination=destination, date=date, passengers=passengers)
 
 @app.route('/booking/<int:bus_id>')
 def booking_page(bus_id):
@@ -361,17 +449,41 @@ def booking_page(bus_id):
     
     date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
     
+    # Get schedule for this bus on this date
+    schedule = get_schedule_by_bus_and_date(bus_id, date)
+    
+    if not schedule:
+        flash('No schedule available for this date', 'warning')
+        return redirect(url_for('index'))
+    
     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
     route = get_route_by_id(bus.get('route_id'))
     
-    total_seats = bus.get('total_seats', 40)
-    seat_data = load_bus_seats(bus_id, date)
-    booked_seats_list = seat_data.get('booked_seats_list', [])
+    total_seats = schedule.get('total_seats', bus.get('total_seats', 40))
+    schedule_id = schedule.get('id')
+    
+    # Get booked seats from bus_seats
+    booked_seats_list = []
+    if DB_CONNECTED:
+        try:
+            response = requests.get(
+                f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{date}",
+                headers=SUPABASE_HEADERS,
+                timeout=10
+            )
+            if response.status_code == 200 and response.json():
+                seat_data = response.json()[0]
+                booked_seats_list = seat_data.get('booked_seats_list', [])
+        except:
+            pass
+    else:
+        seat_data = load_bus_seats(bus_id, date)
+        booked_seats_list = seat_data.get('booked_seats_list', [])
     
     seats = []
     for i in range(1, total_seats + 1):
-        seat_id = str(i)
-        is_booked = seat_id in booked_seats_list
+        seat_num = str(i)
+        is_booked = seat_num in booked_seats_list
         seats.append({
             'id': i,
             'number': i,
@@ -382,8 +494,10 @@ def booking_page(bus_id):
         bus=bus,
         vehicle=vehicle,
         route=route,
+        schedule=schedule,
         seats=seats,
-        date=date
+        date=date,
+        fare=bus.get('fare')
     )
 
 @app.route('/api/book', methods=['POST'])
@@ -396,14 +510,7 @@ def create_booking():
         print("📦 Data received:", data)
         
         bus_id = data.get('bus_id')
-        print(f"🚌 Bus ID: {bus_id}")
-        
-        bus = get_bus_by_id(bus_id)
-        if not bus:
-            return jsonify({'success': False, 'error': 'Bus not found'}), 404
-        
         booking_date = data.get('booking_date', datetime.now().strftime('%Y-%m-%d'))
-        booking_time = data.get('booking_time', datetime.now().strftime('%H:%M:%S'))
         passenger_name = data.get('passenger_name', '').strip()
         passenger_phone = data.get('passenger_phone', '').strip()
         passenger_email = data.get('passenger_email', '').strip()
@@ -411,35 +518,95 @@ def create_booking():
         total_fare = data.get('total_fare', 0)
         payment_method = data.get('payment_method', 'mpesa')
         
+        print(f"🚌 Bus ID: {bus_id}")
         print(f"👤 Passenger: {passenger_name}")
         print(f"💺 Seats: {selected_seats}")
-        print(f"💰 Fare: {total_fare}")
         print(f"📅 Date: {booking_date}")
-        print(f"⏰ Time: {booking_time}")
         
         if not all([bus_id, passenger_name, passenger_phone, selected_seats]):
             return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
         
-        seat_data = load_bus_seats(bus_id, booking_date)
-        booked_seats_list = seat_data.get('booked_seats_list', [])
-        print(f"📊 Current booked: {booked_seats_list}")
+        bus = get_bus_by_id(bus_id)
+        if not bus:
+            return jsonify({'success': False, 'error': 'Bus not found'}), 404
         
+        # Get schedule for this date
+        schedule = get_schedule_by_bus_and_date(bus_id, booking_date)
+        
+        if not schedule:
+            return jsonify({'success': False, 'error': 'No schedule available for this date'}), 404
+        
+        schedule_id = schedule.get('id')
+        
+        # Get current booked seats
+        booked_seats_list = []
+        if DB_CONNECTED:
+            try:
+                response = requests.get(
+                    f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{booking_date}",
+                    headers=SUPABASE_HEADERS,
+                    timeout=10
+                )
+                if response.status_code == 200 and response.json():
+                    seat_data = response.json()[0]
+                    booked_seats_list = seat_data.get('booked_seats_list', [])
+            except:
+                pass
+        
+        # Check if seats are already booked
         for seat in selected_seats:
             if str(seat) in booked_seats_list:
                 return jsonify({'success': False, 'error': f'Seat {seat} is already booked for {booking_date}'}), 400
         
+        # Update booked seats
         new_booked_list = booked_seats_list.copy()
         for seat in selected_seats:
             seat = str(seat)
             if seat not in new_booked_list:
                 new_booked_list.append(seat)
         
-        print(f"📊 New booked: {new_booked_list}")
+        # Update bus_seats
+        if DB_CONNECTED:
+            try:
+                check = requests.get(
+                    f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{booking_date}",
+                    headers=SUPABASE_HEADERS,
+                    timeout=10
+                )
+                
+                if check.status_code == 200 and check.json():
+                    # Update existing
+                    response = requests.patch(
+                        f"{SUPABASE_URL}/rest/v1/bus_seats?schedule_id=eq.{schedule_id}&booking_date=eq.{booking_date}",
+                        headers=SUPABASE_HEADERS,
+                        json={
+                            'booked_seats_list': new_booked_list,
+                            'booked_seats': len(new_booked_list),
+                            'updated_at': datetime.utcnow().isoformat()
+                        },
+                        timeout=10
+                    )
+                else:
+                    # Insert new
+                    response = requests.post(
+                        f"{SUPABASE_URL}/rest/v1/bus_seats",
+                        headers=SUPABASE_HEADERS,
+                        json={
+                            'schedule_id': schedule_id,
+                            'booking_date': booking_date,
+                            'booked_seats_list': new_booked_list,
+                            'booked_seats': len(new_booked_list)
+                        },
+                        timeout=10
+                    )
+            except Exception as e:
+                print(f"Error updating seats: {e}")
+                return jsonify({'success': False, 'error': 'Failed to update seats'}), 500
+        else:
+            # JSON fallback
+            update_bus_seats(bus_id, booking_date, new_booked_list)
         
-        update_success = update_bus_seats(bus_id, booking_date, new_booked_list)
-        if not update_success:
-            return jsonify({'success': False, 'error': 'Failed to update seats. Please try again.'}), 500
-        
+        # Create booking
         booking_ref = generate_booking_ref()
         booking_id = generate_booking_id()
         
@@ -447,6 +614,7 @@ def create_booking():
             'booking_id': booking_id,
             'booking_ref': booking_ref,
             'bus_id': bus_id,
+            'schedule_id': schedule_id,
             'vehicle_id': bus.get('vehicle_id'),
             'route_id': bus.get('route_id'),
             'passenger_name': passenger_name,
@@ -455,7 +623,7 @@ def create_booking():
             'selected_seats': selected_seats,
             'total_fare': total_fare,
             'booking_date': booking_date,
-            'booking_time': booking_time,
+            'departure_date': booking_date,
             'departure_time': bus.get('departure_time'),
             'arrival_time': bus.get('arrival_time'),
             'status': 'confirmed',
@@ -464,9 +632,13 @@ def create_booking():
             'created_at': datetime.utcnow().isoformat()
         }
         
-        print(f"💾 Saving booking to Supabase: {booking_data}")
-        
-        save_booking_to_supabase(booking_data)
+        if DB_CONNECTED:
+            save_booking_to_supabase(booking_data)
+        else:
+            # JSON fallback
+            bookings = load_json('bookings.json')
+            bookings.append(booking_data)
+            save_json('bookings.json', bookings)
         
         print(f"✅ Booking created: {booking_ref}")
         print("=" * 60)
@@ -572,6 +744,7 @@ def api_status():
         'vehicles': len(load_vehicles()),
         'routes': len(load_routes()),
         'buses': len(load_buses()),
+        'schedules': len(load_schedules()),
         'bookings': len(load_bookings()),
         'timestamp': datetime.utcnow().isoformat()
     })
@@ -597,4 +770,23 @@ if __name__ == '__main__':
     vehicles = load_vehicles()
     routes = load_routes()
     buses = load_buses()
-    print(f"📊 Vehicles: {len(vehicles)},
+    schedules = load_schedules()
+    bookings = load_bookings()
+    
+    print(f"📊 Vehicles: {len(vehicles)}")
+    print(f"📊 Routes: {len(routes)}")
+    print(f"📊 Buses: {len(buses)}")
+    print(f"📊 Schedules: {len(schedules)}")
+    print(f"📊 Bookings: {len(bookings)}")
+    print("="*60)
+    
+    # Show some sample schedules
+    if schedules:
+        print("\n📅 Sample Schedules:")
+        for s in schedules[:5]:
+            print(f"  - Bus {s.get('bus_id')} on {s.get('departure_date')}: {s.get('available_seats')} seats")
+    
+    print("\n🚀 Starting server...")
+    print("📍 http://localhost:5000")
+    print("="*60)
+    app.run(debug=True, host='0.0.0.0', port=5000)
