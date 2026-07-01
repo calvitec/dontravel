@@ -438,9 +438,17 @@
             font-weight: 400;
         }
         
-        /* ===== SEARCH RESULTS ===== */
+        /* ===== SEARCH RESULTS - MOVED OUTSIDE HERO ===== */
+        .results-section {
+            background: #0a0a1a;
+            padding: 20px 20px 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .results-section .results-container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
         #searchResults {
-            margin-top: 16px;
             display: none;
         }
         #searchResults.visible {
@@ -925,9 +933,8 @@
         </div>
     </header>
 
-    <!-- ===== HERO WITH CAROUSEL - FIXED HEIGHT ===== -->
+    <!-- ===== HERO WITH CAROUSEL ===== -->
     <section class="hero-section">
-        <!-- CAROUSEL IMAGES -->
         <div class="carousel-container">
             <div class="carousel-slide">
                 <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1400&q=80" alt="Modern Bus" loading="lazy" />
@@ -1002,9 +1009,6 @@
                         </div>
                     </div>
                 </form>
-                
-                <!-- ===== RESULTS CONTAINER ===== -->
-                <div id="searchResults"></div>
             </div>
             
             <div class="hero-stats animate-fade-in" style="animation-delay:0.6s;">
@@ -1036,6 +1040,13 @@
                 <span class="dot-indicator" data-index="2"></span>
             </div>
             <button id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- ===== SEARCH RESULTS - MOVED OUTSIDE HERO ===== -->
+    <section class="results-section" id="resultsSection">
+        <div class="results-container">
+            <div id="searchResults"></div>
         </div>
     </section>
 
@@ -1288,6 +1299,7 @@
                 searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
                 searchBtn.disabled = true;
                 resultsContainer.innerHTML = '';
+                resultsContainer.className = '';
                 
                 try {
                     const response = await fetch(`/api/search?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${date}&passengers=${passengers}`);
@@ -1304,10 +1316,11 @@
                     console.error('Search error:', error);
                     showToast('❌ Error searching. Please try again.');
                     resultsContainer.innerHTML = `
-                        <div style="margin-top:16px; padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center;">
+                        <div style="padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center;">
                             <div style="font-size:2rem; margin-bottom:8px;">❌</div>
                             <h3 style="color:white; font-size:1rem; margin:0;">Search Error</h3>
                             <p style="color:rgba(255,255,255,0.6); font-size:0.85rem; margin-top:4px;">${error.message}</p>
+                            <p style="color:rgba(255,255,255,0.4); font-size:0.75rem; margin-top:4px;">Please try again or check your connection</p>
                         </div>
                     `;
                     resultsContainer.className = 'visible';
@@ -1323,7 +1336,7 @@
             
             if (results && results.length > 0) {
                 let html = `
-                    <div style="margin-top:16px; padding:16px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); animation:slideUp 0.5s ease-out;">
+                    <div style="padding:16px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); animation:slideUp 0.5s ease-out;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:6px;">
                             <h3 style="color:#fbbf24; font-size:0.95rem; margin:0;">
                                 ✅ Found ${results.length} vehicles for ${passengers} passengers
@@ -1380,11 +1393,14 @@
                 highlightVehicles(results);
             } else {
                 resultsContainer.innerHTML = `
-                    <div style="margin-top:16px; padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center; animation:slideUp 0.5s ease-out;">
+                    <div style="padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center; animation:slideUp 0.5s ease-out;">
                         <div style="font-size:2rem; margin-bottom:8px;">🚌</div>
                         <h3 style="color:white; font-size:0.95rem; margin:0;">No vehicles available</h3>
                         <p style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-top:4px;">
                             No vehicles found for ${passengers} passengers on ${origin} → ${destination}
+                        </p>
+                        <p style="color:rgba(255,255,255,0.3); font-size:0.7rem; margin-top:2px;">
+                            Try adjusting your search criteria
                         </p>
                     </div>
                 `;
@@ -1398,7 +1414,10 @@
             }
             
             setTimeout(() => {
-                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const resultsSection = document.getElementById('resultsSection');
+                if (resultsSection) {
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }, 200);
         }
 
