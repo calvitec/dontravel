@@ -440,11 +440,6 @@
         /* ===== SEARCH RESULTS ===== */
         #searchResults {
             margin-top: 24px;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.08);
             display: none;
         }
         #searchResults.visible {
@@ -944,10 +939,7 @@
             </div>
         </div>
         
-        <!-- Light overlay so text is readable -->
         <div class="hero-overlay"></div>
-        
-        <!-- Floating accents -->
         <div class="hero-accent gold"></div>
         <div class="hero-accent purple"></div>
         <div class="hero-accent blue"></div>
@@ -970,7 +962,7 @@
                 Compare prices, choose your seats, and travel in style across <strong>Kenya</strong>.
             </p>
             
-            <!-- Search Card - UPDATED with AJAX -->
+            <!-- Search Card -->
             <div class="hero-search-card animate-zoom-in" style="animation-delay:0.4s;" id="search-section">
                 <form id="searchForm">
                     <div class="search-grid">
@@ -1277,14 +1269,16 @@
 
         resetInterval();
 
-        // ===== INSTANT AJAX SEARCH =====
+        // ===== INSTANT AJAX SEARCH - NO PAGE RELOAD =====
         const searchForm = document.getElementById('searchForm');
         const searchBtn = document.getElementById('searchBtn');
         const resultsContainer = document.getElementById('searchResults');
 
         if (searchForm) {
             searchForm.addEventListener('submit', async function(e) {
+                // IMPORTANT: Prevent page reload
                 e.preventDefault();
+                e.stopPropagation();
                 
                 const origin = document.getElementById('originInput').value.trim() || 'Gilgil';
                 const destination = document.getElementById('destInput').value.trim() || 'Nairobi';
@@ -1294,17 +1288,46 @@
                 // Show loading state
                 searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
                 searchBtn.disabled = true;
+                resultsContainer.innerHTML = '';
                 
                 try {
                     // Make AJAX request to Flask API
                     const response = await fetch(`/api/search?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${date}&passengers=${passengers}`);
-                    const data = await response.json();
                     
-                    // Display results instantly
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Search results:', data);
+                    
+                    // Display results instantly below the search form
                     displaySearchResults(data, origin, destination, passengers);
                 } catch (error) {
                     console.error('Search error:', error);
                     showToast('❌ Error searching. Please try again.');
+                    resultsContainer.innerHTML = `
+                        <div style="
+                            margin-top: 20px;
+                            padding: 30px 20px;
+                            background: rgba(255,255,255,0.05);
+                            backdrop-filter: blur(10px);
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.08);
+                            text-align: center;
+                            animation: slideUp 0.5s ease-out;
+                        ">
+                            <div style="font-size: 2.5rem; margin-bottom: 12px;">❌</div>
+                            <h3 style="color: white; font-size: 1.1rem; margin: 0;">Search Error</h3>
+                            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 6px;">
+                                ${error.message}
+                            </p>
+                            <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 4px;">
+                                Please try again or check your connection
+                            </p>
+                        </div>
+                    `;
+                    resultsContainer.className = 'visible';
                 } finally {
                     searchBtn.innerHTML = '<i class="fas fa-search"></i> Search';
                     searchBtn.disabled = false;
@@ -1319,15 +1342,24 @@
             if (results && results.length > 0) {
                 // Build results HTML
                 let html = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="color: #fbbf24; font-size: 1.1rem; margin: 0;">
-                            ✅ Found ${results.length} vehicles for ${passengers} passengers
-                        </h3>
-                        <span style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">
-                            ${origin} → ${destination}
-                        </span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                    <div style="
+                        margin-top: 20px;
+                        padding: 20px;
+                        background: rgba(255,255,255,0.05);
+                        backdrop-filter: blur(10px);
+                        border-radius: 16px;
+                        border: 1px solid rgba(255,255,255,0.08);
+                        animation: slideUp 0.5s ease-out;
+                    ">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                            <h3 style="color: #fbbf24; font-size: 1.1rem; margin: 0;">
+                                ✅ Found ${results.length} vehicles for ${passengers} passengers
+                            </h3>
+                            <span style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">
+                                ${origin} → ${destination} · ${new Date().toLocaleDateString()}
+                            </span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
                 `;
                 
                 results.forEach(vehicle => {
@@ -1337,7 +1369,14 @@
                     const type = vehicle.vehicle_type || vehicle.type || 'Standard';
                     
                     html += `
-                        <div class="result-card">
+                        <div class="result-card" style="
+                            background: rgba(255,255,255,0.06);
+                            border: 1px solid rgba(34,197,94,0.2);
+                            border-radius: 12px;
+                            padding: 16px;
+                            text-align: center;
+                            transition: all 0.3s;
+                        ">
                             <div style="font-size: 2rem; margin-bottom: 8px;">
                                 <i class="fas ${getVehicleIcon(name)}"></i>
                             </div>
@@ -1352,7 +1391,10 @@
                     `;
                 });
                 
-                html += `</div>`;
+                html += `
+                        </div>
+                    </div>
+                `;
                 resultsContainer.innerHTML = html;
                 resultsContainer.className = 'visible';
                 
@@ -1360,11 +1402,23 @@
                 highlightVehicles(results);
             } else {
                 resultsContainer.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <div style="font-size: 2rem; margin-bottom: 8px;">🚌</div>
+                    <div style="
+                        margin-top: 20px;
+                        padding: 30px 20px;
+                        background: rgba(255,255,255,0.05);
+                        backdrop-filter: blur(10px);
+                        border-radius: 16px;
+                        border: 1px solid rgba(255,255,255,0.08);
+                        text-align: center;
+                        animation: slideUp 0.5s ease-out;
+                    ">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">🚌</div>
                         <h3 style="color: white; font-size: 1.1rem; margin: 0;">No vehicles available</h3>
-                        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 4px;">
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 6px;">
                             No vehicles found for ${passengers} passengers on ${origin} → ${destination}
+                        </p>
+                        <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 4px;">
+                            Try adjusting your search criteria
                         </p>
                     </div>
                 `;
@@ -1379,7 +1433,9 @@
             }
             
             // Scroll to results
-            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
         }
 
         function highlightVehicles(results) {
@@ -1417,6 +1473,24 @@
             
             const toast = document.createElement('div');
             toast.className = 'search-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.85);
+                backdrop-filter: blur(12px);
+                color: white;
+                padding: 16px 32px;
+                border-radius: 16px;
+                font-weight: 500;
+                z-index: 9999;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                animation: slideUp 0.4s ease-out;
+                max-width: 90%;
+                text-align: center;
+                font-size: 1rem;
+            `;
             toast.textContent = message;
             document.body.appendChild(toast);
             
