@@ -290,60 +290,10 @@ def generate_booking_ref():
 def generate_booking_id():
     return 'BK-' + str(uuid.uuid4().hex[:8]).upper()
 
-# ===== CREATE SAMPLE DATA WITH YOUR VEHICLES =====
-def create_sample_data():
-    vehicles = load_json('vehicles.json')
-    if not vehicles:
-        print("📁 Creating sample vehicles...")
-        sample_vehicles = [
-            {"id": 1, "vehicle_id": "VEH-001", "vehicle_type": "Axio", "vehicle_model": "Toyota Axio", "capacity": 4, "base_price": 2000, "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop", "status": "available"},
-            {"id": 2, "vehicle_id": "VEH-002", "vehicle_type": "Spacio", "vehicle_model": "Toyota Spacio", "capacity": 5, "base_price": 2000, "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop", "status": "available"},
-            {"id": 3, "vehicle_id": "VEH-003", "vehicle_type": "Fielder", "vehicle_model": "Toyota Fielder", "capacity": 5, "base_price": 2000, "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop", "status": "available"},
-            {"id": 4, "vehicle_id": "VEH-004", "vehicle_type": "Noah", "vehicle_model": "Toyota Noah", "capacity": 7, "base_price": 1500, "image_url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop", "status": "available"},
-            {"id": 5, "vehicle_id": "VEH-005", "vehicle_type": "Probox", "vehicle_model": "Toyota Probox", "capacity": 4, "base_price": 2000, "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop", "status": "available"},
-            {"id": 6, "vehicle_id": "VEH-006", "vehicle_type": "Ractis", "vehicle_model": "Toyota Ractis", "capacity": 4, "base_price": 2000, "image_url": "https://images.unsplash.com/photo-1550355291-bbee04a5f9ba?w=600&h=400&fit=crop", "status": "available"},
-            {"id": 7, "vehicle_id": "VEH-007", "vehicle_type": "Bus", "vehicle_model": "Bus", "capacity": 40, "base_price": 500, "image_url": "https://images.unsplash.com/photo-1544626331-e26879cd4d9b?w=600&h=400&fit=crop", "status": "available"}
-        ]
-        save_json('vehicles.json', sample_vehicles)
-    
-    routes = load_json('routes.json')
-    if not routes:
-        print("📁 Creating sample routes...")
-        sample_routes = [
-            {"id": 1, "route_id": "RTE-001", "origin": "Gilgil", "destination": "Nairobi", "distance_km": 120, "duration_minutes": 120, "base_fare": 500},
-            {"id": 2, "route_id": "RTE-002", "origin": "Gilgil", "destination": "Nakuru", "distance_km": 60, "duration_minutes": 60, "base_fare": 750}
-        ]
-        save_json('routes.json', sample_routes)
-    
-    buses = load_json('buses.json')
-    if not buses:
-        print("📁 Creating sample buses...")
-        sample_buses = [
-            # Gilgil to Nairobi - Buses
-            {"id": 1, "bus_id": "BUS-001", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 7, "total_seats": 40, "fare": 500, "departure_time": "06:00:00", "arrival_time": "08:00:00", "status": "active"},
-            {"id": 2, "bus_id": "BUS-002", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 7, "total_seats": 40, "fare": 500, "departure_time": "10:00:00", "arrival_time": "12:00:00", "status": "active"},
-            {"id": 3, "bus_id": "BUS-003", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 7, "total_seats": 40, "fare": 500, "departure_time": "14:00:00", "arrival_time": "16:00:00", "status": "active"},
-            # Gilgil to Nairobi - Noah
-            {"id": 4, "bus_id": "BUS-004", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 4, "total_seats": 7, "fare": 1500, "departure_time": "07:00:00", "arrival_time": "09:00:00", "status": "active"},
-            {"id": 5, "bus_id": "BUS-005", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 4, "total_seats": 7, "fare": 1500, "departure_time": "12:00:00", "arrival_time": "14:00:00", "status": "active"},
-            # Gilgil to Nairobi - Other vehicles (Axio, Spacio, Fielder, Probox, Ractis)
-            {"id": 6, "bus_id": "BUS-006", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 1, "total_seats": 4, "fare": 2000, "departure_time": "08:00:00", "arrival_time": "10:00:00", "status": "active"},
-            {"id": 7, "bus_id": "BUS-007", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 2, "total_seats": 5, "fare": 2000, "departure_time": "09:00:00", "arrival_time": "11:00:00", "status": "active"},
-            {"id": 8, "bus_id": "BUS-008", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 3, "total_seats": 5, "fare": 2000, "departure_time": "11:00:00", "arrival_time": "13:00:00", "status": "active"},
-            {"id": 9, "bus_id": "BUS-009", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 5, "total_seats": 4, "fare": 2000, "departure_time": "13:00:00", "arrival_time": "15:00:00", "status": "active"},
-            {"id": 10, "bus_id": "BUS-010", "company_name": "Don Travels", "route_id": 1, "vehicle_id": 6, "total_seats": 4, "fare": 2000, "departure_time": "15:00:00", "arrival_time": "17:00:00", "status": "active"},
-            # Gilgil to Nakuru - All vehicles 750 per seat
-            {"id": 11, "bus_id": "BUS-011", "company_name": "Don Travels", "route_id": 2, "vehicle_id": 1, "total_seats": 4, "fare": 750, "departure_time": "08:00:00", "arrival_time": "09:00:00", "status": "active"},
-            {"id": 12, "bus_id": "BUS-012", "company_name": "Don Travels", "route_id": 2, "vehicle_id": 4, "total_seats": 7, "fare": 750, "departure_time": "10:00:00", "arrival_time": "11:00:00", "status": "active"},
-            {"id": 13, "bus_id": "BUS-013", "company_name": "Don Travels", "route_id": 2, "vehicle_id": 7, "total_seats": 40, "fare": 750, "departure_time": "12:00:00", "arrival_time": "13:00:00", "status": "active"}
-        ]
-        save_json('buses.json', sample_buses)
-
 # ===== ROUTES =====
 
 @app.route('/')
 def index():
-    create_sample_data()
     vehicles = load_vehicles()
     routes = load_routes()
     today = datetime.now().strftime('%Y-%m-%d')
@@ -366,7 +316,7 @@ def search_results():
     for route in routes:
         if route.get('origin', '').lower().strip() == origin.lower().strip() and route.get('destination', '').lower().strip() == destination.lower().strip():
             for bus in buses:
-                if bus.get('route_id') == route.get('id'):
+                if bus.get('route_id') == route.get('id') and bus.get('status') == 'active':
                     vehicle = get_vehicle_by_id(bus.get('vehicle_id'))
                     if vehicle:
                         seat_data = load_bus_seats(bus.get('id'), date)
@@ -374,7 +324,6 @@ def search_results():
                         total = bus.get('total_seats', 40)
                         available = total - booked
                         
-                        # Time filter
                         dep_time = bus.get('departure_time', '')
                         if time_from and dep_time:
                             if dep_time < time_from:
@@ -638,11 +587,14 @@ def handler(request, context):
     return app(request, context)
 
 if __name__ == '__main__':
-    create_sample_data()
     print("\n" + "="*60)
     print("🚌 DON TRAVELS - Complete Bus Booking System")
     print("="*60)
     print(f"📁 Database: {DB_TYPE}")
     print(f"🔗 Connected: {'✅ YES' if DB_CONNECTED else '❌ NO'}")
-    print("="*60)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    # Show data counts
+    vehicles = load_vehicles()
+    routes = load_routes()
+    buses = load_buses()
+    print(f"📊 Vehicles: {len(vehicles)},
