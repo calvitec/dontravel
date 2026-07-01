@@ -129,10 +129,11 @@
         .nav-link.active { color: #f59e0b; }
         .nav-link.active::after { width: 60%; }
         
-        /* ===== HERO WITH CAROUSEL ===== */
+        /* ===== HERO WITH CAROUSEL - FIXED HEIGHT ===== */
         .hero-section {
             position: relative;
-            min-height: 100vh;
+            min-height: 80vh;
+            max-height: 90vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -215,7 +216,7 @@
         
         .carousel-controls {
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
@@ -223,7 +224,7 @@
             gap: 12px;
             background: rgba(0,0,0,0.3);
             backdrop-filter: blur(8px);
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 40px;
             border: 1px solid rgba(255,255,255,0.1);
         }
@@ -231,10 +232,10 @@
             background: transparent;
             border: none;
             color: rgba(255,255,255,0.6);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 30px;
         }
         .carousel-controls button:hover {
@@ -243,12 +244,12 @@
         }
         .carousel-controls .dots {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
         .carousel-controls .dot-indicator {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: rgba(255,255,255,0.3);
             transition: all 0.4s;
@@ -256,7 +257,7 @@
         }
         .carousel-controls .dot-indicator.active {
             background: #f59e0b;
-            width: 20px;
+            width: 16px;
             border-radius: 10px;
         }
         
@@ -266,7 +267,7 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 24px;
+            padding: 30px 20px;
         }
         
         .hero-badge {
@@ -275,36 +276,36 @@
             gap: 8px;
             background: rgba(245, 158, 11, 0.15);
             backdrop-filter: blur(10px);
-            padding: 8px 24px;
+            padding: 6px 18px;
             border-radius: 9999px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #fbbf24;
             font-weight: 600;
             border: 1px solid rgba(245, 158, 11, 0.1);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
         .hero-badge .dot {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #f59e0b;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
         .hero-badge .rating {
             background: rgba(245,158,11,0.2);
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 9999px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
         }
         
         .hero-title {
-            font-size: 5rem;
+            font-size: 3.5rem;
             font-weight: 900;
             color: rgba(255,255,255,0.95);
-            letter-spacing: -3px;
-            line-height: 1.05;
-            margin-bottom: 16px;
-            max-width: 700px;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            max-width: 600px;
             text-shadow: 0 2px 40px rgba(0,0,0,0.3);
         }
         .hero-title .highlight { 
@@ -319,10 +320,10 @@
         
         .hero-subtitle {
             color: rgba(255,255,255,0.85);
-            max-width: 550px;
-            font-size: 1.2rem;
-            line-height: 1.8;
-            margin-bottom: 32px;
+            max-width: 500px;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
             text-shadow: 0 2px 20px rgba(0,0,0,0.2);
             font-weight: 400;
         }
@@ -336,9 +337,9 @@
             background: rgba(255,255,255,0.06);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border-radius: 24px;
-            padding: 28px 32px;
-            max-width: 820px;
+            border-radius: 20px;
+            padding: 20px 24px;
+            max-width: 750px;
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 30px 80px rgba(0,0,0,0.4);
             transition: all 0.4s;
@@ -351,7 +352,7 @@
         .search-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr auto;
-            gap: 14px;
+            gap: 10px;
             align-items: end;
             width: 100%;
         }
@@ -360,11 +361,11 @@
             min-width: 0;
         }
         .search-field .form-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             color: rgba(255,255,255,0.6);
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
@@ -372,10 +373,10 @@
         .search-field .form-input {
             background: rgba(255,255,255,0.06);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 12px 16px;
+            border-radius: 12px;
+            padding: 10px 14px;
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
             color: white;
             min-width: 0;
@@ -392,24 +393,24 @@
         .hero-search-btn {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-            padding: 12px 28px;
-            border-radius: 14px;
+            padding: 10px 20px;
+            border-radius: 12px;
             font-weight: 700;
             border: none;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 100%;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
             white-space: nowrap;
-            height: 48px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
         .hero-search-btn:hover { 
-            transform: translateY(-3px); 
+            transform: translateY(-2px); 
             box-shadow: 0 12px 35px rgba(245, 158, 11, 0.35);
         }
         .hero-search-btn:disabled {
@@ -419,12 +420,12 @@
         
         .hero-stats {
             display: flex;
-            gap: 48px;
-            margin-top: 32px;
+            gap: 30px;
+            margin-top: 20px;
         }
         .hero-stats .stat-item { text-align: left; }
         .hero-stats .stat-item .number { 
-            font-size: 2rem; 
+            font-size: 1.5rem; 
             font-weight: 800; 
             color: #f59e0b;
             display: block;
@@ -432,14 +433,14 @@
             text-shadow: 0 2px 20px rgba(0,0,0,0.2);
         }
         .hero-stats .stat-item .label { 
-            font-size: 0.8rem; 
+            font-size: 0.7rem; 
             color: rgba(255,255,255,0.5); 
             font-weight: 400;
         }
         
         /* ===== SEARCH RESULTS ===== */
         #searchResults {
-            margin-top: 24px;
+            margin-top: 16px;
             display: none;
         }
         #searchResults.visible {
@@ -450,12 +451,12 @@
             background: rgba(255,255,255,0.06);
             border: 1px solid rgba(34,197,94,0.2);
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             text-align: center;
             transition: all 0.3s;
         }
         .result-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             background: rgba(255,255,255,0.1);
         }
         
@@ -468,7 +469,7 @@
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(12px);
             color: white;
-            padding: 16px 32px;
+            padding: 14px 28px;
             border-radius: 16px;
             font-weight: 500;
             z-index: 9999;
@@ -476,27 +477,27 @@
             animation: slideUp 0.4s ease-out;
             max-width: 90%;
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
         /* ===== VEHICLE SHOWCASE ===== */
         .vehicle-showcase {
-            padding: 80px 20px;
+            padding: 60px 20px;
             background: white;
         }
         .vehicle-showcase .section-title {
             text-align: center;
-            margin-bottom: 48px;
+            margin-bottom: 36px;
         }
         .vehicle-showcase .section-title .tag {
             color: #f59e0b;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
         .vehicle-showcase .section-title h2 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: #0f172a;
             margin-top: 4px;
@@ -506,19 +507,20 @@
             color: #64748b;
             max-width: 500px;
             margin: 8px auto 0;
+            font-size: 0.9rem;
         }
         
         .vehicle-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
             max-width: 1200px;
             margin: 0 auto;
         }
         .vehicle-card {
             background: white;
-            border-radius: 20px;
-            padding: 24px 20px;
+            border-radius: 16px;
+            padding: 18px 14px;
             text-align: center;
             border: 1px solid #f1f5f9;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -536,21 +538,21 @@
         }
         .vehicle-card:hover::before { opacity: 1; }
         .vehicle-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.04);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
             border-color: rgba(245, 158, 11, 0.15);
         }
         .vehicle-card .icon-wrap {
-            width: 72px;
-            height: 72px;
-            border-radius: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.02));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: #f59e0b;
-            margin: 0 auto 12px;
+            margin: 0 auto 10px;
             transition: all 0.5s;
         }
         .vehicle-card:hover .icon-wrap {
@@ -559,10 +561,10 @@
             transform: scale(1.05) rotate(-5deg);
             box-shadow: 0 12px 30px rgba(245, 158, 11, 0.15);
         }
-        .vehicle-card h4 { font-weight: 700; color: #0f172a; font-size: 1rem; }
-        .vehicle-card .capacity { font-size: 0.75rem; color: #64748b; }
+        .vehicle-card h4 { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
+        .vehicle-card .capacity { font-size: 0.7rem; color: #64748b; }
         .vehicle-card .price { 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             font-weight: 700; 
             color: #f59e0b;
             margin-top: 4px;
@@ -571,31 +573,31 @@
             display: inline-block;
             background: #fef3c7;
             color: #92400e;
-            padding: 2px 14px;
+            padding: 2px 12px;
             border-radius: 9999px;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 600;
-            margin-top: 6px;
+            margin-top: 4px;
         }
         
         /* ===== FEATURES ===== */
         .features-section {
-            padding: 80px 20px;
+            padding: 60px 20px;
             background: #f8fafc;
         }
         .features-section .section-title {
             text-align: center;
-            margin-bottom: 48px;
+            margin-bottom: 36px;
         }
         .features-section .section-title .tag {
             color: #f59e0b;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
         .features-section .section-title h2 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: #0f172a;
             margin-top: 4px;
@@ -605,61 +607,62 @@
             color: #64748b;
             max-width: 500px;
             margin: 8px auto 0;
+            font-size: 0.9rem;
         }
         
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            gap: 16px;
             max-width: 1200px;
             margin: 0 auto;
         }
         .feature-card {
             background: white;
-            border-radius: 20px;
-            padding: 32px 24px;
+            border-radius: 16px;
+            padding: 24px 18px;
             text-align: center;
             border: 1px solid #f1f5f9;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .feature-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.04);
             border-color: rgba(245, 158, 11, 0.1);
         }
         .feature-card .icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.02));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #f59e0b;
-            margin: 0 auto 12px;
+            margin: 0 auto 10px;
         }
-        .feature-card h4 { font-weight: 700; color: #0f172a; font-size: 1rem; }
-        .feature-card p { color: #64748b; font-size: 0.85rem; margin-top: 4px; line-height: 1.5; }
+        .feature-card h4 { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
+        .feature-card p { color: #64748b; font-size: 0.8rem; margin-top: 4px; line-height: 1.5; }
         
         /* ===== TESTIMONIALS ===== */
         .testimonials-section {
-            padding: 80px 20px;
+            padding: 60px 20px;
             background: white;
         }
         .testimonials-section .section-title {
             text-align: center;
-            margin-bottom: 48px;
+            margin-bottom: 36px;
         }
         .testimonials-section .section-title .tag {
             color: #f59e0b;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
         .testimonials-section .section-title h2 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: #0f172a;
             margin-top: 4px;
@@ -669,44 +672,45 @@
             color: #64748b;
             max-width: 500px;
             margin: 8px auto 0;
+            font-size: 0.9rem;
         }
         
         .testimonials-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 16px;
             max-width: 1200px;
             margin: 0 auto;
         }
         .testimonial-card {
             background: white;
-            border-radius: 20px;
-            padding: 28px 24px;
+            border-radius: 16px;
+            padding: 20px 18px;
             border: 1px solid #f1f5f9;
             transition: all 0.4s;
         }
         .testimonial-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.04);
         }
-        .testimonial-card .stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 10px; }
+        .testimonial-card .stars { color: #f59e0b; font-size: 0.8rem; margin-bottom: 8px; }
         .testimonial-card .quote { 
             font-style: italic; 
             color: #1e293b; 
-            line-height: 1.7; 
-            font-size: 0.95rem;
+            line-height: 1.6; 
+            font-size: 0.85rem;
         }
         .testimonial-card .author { 
             display: flex; 
             align-items: center; 
-            gap: 14px; 
-            margin-top: 16px; 
-            padding-top: 16px;
+            gap: 12px; 
+            margin-top: 12px; 
+            padding-top: 12px;
             border-top: 1px solid #f1f5f9;
         }
         .testimonial-card .author .avatar {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             display: flex;
@@ -714,15 +718,15 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.8rem;
         }
-        .testimonial-card .author .name { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
-        .testimonial-card .author .route { font-size: 0.75rem; color: #94a3b8; }
+        .testimonial-card .author .name { font-weight: 700; color: #0f172a; font-size: 0.8rem; }
+        .testimonial-card .author .route { font-size: 0.65rem; color: #94a3b8; }
         
         /* ===== FOOTER ===== */
         .app-footer {
             background: #0a0a1a;
-            padding: 48px 20px 24px;
+            padding: 40px 20px 20px;
             border-top: 1px solid rgba(255,255,255,0.02);
         }
         .app-footer .footer-content {
@@ -730,41 +734,41 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
+            gap: 30px;
         }
         .app-footer .footer-brand h3 {
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 800;
         }
         .app-footer .footer-brand h3 span { color: #f59e0b; }
         .app-footer .footer-brand p {
             color: #64748b;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-top: 8px;
             max-width: 300px;
             line-height: 1.6;
         }
         .app-footer .footer-links h4 {
             color: white;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .app-footer .footer-links a {
             display: block;
             color: #64748b;
             text-decoration: none;
-            font-size: 0.85rem;
-            padding: 4px 0;
+            font-size: 0.8rem;
+            padding: 3px 0;
             transition: color 0.3s;
         }
         .app-footer .footer-links a:hover { color: #f59e0b; }
         .app-footer .footer-links a i { margin-right: 6px; width: 16px; }
         .app-footer .footer-bottom {
             max-width: 1200px;
-            margin: 32px auto 0;
-            padding-top: 20px;
+            margin: 24px auto 0;
+            padding-top: 16px;
             border-top: 1px solid rgba(255,255,255,0.04);
             display: flex;
             justify-content: space-between;
@@ -774,15 +778,15 @@
         }
         .app-footer .footer-bottom p {
             color: #475569;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .app-footer .footer-bottom .social-icons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
         .app-footer .footer-bottom .social-icons a {
-            width: 40px;
-            height: 40px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.04);
@@ -792,6 +796,7 @@
             color: #475569;
             transition: all 0.3s;
             text-decoration: none;
+            font-size: 0.8rem;
         }
         .app-footer .footer-bottom .social-icons a:hover {
             background: #f59e0b;
@@ -811,95 +816,91 @@
         }
         
         @media (max-width: 992px) {
-            .hero-title { font-size: 3.5rem; letter-spacing: -2px; }
+            .hero-title { font-size: 2.8rem; letter-spacing: -1.5px; }
             .hero-search-card { max-width: 100%; }
-            .hero-stats { gap: 24px; }
-            .hero-stats .stat-item .number { font-size: 1.6rem; }
+            .hero-stats { gap: 20px; }
+            .hero-stats .stat-item .number { font-size: 1.3rem; }
             .features-grid { grid-template-columns: repeat(2, 1fr); }
             .testimonials-grid { grid-template-columns: 1fr 1fr; }
             .app-footer .footer-content { grid-template-columns: 1fr 1fr; }
-            .carousel-controls { bottom: 20px; padding: 6px 12px; gap: 8px; }
-            .carousel-controls button { font-size: 1rem; padding: 2px 8px; }
         }
         
         @media (max-width: 768px) {
-            .hero-title { font-size: 2.6rem; letter-spacing: -1.5px; }
-            .hero-section { min-height: auto; padding: 120px 0 60px; }
-            .hero-content { padding: 20px 16px; }
-            .hero-subtitle { font-size: 1rem; }
-            .hero-search-card { padding: 20px 16px; border-radius: 20px; }
+            .hero-title { font-size: 2.2rem; letter-spacing: -1px; }
+            .hero-section { min-height: auto; padding: 100px 0 40px; max-height: none; }
+            .hero-content { padding: 16px 14px; }
+            .hero-subtitle { font-size: 0.9rem; }
+            .hero-search-card { padding: 16px; border-radius: 16px; }
             
             .search-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 12px;
+                gap: 10px;
             }
             .search-grid .search-btn-wrap {
                 grid-column: span 2;
             }
             .search-field .form-input {
-                padding: 10px 14px;
-                font-size: 0.85rem;
+                padding: 8px 12px;
+                font-size: 0.8rem;
             }
             .hero-search-btn {
-                height: 44px;
-                font-size: 0.9rem;
-                padding: 10px 20px;
+                height: 38px;
+                font-size: 0.8rem;
+                padding: 8px 16px;
             }
             
-            .hero-stats { gap: 16px; flex-wrap: wrap; }
-            .hero-stats .stat-item .number { font-size: 1.2rem; }
-            .app-header .brand .brand-text { font-size: 1.1rem; }
-            .app-header .brand .brand-icon { width: 38px; height: 38px; font-size: 1rem; }
-            .header-btn { padding: 8px 16px; font-size: 0.75rem; }
+            .hero-stats { gap: 12px; flex-wrap: wrap; }
+            .hero-stats .stat-item .number { font-size: 1.1rem; }
+            .app-header .brand .brand-text { font-size: 1rem; }
+            .app-header .brand .brand-icon { width: 34px; height: 34px; font-size: 0.9rem; }
+            .header-btn { padding: 6px 14px; font-size: 0.7rem; }
             .nav-links { display: none !important; }
-            .vehicle-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .vehicle-card { padding: 16px 12px; }
-            .vehicle-card .icon-wrap { width: 56px; height: 56px; font-size: 1.5rem; }
-            .features-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .feature-card { padding: 20px 16px; }
+            .vehicle-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .vehicle-card { padding: 14px 10px; }
+            .vehicle-card .icon-wrap { width: 48px; height: 48px; font-size: 1.2rem; }
+            .features-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .feature-card { padding: 16px 14px; }
             .testimonials-grid { grid-template-columns: 1fr; }
-            .app-footer .footer-content { grid-template-columns: 1fr; gap: 24px; }
-            .hero-accent.gold { width: 200px; height: 200px; }
-            .hero-accent.purple { width: 150px; height: 150px; }
-            .carousel-controls { bottom: 15px; padding: 4px 10px; gap: 6px; }
+            .app-footer .footer-content { grid-template-columns: 1fr; gap: 20px; }
+            .hero-accent.gold { width: 150px; height: 150px; }
+            .hero-accent.purple { width: 120px; height: 120px; }
+            .carousel-controls { bottom: 12px; padding: 4px 10px; gap: 6px; }
             .carousel-controls button { font-size: 0.8rem; padding: 2px 6px; }
-            .carousel-controls .dot-indicator { width: 6px; height: 6px; }
-            .carousel-controls .dot-indicator.active { width: 14px; }
+            .carousel-controls .dot-indicator { width: 5px; height: 5px; }
+            .carousel-controls .dot-indicator.active { width: 12px; }
         }
         
         @media (max-width: 480px) {
-            .hero-title { font-size: 2rem; }
-            .hero-badge { font-size: 0.65rem; padding: 4px 14px; }
+            .hero-title { font-size: 1.8rem; }
+            .hero-badge { font-size: 0.6rem; padding: 4px 12px; }
             
             .search-grid {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 8px;
             }
             .search-grid .search-btn-wrap {
                 grid-column: span 1;
             }
             .search-field .form-input {
-                padding: 10px 14px;
-                font-size: 0.85rem;
+                padding: 8px 12px;
+                font-size: 0.8rem;
             }
             .hero-search-btn {
-                height: 44px;
-                font-size: 0.9rem;
-                padding: 10px 20px;
+                height: 38px;
+                font-size: 0.8rem;
+                padding: 8px 16px;
             }
             
             .vehicle-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .vehicle-card { padding: 12px 8px; border-radius: 14px; }
-            .vehicle-card .icon-wrap { width: 44px; height: 44px; font-size: 1.2rem; }
-            .hero-search-card { padding: 12px; }
+            .vehicle-card { padding: 10px 8px; border-radius: 12px; }
+            .vehicle-card .icon-wrap { width: 40px; height: 40px; font-size: 1rem; }
+            .hero-search-card { padding: 10px; }
             .features-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .feature-card { padding: 16px 12px; border-radius: 14px; }
-            .feature-card .icon { width: 48px; height: 48px; font-size: 1.2rem; }
+            .feature-card { padding: 14px 10px; border-radius: 12px; }
+            .feature-card .icon { width: 40px; height: 40px; font-size: 1rem; }
             .app-footer .footer-bottom { flex-direction: column; text-align: center; }
-            .hero-stats .stat-item .number { font-size: 1rem; }
-            .hero-stats .stat-item .label { font-size: 0.65rem; }
-            .carousel-controls { bottom: 10px; padding: 4px 8px; gap: 4px; }
-            .carousel-controls button { font-size: 0.7rem; padding: 2px 4px; }
+            .hero-stats .stat-item .number { font-size: 0.9rem; }
+            .hero-stats .stat-item .label { font-size: 0.6rem; }
         }
     </style>
 </head>
@@ -924,7 +925,7 @@
         </div>
     </header>
 
-    <!-- ===== HERO WITH CAROUSEL ===== -->
+    <!-- ===== HERO WITH CAROUSEL - FIXED HEIGHT ===== -->
     <section class="hero-section">
         <!-- CAROUSEL IMAGES -->
         <div class="carousel-container">
@@ -1269,7 +1270,7 @@
 
         resetInterval();
 
-        // ===== INSTANT AJAX SEARCH WITH BOOKING BUTTONS =====
+        // ===== INSTANT AJAX SEARCH =====
         const searchForm = document.getElementById('searchForm');
         const searchBtn = document.getElementById('searchBtn');
         const resultsContainer = document.getElementById('searchResults');
@@ -1303,10 +1304,10 @@
                     console.error('Search error:', error);
                     showToast('❌ Error searching. Please try again.');
                     resultsContainer.innerHTML = `
-                        <div style="margin-top:20px; padding:30px 20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); text-align:center;">
-                            <div style="font-size:2.5rem; margin-bottom:12px;">❌</div>
-                            <h3 style="color:white; font-size:1.1rem; margin:0;">Search Error</h3>
-                            <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-top:6px;">${error.message}</p>
+                        <div style="margin-top:16px; padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center;">
+                            <div style="font-size:2rem; margin-bottom:8px;">❌</div>
+                            <h3 style="color:white; font-size:1rem; margin:0;">Search Error</h3>
+                            <p style="color:rgba(255,255,255,0.6); font-size:0.85rem; margin-top:4px;">${error.message}</p>
                         </div>
                     `;
                     resultsContainer.className = 'visible';
@@ -1322,16 +1323,16 @@
             
             if (results && results.length > 0) {
                 let html = `
-                    <div style="margin-top:20px; padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); animation:slideUp 0.5s ease-out;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-                            <h3 style="color:#fbbf24; font-size:1.1rem; margin:0;">
+                    <div style="margin-top:16px; padding:16px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); animation:slideUp 0.5s ease-out;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:6px;">
+                            <h3 style="color:#fbbf24; font-size:0.95rem; margin:0;">
                                 ✅ Found ${results.length} vehicles for ${passengers} passengers
                             </h3>
-                            <span style="color:rgba(255,255,255,0.6); font-size:0.8rem;">
+                            <span style="color:rgba(255,255,255,0.5); font-size:0.7rem;">
                                 ${origin} → ${destination} · ${new Date(date).toLocaleDateString()}
                             </span>
                         </div>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">
                 `;
                 
                 results.forEach(vehicle => {
@@ -1348,20 +1349,19 @@
                     else if (lowerName.includes('truck') || lowerName.includes('probox')) icon = 'fa-truck';
                     
                     html += `
-                        <div class="result-card">
-                            <div style="font-size:2rem; margin-bottom:8px;">
+                        <div class="result-card" style="background:rgba(255,255,255,0.06); border:1px solid rgba(34,197,94,0.2); border-radius:10px; padding:12px; text-align:center;">
+                            <div style="font-size:1.5rem; margin-bottom:4px;">
                                 <i class="fas ${icon}"></i>
                             </div>
-                            <h4 style="color:white; font-weight:700; font-size:1rem; margin:0;">${name}</h4>
-                            <div style="color:rgba(255,255,255,0.6); font-size:0.8rem;">${capacity} Seats</div>
-                            <div style="color:#f59e0b; font-weight:700; font-size:1.1rem; margin:4px 0;">KSh ${Number(price).toLocaleString()}</div>
-                            <div style="display:flex; justify-content:center; gap:4px; flex-wrap:wrap; margin-bottom:10px;">
-                                <span style="display:inline-block; background:rgba(34,197,94,0.15); color:#22c55e; padding:2px 12px; border-radius:9999px; font-size:0.65rem; font-weight:600;">Available</span>
-                                <span style="display:inline-block; background:rgba(245,158,11,0.1); color:#f59e0b; padding:2px 12px; border-radius:9999px; font-size:0.65rem; font-weight:600;">${type}</span>
+                            <h4 style="color:white; font-weight:700; font-size:0.85rem; margin:0;">${name}</h4>
+                            <div style="color:rgba(255,255,255,0.5); font-size:0.7rem;">${capacity} Seats</div>
+                            <div style="color:#f59e0b; font-weight:700; font-size:0.95rem; margin:2px 0;">KSh ${Number(price).toLocaleString()}</div>
+                            <div style="display:flex; justify-content:center; gap:3px; flex-wrap:wrap; margin-bottom:8px;">
+                                <span style="display:inline-block; background:rgba(34,197,94,0.15); color:#22c55e; padding:1px 10px; border-radius:9999px; font-size:0.55rem; font-weight:600;">Available</span>
+                                <span style="display:inline-block; background:rgba(245,158,11,0.1); color:#f59e0b; padding:1px 10px; border-radius:9999px; font-size:0.55rem; font-weight:600;">${type}</span>
                             </div>
-                            <!-- ===== BOOK NOW BUTTON ===== -->
                             <a href="/booking/${vehicleId}?date=${date}" 
-                               style="display:inline-block; background:linear-gradient(135deg, #f59e0b, #d97706); color:white; padding:8px 20px; border-radius:9999px; font-weight:600; font-size:0.85rem; text-decoration:none; transition:all 0.3s; width:100%; box-sizing:border-box;"
+                               style="display:inline-block; background:linear-gradient(135deg, #f59e0b, #d97706); color:white; padding:6px 16px; border-radius:9999px; font-weight:600; font-size:0.75rem; text-decoration:none; transition:all 0.3s; width:100%; box-sizing:border-box;"
                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(245,158,11,0.3)';"
                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                                 <i class="fas fa-calendar-check"></i> Book Now
@@ -1380,10 +1380,10 @@
                 highlightVehicles(results);
             } else {
                 resultsContainer.innerHTML = `
-                    <div style="margin-top:20px; padding:30px 20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); text-align:center; animation:slideUp 0.5s ease-out;">
-                        <div style="font-size:2.5rem; margin-bottom:12px;">🚌</div>
-                        <h3 style="color:white; font-size:1.1rem; margin:0;">No vehicles available</h3>
-                        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-top:6px;">
+                    <div style="margin-top:16px; padding:20px; background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.08); text-align:center; animation:slideUp 0.5s ease-out;">
+                        <div style="font-size:2rem; margin-bottom:8px;">🚌</div>
+                        <h3 style="color:white; font-size:0.95rem; margin:0;">No vehicles available</h3>
+                        <p style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-top:4px;">
                             No vehicles found for ${passengers} passengers on ${origin} → ${destination}
                         </p>
                     </div>
@@ -1399,7 +1399,7 @@
             
             setTimeout(() => {
                 resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+            }, 200);
         }
 
         function highlightVehicles(results) {
@@ -1423,13 +1423,6 @@
             
             const toast = document.createElement('div');
             toast.className = 'search-toast';
-            toast.style.cssText = `
-                position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
-                background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); color:white;
-                padding:16px 32px; border-radius:16px; font-weight:500; z-index:9999;
-                box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:slideUp 0.4s ease-out;
-                max-width:90%; text-align:center; font-size:1rem;
-            `;
             toast.textContent = message;
             document.body.appendChild(toast);
             
