@@ -315,7 +315,7 @@
       border-radius: 10px;
     }
 
-    /* vehicle showcase – enhanced with images */
+    /* vehicle showcase – with images */
     .vehicle-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -351,9 +351,6 @@
     }
     .vehicle-card:hover .vehicle-img {
       transform: scale(1.03);
-    }
-    .vehicle-card .icon-wrap {
-      display: none; /* hidden, using images instead */
     }
     .vehicle-card h4 { font-weight: 700; color: #0f172a; font-size: 1.1rem; margin-top: 4px; }
     .vehicle-card .capacity { font-size: 0.8rem; color: #64748b; }
@@ -405,12 +402,14 @@
     .app-footer .footer-bottom .social-icons a { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:center; color:#475569; transition:all 0.3s; text-decoration:none; }
     .app-footer .footer-bottom .social-icons a:hover { background:#f59e0b; color:white; transform:translateY(-3px); box-shadow:0 8px 25px rgba(245,158,11,0.15); }
 
+    /* responsive overrides */
     @media (max-width:992px) {
       .hero-title { font-size:3.5rem; }
       .hero-search-card { max-width:100%; }
       .features-grid { grid-template-columns:repeat(2,1fr); }
       .testimonials-grid { grid-template-columns:1fr 1fr; }
       .app-footer .footer-content { grid-template-columns:1fr 1fr; }
+      .vehicle-grid { grid-template-columns:repeat(3,1fr); }
     }
     @media (max-width:768px) {
       .hero-title { font-size:2.6rem; }
@@ -429,12 +428,16 @@
       .app-footer .footer-content { grid-template-columns:1fr; gap:24px; }
       .hero-accent.gold { width:200px; height:200px; }
       .hero-accent.purple { width:150px; height:150px; }
+      .carousel-controls { bottom: 20px; padding: 6px 12px; gap:8px; }
+      .carousel-controls button { font-size: 1rem; padding:2px 8px; }
     }
     @media (max-width:480px) {
       .hero-title { font-size:2rem; }
       .hero-search-grid { grid-template-columns:1fr !important; }
       .vehicle-grid { grid-template-columns:1fr 1fr; gap:8px; }
+      .vehicle-card .vehicle-img { height:80px; }
       .features-grid { grid-template-columns:1fr 1fr; gap:8px; }
+      .hero-subtitle { font-size:1rem; }
     }
   </style>
 </head>
@@ -458,7 +461,7 @@
 
   <!-- HERO CAROUSEL with persistent bus images + text overlay -->
   <section class="hero-carousel" id="heroCarousel">
-    <!-- Slides – persistent bus images -->
+    <!-- Slides – persistent bus images (all high-quality Unsplash) -->
     <div class="carousel-slide active"><img src="https://images.unsplash.com/photo-1544626331-e26879cd4d9b?auto=format&fit=crop&w=1400&q=80" alt="Luxury bus 1" loading="lazy" /></div>
     <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1400&q=80" alt="Modern bus 2" loading="lazy" /></div>
     <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1542372147193-a7aca9b7d1ac?auto=format&fit=crop&w=1400&q=80" alt="Executive bus 3" loading="lazy" /></div>
@@ -589,7 +592,7 @@
         header.classList.toggle('scrolled', window.scrollY > 20);
       });
 
-      // ---- CAROUSEL ----
+      // ---- CAROUSEL - FIXED: all slides show properly ----
       const slides = document.querySelectorAll('.carousel-slide');
       const dots = document.querySelectorAll('.dot-indicator');
       const prevBtn = document.getElementById('prevSlide');
@@ -619,6 +622,7 @@
         dot.addEventListener('click', () => { goTo(i); resetInterval(); });
       });
 
+      // start autoplay
       resetInterval();
 
       // observer for animations
