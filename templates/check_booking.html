@@ -34,6 +34,47 @@
             width: 100%;
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35); }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-badge.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .detail-value {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .detail-value.highlight {
+            color: #f59e0b;
+        }
     </style>
 </head>
 <body>
@@ -49,27 +90,116 @@
     <section style="max-width:600px; margin:40px auto; padding:0 20px;">
         {% if booking %}
             <div style="background:white; border-radius:20px; padding:24px; border:1px solid #f1f5f9;">
-                <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a;">Booking Details</h3>
-                <p style="color:#f59e0b; font-weight:600; margin-bottom:16px;">{{ booking.booking_ref }}</p>
-                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9;">
-                    <span style="color:#64748b;">Passenger</span>
-                    <span style="font-weight:600;">{{ booking.passenger_name }}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a;">
+                        <i class="fas fa-ticket-alt" style="color:#f59e0b;"></i> Booking Details
+                    </h3>
+                    <span class="status-badge {{ booking.status or 'confirmed' }}">
+                        {{ (booking.status or 'confirmed')|capitalize }}
+                    </span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9;">
-                    <span style="color:#64748b;">Date</span>
-                    <span style="font-weight:600; color:#f59e0b;">{{ booking.booking_date }}</span>
+                
+                <div style="background:#f8fafc; border-radius:12px; padding:12px 16px; margin-bottom:16px; text-align:center;">
+                    <span style="font-size:0.7rem; color:#94a3b8; display:block;">Booking Reference</span>
+                    <span style="font-size:1.3rem; font-weight:800; color:#f59e0b;">{{ booking.booking_ref }}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9;">
-                    <span style="color:#64748b;">Seats</span>
-                    <span style="font-weight:600;">{{ booking.selected_seats|join(', ') }}</span>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-user"></i> Passenger</span>
+                    <span class="detail-value">{{ booking.passenger_name }}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:8px 0;">
-                    <span style="color:#64748b;">Status</span>
-                    <span style="color:#10b981; font-weight:600;"><i class="fas fa-check-circle"></i> {{ booking.status|capitalize }}</span>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-phone"></i> Phone</span>
+                    <span class="detail-value">{{ booking.passenger_phone }}</span>
                 </div>
-                <a href="/" class="btn-primary" style="display:inline-block; margin-top:16px; text-decoration:none; text-align:center;">
-                    <i class="fas fa-home"></i> Back to Home
-                </a>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-calendar"></i> Booking Date</span>
+                    <span class="detail-value highlight">{{ booking.booking_date }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-calendar-check"></i> Travel Date</span>
+                    <span class="detail-value highlight">{{ booking.departure_date or booking.booking_date }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-clock"></i> Departure Time</span>
+                    <span class="detail-value highlight">{{ booking.departure_time or '08:00' }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-clock"></i> Arrival Time</span>
+                    <span class="detail-value">{{ booking.arrival_time or '14:00' }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-car"></i> Vehicle</span>
+                    <span class="detail-value">
+                        {% if booking.vehicle_type %}
+                            {{ booking.vehicle_type }}
+                        {% elif booking.vehicle_id %}
+                            Vehicle #{{ booking.vehicle_id }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-route"></i> Route</span>
+                    <span class="detail-value">
+                        {% if booking.origin and booking.destination %}
+                            {{ booking.origin }} → {{ booking.destination }}
+                        {% else %}
+                            {{ booking.route_id or 'Not specified' }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-chair"></i> Seats</span>
+                    <span class="detail-value">
+                        {% if booking.selected_seats %}
+                            {% if booking.selected_seats is string %}
+                                {{ booking.selected_seats }}
+                            {% else %}
+                                {{ booking.selected_seats|join(', ') }}
+                            {% endif %}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-money-bill"></i> Total Fare</span>
+                    <span class="detail-value highlight" style="font-size:1.1rem;">
+                        KSh {{ "%.0f"|format(booking.total_fare or 0) }}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-credit-card"></i> Payment</span>
+                    <span class="detail-value">
+                        {{ (booking.payment_status or 'pending')|capitalize }}
+                        {% if booking.payment_method %}
+                            <span style="font-size:0.7rem; color:#94a3b8;">({{ booking.payment_method|upper }})</span>
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div style="margin-top:20px; padding-top:16px; border-top:2px solid #f1f5f9;">
+                    <div style="display:flex; gap:12px;">
+                        <a href="/" class="btn-primary" style="display:inline-block; text-decoration:none; text-align:center; padding:12px;">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                        <a href="/check-booking" style="display:inline-block; padding:12px 24px; border:2px solid #e2e8f0; border-radius:9999px; text-decoration:none; color:#64748b; font-weight:600; text-align:center; flex:1;">
+                            <i class="fas fa-search"></i> Check Another
+                        </a>
+                    </div>
+                </div>
             </div>
         {% else %}
             <div style="background:white; border-radius:24px; padding:32px; border:1px solid #f1f5f9;">
@@ -80,11 +210,15 @@
                 
                 <form method="POST">
                     <div style="margin-bottom:16px;">
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Booking Reference</label>
+                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                            <i class="fas fa-ticket-alt"></i> Booking Reference
+                        </label>
                         <input type="text" name="booking_ref" class="form-input" placeholder="BC-XXXXXXXX" required />
                     </div>
                     <div style="margin-bottom:24px;">
-                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Phone Number</label>
+                        <label style="font-size:0.75rem; font-weight:600; color:#475569; display:block; margin-bottom:4px;">
+                            <i class="fas fa-phone"></i> Phone Number
+                        </label>
                         <input type="tel" name="phone" class="form-input" placeholder="+254 700 000 000" required />
                     </div>
                     <button type="submit" class="btn-primary">
@@ -96,7 +230,7 @@
                     {% if messages %}
                         {% for category, message in messages %}
                             <div style="margin-top:16px; padding:12px; border-radius:12px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b;">
-                                {{ message }}
+                                <i class="fas fa-exclamation-circle"></i> {{ message }}
                             </div>
                         {% endfor %}
                     {% endif %}
